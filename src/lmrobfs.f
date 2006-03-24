@@ -3,7 +3,7 @@ C     FAST S-ESTIMATION
 C     MATHSOFT, INC.
 C     07/25/99
 C=======================================================================
-      SUBROUTINE S_RICLLS(XT,Y,N,NP,MDX,TAU,K,THETA,RS1,SF,SG,SH,IP)
+      SUBROUTINE RLRICLLS(XT,Y,N,NP,MDX,TAU,K,THETA,RS1,SF,SG,SH,IP)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION XT(MDX,NP),Y(N),THETA(N),RS1(N)
@@ -12,15 +12,15 @@ C.......................................................................
 C-----------------------------------------------------------------------
 C     COMPUTES THE SOLUTION OF AN LS PROBLEM
 C-----------------------------------------------------------------------
-      CALL S_RMTRM2(XT,N,NP,MDX,0,TAU,K,SF,SG,SH,IP)
+      CALL RLRMTRM2(XT,N,NP,MDX,0,TAU,K,SF,SG,SH,IP)
       DO 20 JJ=1,NP
          J=JJ
-         CALL S_H12M2(2,J,J+1,N,XT(1,J),1,SH(J),Y,1,N,1,N)
+         CALL RLH12M2(2,J,J+1,N,XT(1,J),1,SH(J),Y,1,N,1,N)
  20   CONTINUE
       DO 30 I=1,N
          THETA(I)=Y(I)
  30   CONTINUE
-      CALL S_SOLVM2(XT,THETA,NP,K,MDX,N)
+      CALL RLSOLVM2(XT,THETA,NP,K,MDX,N)
       DO I=1,K
          RS1(I) = ZERO
       ENDDO
@@ -29,13 +29,13 @@ C-----------------------------------------------------------------------
       ENDDO
       DO J1=1,NP
          J=NP-J1+1
-         CALL S_H12M2(2,J,J+1,N,XT(1,J),1,SH(J),RS1,1,N,1,N)
+         CALL RLH12M2(2,J,J+1,N,XT(1,J),1,SH(J),RS1,1,N,1,N)
       ENDDO
- 120  CALL S_PERMM2(THETA,IP,NP,NP)
+ 120  CALL RLPERMM2(THETA,IP,NP,NP)
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_DPSORT(X, N, IPERM)
+      SUBROUTINE RLDPSORT(X, N, IPERM)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION IPERM(N),X(N)
@@ -122,7 +122,7 @@ C-----------------------------------------------------------------------
  200  RETURN
       END
 C=======================================================================
-      SUBROUTINE S_PRINSS(X,X2,MDX,NP,Y,N,THETA,RES,TAU,K,SF,SG,SH,IP,
+      SUBROUTINE RLPRINSS(X,X2,MDX,NP,Y,N,THETA,RES,TAU,K,SF,SG,SH,IP,
      +     XPXH,XPXI,HDIAG,Q,U,Z)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -133,7 +133,7 @@ C.......................................................................
 C-----------------------------------------------------------------------     
 C     COMPUTES OLS FIT AND PRINCIPAL SENSITIVITY COMPONENTS
 C-----------------------------------------------------------------------   
-      CALL S_RICLLS(X,Y,N,NP,MDX,TAU,K,THETA,RES,SF,SG,SH,IP)
+      CALL RLRICLLS(X,Y,N,NP,MDX,TAU,K,THETA,RES,SF,SG,SH,IP)
       IF(K .NE. NP) RETURN
       DO I = 1, NP
          DO J = 1, NP
@@ -149,7 +149,8 @@ C-----------------------------------------------------------------------
             ENDIF
          ENDDO
       ENDDO
-      CALL DBKSL(XPXI,NP,NP,XPXH,NP,INFO)
+c      CALL DBKSL(XPXI,NP,NP,XPXH,NP,INFO)
+      CALL DTRTRS('U', 'N', 'N', NP, NP, XPXI, NP, XPXH, NP, INFO)
       DO I = 1, NP
          DO J = 1, NP
             S = ZERO
@@ -164,7 +165,8 @@ C-----------------------------------------------------------------------
             XPXH(I,J) = XPXI(I,J)
          ENDDO
       ENDDO
-      CALL CHOL(XPXH,NP,SF,0,0,KK)
+c      CALL CHOL(XPXH,NP,SF,0,0,KK)
+      CALL DPOTRF('U', NP, XPXH, NP, KK)
       DO J = 1, NP
          DO I = J+1, NP
             XPXH(I,J) = XPXH(J,I)
@@ -217,9 +219,9 @@ c                  S = S+X2(I,KK)*XPXH(KK,LL)*U(LL,NP-J+1)
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_FASTSE(X,X2,MDX,NP,Y,Y2,N,RES,TAU,K,SF,SG,SH,IP,XPXH,
-     +     XPXI,HDIAG,Q,U,Z,ITER,IERR,XX,YY,SMIN,IPS,XK,BETA,BET0,MXS,
-     +     TOLS,TOLR,MAXS1,THETA,XTHETA1,XTHETA2,IPERM,C1)
+      SUBROUTINE RLFASTSE(X,X2,MDX,NP,Y,Y2,N,RES,TAU,K,SF,SG,SH,IP,
+     +     XPXH,XPXI,HDIAG,Q,U,Z,ITER,IERR,XX,YY,SMIN,IPS,XK,BETA,BET0,
+     +     MXS,TOLS,TOLR,MAXS1,THETA,XTHETA1,XTHETA2,IPERM,C1)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION X(MDX,NP),Y(N),RES(N),XPXH(NP,NP),XPXI(NP,NP),Y2(N)
@@ -247,9 +249,9 @@ C-----------------------------------------------------------------------
          YY(I) = Y(I)
          Y2(I) = Y(I)
       ENDDO
- 100  CALL S_PRINSS(XX,X2,MDX,NP,YY,NX,THETA,RES,TAU,K,SF,SG,SH,IP,
+ 100  CALL RLPRINSS(XX,X2,MDX,NP,YY,NX,THETA,RES,TAU,K,SF,SG,SH,IP,
      +     XPXH,XPXI,HDIAG,Q,U,Z)
-      CALL S_RESDM2(X,Y,THETA,N,NP,MDX,RES)
+      CALL RLRESDM2(X,Y,THETA,N,NP,MDX,RES)
       IF (K .NE. NP) THEN
          IERR = 1
          GOTO 800
@@ -265,7 +267,7 @@ C-----------------------------------------------------------------------
             IF (ARI .NE. ZERO) S=DMIN1(S,ARI)
          ENDDO
          IF (S .EQ. 1.0D7) GOTO 800
-         CALL S_STORM2(HDIAG,N,K1,S0)
+         CALL RLSTORM2(HDIAG,N,K1,S0)
          S0=2.D0*S0
          IF (S0 .EQ. ZERO) S0=S
          SRES=S0
@@ -275,14 +277,14 @@ C     STEP 3. UPDATE SRES AND SMIN IF NECESSARY
 C-----------------------------------------------------------------------
  435  D=ZERO
       DO 440 I=1,N
-         D=D+S_CHIM2(RES(I)/SRES,IPS,XK)
+         D=D+RLCHIM2(RES(I)/SRES,IPS,XK)
  440  CONTINUE
       IF (SMIN .NE. ZERO .AND. D .GT. CONST) GOTO 700
       IF (D .LE. CONST) GOTO 500
       S0=1.5D0*S0
       SRES=S0
       GOTO 435
- 500  CALL S_RSIGM2(RES,HDIAG,S0,N,NP,TOLR,1,1,MAXS1,NIS,SRES,HDIAG,
+ 500  CALL RLRSIGM2(RES,HDIAG,S0,N,NP,TOLR,1,1,MAXS1,NIS,SRES,HDIAG,
      +     HDIAG,IPS,XK,BETA,BET0)
  600  SMIN=SRES
       S0=SMIN
@@ -314,7 +316,7 @@ C-----------------------------------------------------------------------
       DO I=1, NX
          HDIAG(I) = Z(I,NZ)
       ENDDO
-      CALL S_DPSORT(HDIAG,NX,IPERM)
+      CALL RLDPSORT(HDIAG,NX,IPERM)
       DO I=1,NHALF
          IDX = IPERM(I)
          DO J=1,NP
@@ -337,7 +339,7 @@ C-----------------------------------------------------------------------
  730  DO I=1, NX
          HDIAG(I) = DABS(Z(I,NZ))
       ENDDO
-      CALL S_DPSORT(HDIAG,NX,IPERM)
+      CALL RLDPSORT(HDIAG,NX,IPERM)
       DO I=1,NHALF
          IDX = IPERM(I)
          DO J=1,NP
@@ -346,13 +348,13 @@ C-----------------------------------------------------------------------
          YY(I) = Y2(IDX)
       ENDDO
       NEND = NHALF
- 740  CALL S_RMTRM2(XX,NEND,NP,MDX,1,TAU,K,SF,SG,SH,IP)
+ 740  CALL RLRMTRM2(XX,NEND,NP,MDX,1,TAU,K,SF,SG,SH,IP)
       IF(K .NE. NP) THEN
          IERR = 1
          GOTO 800
       ENDIF
-      CALL S_RICLM2(XX,YY,NEND,NP,MDX,THETA,SH,IP)
-      CALL S_RESDM2(X,Y,THETA,N,NP,MDX,RES)
+      CALL RLRICLM2(XX,YY,NEND,NP,MDX,THETA,SH,IP)
+      CALL RLRESDM2(X,Y,THETA,N,NP,MDX,RES)
       GOTO 435
 C-----------------------------------------------------------------------
 C     STEP 5: GOTO NEXT ITERATION OR EXIT
@@ -370,7 +372,7 @@ C-----------------------------------------------------------------------
          IERR = 3
          GOTO 800
       ENDIF
-      CALL S_RESDM2(X,Y,XTHETA1,N,NP,MDX,RES)
+      CALL RLRESDM2(X,Y,XTHETA1,N,NP,MDX,RES)
       BIG = C1*SMIN
       NX = 0
       DO I=1,N

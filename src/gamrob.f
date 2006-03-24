@@ -6,7 +6,7 @@ C 12/04/00
 C
 C==========================================================================
 C
-      DOUBLE PRECISION FUNCTION S_UZANS(DX,WGT,N,EXU,EXGAM,
+      DOUBLE PRECISION FUNCTION RLUZANS(DX,WGT,N,EXU,EXGAM,
      1 		alfa,sigm,a11,a21,a22,b1,b2,c1,c2,yb,digam,beta)
 	  implicit double precision (a-h, o-z)
       DIMENSION WGT(N),yb(8,2)
@@ -22,8 +22,8 @@ C  Initializations
 C
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
       ENDIF
       S=DBLE(DX)
       BB1=DBLE(B1)
@@ -31,7 +31,7 @@ C
       ALOGS=YLGMN
       IF(S.GT.XLGMN)ALOGS=DLOG(S)
       ANS=EXGAM(1.D0,ALFA,S)
-      S_UZANS=0.D0
+      RLUZANS=0.D0
       IF (ANS.EQ.0.D0) RETURN
       X1=DBLE(S-C1)
       Z1=DBLE(A11)*X1
@@ -46,24 +46,24 @@ C
       IF (TMP.GT.BB2) U2=BB2/TMP
       I=int(WGT(1))
       GOTO (10,20,30) I
-   10 S_UZANS=U1*U2*X1*X2*DBLE(ANS)
+   10 RLUZANS=U1*U2*X1*X2*DBLE(ANS)
       RETURN
-   20 S_UZANS=U1*U2*X1*X1*DBLE(ANS)
+   20 RLUZANS=U1*U2*X1*X1*DBLE(ANS)
       RETURN
-   30 S_UZANS=(U2*(DBLE(BETA)*X1+X2))**2*DBLE(ANS)
+   30 RLUZANS=(U2*(DBLE(BETA)*X1+X2))**2*DBLE(ANS)
       RETURN
-   40 S_UZANS=(U1*X1)**2*DBLE(ANS)
+   40 RLUZANS=(U1*X1)**2*DBLE(ANS)
       RETURN
       END
 C
 C========================================================================
 C
-      SUBROUTINE S_INTUXG(X,NREP,IOPT,TIL,SUM,XLOWER,UPPER,
+      SUBROUTINE RLINTUXG(X,NREP,IOPT,TIL,SUM,XLOWER,UPPER,
      1 	alfa,sigm,a11,a21,a22,b1,b2,c1,c2,yb,digam,BETA)
 	  implicit double precision (a-h, o-z)
-      DOUBLE PRECISION S_UZANS,TILD,ERRSTD,WORK,S_EXU,LO,HI,SS(7)
+      DOUBLE PRECISION RLUZANS,TILD,ERRSTD,WORK,RLEXU,LO,HI,SS(7)
       dimension WGT(1),X(NREP),IWORK(80),WORK(320),yb(8,2)
-      EXTERNAL S_EXU,S_UZANS,S_GAMMA
+      EXTERNAL RLEXU,RLUZANS,RLGAMMA
 C
 C     INITIALISATION
 C
@@ -86,7 +86,7 @@ C
       TILD=TIL
       if (hi.le.1.d-3.and.iopt.eq.3) tild=1.d-1 
 
-      CALL S_INTGRD(S_UZANS,WGT,1,s_EXU,s_GAMMA,LO,HI,TILD,TILD,
+      CALL RLINTGRD(RLUZANS,WGT,1,RLEXU,RLGAMMA,LO,HI,TILD,TILD,
      1            KEY,LIMIT,SS(I),ERRSTD,NEVAL,IER,WORK,IWORK,
      *			 alfa,sigm,
      2			 a11,a21,a22,b1,b2,c1,c2,YB,DIGAM,beta)
@@ -99,7 +99,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_IEQTA1(AA,FA,A11,C1,B1,XLOWER,XUPPER,TIL,
+      SUBROUTINE RLIEQTA1(AA,FA,A11,C1,B1,XLOWER,XUPPER,TIL,
      1		alfa,sigm,a21,a22,b2,c2,yb,digam,beta)
 	  implicit double precision (a-h, o-z)
 	  double precision mypar
@@ -136,7 +136,7 @@ C
       mypar(17)=beta
       mypar(18)=yb(1,1)
 
-      CALL S_INTUXG(X,3,4,TIL,SUM1,XLOWER,XUPPER,alfa,sigm,
+      CALL RLINTUXG(X,3,4,TIL,SUM1,XLOWER,XUPPER,alfa,sigm,
      *	a11,a21,a22,b1,b2,c1,c2,yb,digam,beta)
       AA=1.D0/dsqrt(SUM1)
       FA=A11*A11*SUM1-1.D0
@@ -145,7 +145,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_IEQTA2(AA,Fa,A11,C1,B1,XLOWER,XUPPER,TIL,alfa,
+      SUBROUTINE RLIEQTA2(AA,Fa,A11,C1,B1,XLOWER,XUPPER,TIL,alfa,
      *		sigm,a21,a22,b2,c2,yb,digam,x2,nsol,beta)
       implicit double precision(a-h, o-z)
       DIMENSION X(7),Z0(7),X2(4)
@@ -165,9 +165,9 @@ C
       X(NSOL+1)=X11
       X(NSOL+2)=X12
       N2=NSOL+2
-      CALL S_SRT2(X,Z0,7,1,N2)
+      CALL RLSRT2(X,Z0,7,1,N2)
       IOPT=1
-   50 CALL S_INTUXG(X,N2+1,IOPT,TIL,SUMI,XLOWER,XUPPER,alfa,
+   50 CALL RLINTUXG(X,N2+1,IOPT,TIL,SUMI,XLOWER,XUPPER,alfa,
      1	sigm,a11,a21,a22,b1,b2,c1,c2,yb,digam,beta)
       IF (IOPT.EQ.1) THEN
         u12x12=SUMI
@@ -177,10 +177,10 @@ C
       digam=SUMI
       IF (digam .LT. 1.D-6) digam=1.D-6
       BETA=-u12x12/digam
-      CALL S_SRT2(X2,Z0,NSOL,1,NSOL)   
+      CALL RLSRT2(X2,Z0,NSOL,1,NSOL)   
       DO 150 I=1,NSOL
   150 X(I)=X2(I)
-      CALL S_INTUXG(X,NSOL+1,3,TIL,SUM,XLOWER,XUPPER,alfa,
+      CALL RLINTUXG(X,NSOL+1,3,TIL,SUM,XLOWER,XUPPER,alfa,
      1	sigm,a11,a21,a22,b1,b2,c1,c2,yb,digam,beta)
       AA=1.D0/DSQRT(SUM)
       FA=A22*A22*SUM - 1.D0
@@ -189,7 +189,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_IEQTA3(AA,FA,A11,A21,A22,U12X11,BETA)
+      SUBROUTINE RLIEQTA3(AA,FA,A11,A21,A22,U12X11,BETA)
 c
 c argument u12x11 is also called digam (part of /GAMPR/)
 c argument beta is also called trigm (part of /GAMPR/)
@@ -202,7 +202,7 @@ c
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_A2A3A1(MAXIT,TOL,ALPHA,A,FA,NIT,A11,A21,A22,
+      SUBROUTINE RLA2A3A1(MAXIT,TOL,ALPHA,A,FA,NIT,A11,A21,A22,
      1 C1,C2,B1,B2,XLOWER,XUPPER,U12X11,BETA,X2,Y2,NSOL,TIL,sigm,yb)
 C     * digam)
       implicit double precision (a-h, o-z)
@@ -222,7 +222,7 @@ C
 C  STEP 1: Compute new value of (Aij) and check convergence
 C  ------
   100 continue
-      CALL S_SOLVX(B2,TOL,NSOL,X2,Y2,A21,A22,C1,C2)
+      CALL RLSOLVX(B2,TOL,NSOL,X2,Y2,A21,A22,C1,C2)
 	  mypar(1) = a11
 	  mypar(2) = a21
 	  mypar(3) = a22
@@ -236,7 +236,7 @@ C  ------
 	  mypar(11) = dble(nsol)
 	  mypar(12) = beta
 
-      CALL S_IEQTA1(a1,FA(1),A11,C1,B1,XLOWER,XUPPER,TIL,alfa,
+      CALL RLIEQTA1(a1,FA(1),A11,C1,B1,XLOWER,XUPPER,TIL,alfa,
      *		sigm,a21,a22,b2,c2,yb,U12X11,beta)
 	  mypar(1) = a11
 	  mypar(2) = a21
@@ -251,7 +251,7 @@ C  ------
 	  mypar(11) = dble(nsol)
 	  mypar(12) = a1
 
-      CALL S_IEQTA2(a2,FA(2),A11,C1,B1,XLOWER,XUPPER,TIL,alfa,
+      CALL RLIEQTA2(a2,FA(2),A11,C1,B1,XLOWER,XUPPER,TIL,alfa,
      *		sigm,a21,a22,b2,c2,yb,U12X11,x2,nsol,beta)
 	  mypar(1) = a11
 	  mypar(2) = a21
@@ -267,7 +267,7 @@ C  ------
 	  mypar(12) = a2
 
       a3=a2
-      CALL S_IEQTA3(a3,FA(3),A11,A21,A22,U12X11,BETA)
+      CALL RLIEQTA3(a3,FA(3),A11,A21,A22,U12X11,BETA)
 	  mypar(1) = a11
 	  mypar(2) = a21
 	  mypar(3) = a22
@@ -303,12 +303,12 @@ C  ------
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_CRETABI(B1,B2,KK,LA,A,MAXTA,MAXTC,MAXIT,TIL,TOL,
+      SUBROUTINE RLCRETABI(B1,B2,KK,LA,A,MAXTA,MAXTC,MAXIT,TIL,TOL,
      +           ALPHA1,ALPHA2,MONIT,TAB,TPAR)
 	  implicit double precision (a-h, o-z)
       dimension A(3),FA(3),CALF(2),ZERO(2),TAB(kk,5),ver(7),tpar(6)
 	  dimension x2(4),y2(0:4),yb(8,2)
-      EXTERNAL S_GAMDIGAMA,S_GAMTRIGAM
+      EXTERNAL RLGAMDIGAMA,RLGAMTRIGAM
 
       PB1=B1
       PB2=B2
@@ -336,8 +336,8 @@ C
       suma=dabs(a(1))+dabs(a(2))+dabs(a(3))
       DO 100 IA=1,KK
       ALFA=tpar(3)+(dble(IA) - 1.D0 )*tpar(6)
-      DIGAM=S_GAMDIGAMA(ALFA)
-      trigm=s_GAMtrigam(alfa)
+      DIGAM=RLGAMDIGAMA(ALFA)
+      trigm=rlGAMtrigam(alfa)
       if (la.eq.2.or.suma.eq.0.D0) then
          A22=1.D0/dsqrt(trigm - 1.D0/alfa)
          A21=-a22/ALFA
@@ -355,8 +355,8 @@ C
         c2=digam
         c1=alfa
       endif
-      CALL S_LIMGAM(1.D0,ALFA,XLOWER,UPPER)
-      CALL S_SOLVX(B2,TOL,NSOL,X2,Y2,A21,A22,C1,C2)
+      CALL RLLIMGAM(1.D0,ALFA,XLOWER,UPPER)
+      CALL RLSOLVX(B2,TOL,NSOL,X2,Y2,A21,A22,C1,C2)
       CALF(1)=c1
       CALF(2)=c2
       A(1)=A11
@@ -364,28 +364,28 @@ C
       A(3)=A22
       NIT=1
    10 continue
-      IF (LA.GE.2) CALL S_A2A3A1(MAXTA,TOL,ALFA,A,FA,NITA,
+      IF (LA.GE.2) CALL RLA2A3A1(MAXTA,TOL,ALFA,A,FA,NITA,
      1 A11,A21,A22,C1,C2,B1,B2,XLOWER,UPPER,DIGAM,TRIGM,
      2 X2,Y2,NSOL,TIL,sigm,yb)
-      CALL S_SOLC12(MAXTC,TOL,ALFA,CALF,ZERO,NITC,X2,
+      CALL RLSOLC12(MAXTC,TOL,ALFA,CALF,ZERO,NITC,X2,
      1 Y2,NSOL,A11,A21,A22,C1,C2,B1,B2)
 
-      CALL S_SOLVX(B2,TOL,NSOL,X2,Y2,A21,A22,C1,C2)
+      CALL RLSOLVX(B2,TOL,NSOL,X2,Y2,A21,A22,C1,C2)
 
       IF (LA.LE.1) GOTO 15
-      CALL S_IEQTA1(aa,FA1,A11,C1,B1,XLOWER,UPPER,TIL,alfa,
+      CALL RLIEQTA1(aa,FA1,A11,C1,B1,XLOWER,UPPER,TIL,alfa,
      *		sigm,a21,a22,b2,c2,yb,digam,trigm)
 
       IF (DABS(FA1).GT.TOL.AND.NIT.NE.MAXIT) GOTO 20
-      CALL S_IEQTA2(aa,FA2,A11,C1,B1,XLOWER,UPPER,TIL,alfa,
+      CALL RLIEQTA2(aa,FA2,A11,C1,B1,XLOWER,UPPER,TIL,alfa,
      *		sigm,a21,a22,b2,c2,yb,digam,x2,nsol,trigm)
       IF (DABS(FA2).GT.TOL.AND.NIT.NE.MAXIT) GOTO 20
-      CALL S_IEQTA3(aa,FA3,A11,A21,A22,DIGAM,TRIGM)
+      CALL RLIEQTA3(aa,FA3,A11,A21,A22,DIGAM,TRIGM)
       IF (DABS(FA3).GT.TOL.AND.NIT.NE.MAXIT) GOTO 20
    15 CONTINUE
-      CALL S_EQTNC1(FC1,F1A,F1B,B1,A11,C1,ALFA)
+      CALL RLEQTNC1(FC1,F1A,F1B,B1,A11,C1,ALFA)
       IF (DABS(FC1).GT.TOL.AND.NIT.NE.MAXIT) GOTO 20
-      CALL S_EQTNC2(FC2,F2A,F2B,B2,A21,A22,C1,C2,X2,Y2,NSOL,
+      CALL RLEQTNC2(FC2,F2A,F2B,B2,A21,A22,C1,C2,X2,Y2,NSOL,
      1					ALFA)
       IF (DABS(FC2).GT.TOL) GOTO 20
       GOTO 30
@@ -420,13 +420,13 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_SOLVX(B,TOL,NSOL,XB,YB,A21,A22,C1,C2)
+      SUBROUTINE RLSOLVX(B,TOL,NSOL,XB,YB,A21,A22,C1,C2)
 C
 C  Solutions of y=a22*(ln(x)-c2)+a21*(x-c1)=+/-B, a22<>0
 C
       implicit double precision (a-h, o-z)
       DIMENSION XB(4),YB(0:4)
-      EXTERNAL S_XEXPD
+      EXTERNAL RLXEXPD
       BS=B
       do 50 j=1,4
       xb(j)=0.D0
@@ -434,9 +434,9 @@ C
       IF (A22.LT.0.D0) BS=-B
       IF (A21.EQ.0.D0) THEN
         YB(0)=-BS
-        XB(1)=S_XEXPD(-BS/A22+C2)
+        XB(1)=RLXEXPD(-BS/A22+C2)
         YB(1)=0.D0
-        XB(2)=S_XEXPD(BS/A22+C2)
+        XB(2)=RLXEXPD(BS/A22+C2)
         YB(2)=BS
         NSOL=2
         RETURN
@@ -449,10 +449,10 @@ C
 C (**) here x0 < 0
 C what does solvx0 do then???
 C
-        CALL S_SOLVX0(-BS,TOL,x0,1,XB(1),A21,A22,C1,C2)
+        CALL RLSOLVX0(-BS,TOL,x0,1,XB(1),A21,A22,C1,C2)
         YB(1)=0.D0
         XB(2)=1.D0
-        CALL S_SOLVX0( BS,TOL,x0,2,XB(2),A21,A22,C1,C2)
+        CALL RLSOLVX0( BS,TOL,x0,2,XB(2),A21,A22,C1,C2)
         YB(1)=0.D0
         YB(2)=BS
         NSOL=2
@@ -461,20 +461,20 @@ C
         IF ((A22.GT.0.D0.AND.Y0.GT.B).OR.
      1 (A22.LT.0.D0.AND.Y0.LT.-B)) THEN
           YB(0)=-BS
-          CALL S_SOLVX0(-BS,TOL,x0,1,XB(1),A21,A22,C1,C2)
+          CALL RLSOLVX0(-BS,TOL,x0,1,XB(1),A21,A22,C1,C2)
           YB(1)=0.D0
-          CALL S_SOLVX0(-BS,TOL,x0,2,XB(4),A21,A22,C1,C2)
+          CALL RLSOLVX0(-BS,TOL,x0,2,XB(4),A21,A22,C1,C2)
           YB(4)=-BS
           YB(2)=BS
-          CALL S_SOLVX0(BS,TOL,x0,1,XB(2),A21,A22,C1,C2)
-          CALL S_SOLVX0(BS,TOL,x0,2,XB(3),A21,A22,C1,C2)
+          CALL RLSOLVX0(BS,TOL,x0,1,XB(2),A21,A22,C1,C2)
+          CALL RLSOLVX0(BS,TOL,x0,2,XB(3),A21,A22,C1,C2)
           YB(3)=0.D0
           NSOL=4
        ELSEIF ((A22.GT.0..AND.Y0.GT.-B).OR.(A22.LT.0..AND.Y0.LT.B)) THEN
           YB(0)=-BS
-          CALL S_SOLVX0(-BS,TOL,x0,1,XB(1),A21,A22,C1,C2)
+          CALL RLSOLVX0(-BS,TOL,x0,1,XB(1),A21,A22,C1,C2)
           YB(1)=0.D0
-          CALL S_SOLVX0(-BS,TOL,x0,2,XB(2),A21,A22,C1,C2)
+          CALL RLSOLVX0(-BS,TOL,x0,2,XB(2),A21,A22,C1,C2)
           YB(2)=-BS
           NSOL=2
         ELSE
@@ -488,7 +488,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_SOLVX0(B,TOL,x0,istep,X,A21,A22,C1,C2)
+      SUBROUTINE RLSOLVX0(B,TOL,x0,istep,X,A21,A22,C1,C2)
       implicit double precision (a-h, o-z)
       DATA NCALL,XLGMN,YLGMN/0,0.D0,0.D0/
 C
@@ -496,8 +496,8 @@ C  Initializations
 C
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
       ENDIF
       Y=B+A22*C2+A21*C1
       if(istep.eq.1)then
@@ -563,7 +563,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_EQTNC2(F,FP1,FP2,B2,A21,A22,C1,C2,X,Y,NSOL,
+      SUBROUTINE RLEQTNC2(F,FP1,FP2,B2,A21,A22,C1,C2,X,Y,NSOL,
      1 					ALFA)
       implicit double precision (a-h, o-z)
       dimension X(4),Y(0:4)
@@ -574,10 +574,10 @@ C
       FP1=0.D0
       FP2=0.D0
       IF (NSOL.GE.2) THEN
-       CALL S_INTGAM(1,0.D0,XL,ALFA,SUM1)
-       CALL S_INTGAM(4,XL,XU,ALFA,SUM2)
-       CALL S_INTGAM(2,XL,XU,ALFA,SUM3)
-       CALL S_INTGAM(1,0.D0,XU,ALFA,SUM4)
+       CALL RLINTGAM(1,0.D0,XL,ALFA,SUM1)
+       CALL RLINTGAM(4,XL,XU,ALFA,SUM2)
+       CALL RLINTGAM(2,XL,XU,ALFA,SUM3)
+       CALL RLINTGAM(1,0.D0,XU,ALFA,SUM4)
        F=Y(0)*SUM1+(A22*SUM2+A21*SUM3-(A22*C2+A21*C1)*(SUM4-SUM1))
      *   +Y(2)*(1.D0-SUM4)
        FP1=-A21*(SUM4-SUM1)
@@ -587,10 +587,10 @@ C
        XL=X(3)
        XU=X(4)
        F=F-Y(2)*(1.D0-SUM4)
-       CALL S_INTGAM(1,0.D0,XL,ALFA,SUM5)
-       CALL S_INTGAM(4,XL,XU,ALFA,SUM6)
-       CALL S_INTGAM(2,XL,XU,ALFA,SUM7)
-       CALL S_INTGAM(1,0.D0,XU,ALFA,SUM8)
+       CALL RLINTGAM(1,0.D0,XL,ALFA,SUM5)
+       CALL RLINTGAM(4,XL,XU,ALFA,SUM6)
+       CALL RLINTGAM(2,XL,XU,ALFA,SUM7)
+       CALL RLINTGAM(1,0.D0,XU,ALFA,SUM8)
        F=F+Y(2)*(SUM5-SUM4)+Y(4)*(1.D0-SUM8)+
      *    (A22*SUM6+A21*SUM7-(A22*C2+A21*C1)*(SUM8-SUM5))
        FP1=FP1-A21*(SUM8-SUM5)
@@ -601,7 +601,7 @@ C
 C
 C----------------------------------------------------------------------
 C
-      SUBROUTINE S_EQTNC1(F,FP1,FP2,B1,A11,C1,ALFA)
+      SUBROUTINE RLEQTNC1(F,FP1,FP2,B1,A11,C1,ALFA)
       implicit double precision (a-h, o-z)
 C
       B=B1
@@ -615,9 +615,9 @@ C
         SB=-B
       ENDIF
       IF (XL.LT.0.D0) XL=0.D0
-      CALL S_INTGAM(1,0.D0,XL,ALFA,SUM1)
-      CALL S_INTGAM(2,XL,XU,ALFA,SUM2)
-      CALL S_INTGAM(1,0.D0,XU,ALFA,SUM3)
+      CALL RLINTGAM(1,0.D0,XL,ALFA,SUM1)
+      CALL RLINTGAM(2,XL,XU,ALFA,SUM2)
+      CALL RLINTGAM(1,0.D0,XU,ALFA,SUM3)
       F=-SB*SUM1+A11*SUM2-A11*C1*(SUM3-SUM1)+SB*(1.D0-SUM3)
       FP1=-A11*(SUM3-SUM1)
       FP2=0.D0
@@ -626,7 +626,7 @@ C
 C
 C----------------------------------------------------------------------
 C
-      SUBROUTINE S_SOLC12(MAXIT,TOL,ALPHA,CALF,ZERO,NIT,X,Y,NSOL,
+      SUBROUTINE RLSOLC12(MAXIT,TOL,ALPHA,CALF,ZERO,NIT,X,Y,NSOL,
      1 A11,A21,A22,C1,C2,B1,B2)
       implicit double precision (a-h, o-z)
       double precision lamda
@@ -642,8 +642,8 @@ C
       C2=CALF(2)
       ALFA=ALPHA
       SIGM=1.D0
-        CALL S_EQTNC1(F10,F1A,F1B,B1,A11,C1,ALFA)
-        CALL S_EQTNC2(F20,F2A,F2B,B2,A21,A22,C1,C2,X,Y,NSOL,ALFA)
+        CALL RLEQTNC1(F10,F1A,F1B,B1,A11,C1,ALFA)
+        CALL RLEQTNC2(F20,F2A,F2B,B2,A21,A22,C1,C2,X,Y,NSOL,ALFA)
         MADE=1
       S=F10**2+F20**2
       IF (S.LT.TOL2) GOTO 200
@@ -669,12 +669,12 @@ C
       NSTP=0
   150 C1=C01-GAM1*DLT1
       C2=C02-GAM2*DLT2
-      CALL S_SOLVX(B2,TOL,NSOL,X,Y,A21,A22,C1,C2)
-      CALL S_EQTNC1(F10,F1A,F1B,B1,A11,C1,ALFA)
-      CALL S_EQTNC2(F20,F2A,F2B,B2,A21,A22,C1,C2,X,Y,NSOL,ALFA)
+      CALL RLSOLVX(B2,TOL,NSOL,X,Y,A21,A22,C1,C2)
+      CALL RLEQTNC1(F10,F1A,F1B,B1,A11,C1,ALFA)
+      CALL RLEQTNC2(F20,F2A,F2B,B2,A21,A22,C1,C2,X,Y,NSOL,ALFA)
 C
-C the above call to s_eqtnc2 produces log(-0.42..)
-C because s_solvx produces negative X's ... 
+C the above call to rleqtnc2 produces log(-0.42..)
+C because rlsolvx produces negative X's ... 
 C because sign(a21) = sign(a22)
 C which should not happen... 
 C	  return
@@ -701,7 +701,7 @@ C  ------
       RETURN
       END
 
-      SUBROUTINE S_LNTRP0(MDT,TAB,ALPHA,C1,C2,A11,A21,A22,
+      SUBROUTINE RLLNTRP0(MDT,TAB,ALPHA,C1,C2,A11,A21,A22,
      1 				ALPHA1,ALPHA2,DELTA,K)
       implicit double precision (a-h, o-z)
       dimension TAB(MDT,5),VAL(5)
@@ -737,10 +737,10 @@ C  ------
 C
 C-----------------------------------------------------------------------
 C
-      DOUBLE PRECISION FUNCTION S_SEQTN9(SIGMA,Y,NOBS,PARAM)
+      DOUBLE PRECISION FUNCTION RLSEQTN9(SIGMA,Y,NOBS,PARAM)
       implicit double precision (a-h, o-z)
       DIMENSION Y(NOBS), PARAM(5)
-      EXTERNAL S_PSI2
+      EXTERNAL RLPSI2
       DATA NCALL,XLGMN,YLGMN/0,0.D0,0.D0/
 	  A21 = PARAM(1)
 	  A22 = PARAM(2)
@@ -749,8 +749,8 @@ C
 	  B2  = PARAM(5)
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
       ENDIF
       SUM=0.D0
       EN=DBLE(NOBS)
@@ -759,18 +759,18 @@ C
         ALOGS=YLGMN
         IF (S.GT.XLGMN) ALOGS=DLOG(S)
         S=A22*(ALOGS-C2)+A21*(S-C1)
-        SUM=SUM+S_PSI2(S,B2)
+        SUM=SUM+RLPSI2(S,B2)
   120 CONTINUE
-      S_SEQTN9=SUM/EN
+      RLSEQTN9=SUM/EN
       RETURN
       END
 C
 C------------------------------------------------------------------------
 C
-      DOUBLE PRECISION FUNCTION S_SEQTN10(SIGMA,Y,NOBS,PARAM)
+      DOUBLE PRECISION FUNCTION RLSEQTN10(SIGMA,Y,NOBS,PARAM)
       implicit double precision (a-h, o-z)
       DIMENSION Y(NOBS),PARAM(3)
-      EXTERNAL S_PSI1
+      EXTERNAL RLPSI1
 
 	  A11 = PARAM(1)
 	  C1  = PARAM(2)
@@ -780,39 +780,39 @@ C
       EN=DBLE(NOBS)
       DO 120 I=1,NOBS
         S=A11*(Y(I)/SIGMA-C1)
-        SUM=SUM+S_PSI1(S,B1)
+        SUM=SUM+RLPSI1(S,B1)
   120 CONTINUE
-      S_SEQTN10=SUM/EN
+      RLSEQTN10=SUM/EN
       RETURN
       END
 C
 C------------------------------------------------------------------------
 C
-      DOUBLE PRECISION FUNCTION S_PSI1(S,B1)
+      DOUBLE PRECISION FUNCTION RLPSI1(S,B1)
       implicit double precision (a-h, o-z)
 
       ABST=DABS(S)
       TMP=DMIN1(B1,ABST)
       IF (S.LT.0.D0) TMP=-TMP
-      S_PSI1=TMP
+      RLPSI1=TMP
       RETURN
       END
 C
 C------------------------------------------------------------------------
 C
-      DOUBLE PRECISION FUNCTION S_PSI2(S,B2)
+      DOUBLE PRECISION FUNCTION RLPSI2(S,B2)
       implicit double precision (a-h, o-z)
 
       ABST=DABS(S)
       TMP=DMIN1(B2,ABST)
       IF (S.LT.0.D0) TMP=-TMP
-      S_PSI2=TMP
+      RLPSI2=TMP
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_RGFLD(F,V,Y,A,B,TOL,MAXIT,X,ITERM,NOBS,PARAM)
+      SUBROUTINE RLRGFLD(F,V,Y,A,B,TOL,MAXIT,X,ITERM,NOBS,PARAM)
 C
 C PARAM is a vector of parameters for F
 C
@@ -862,7 +862,7 @@ C
       END
 
 
-      SUBROUTINE S_ESTIMP(Y,NOBS,TAB,MDT,LA,MAXIT,TPAR,TOL,ALFA1,ALFA2,
+      SUBROUTINE RLESTIMP(Y,NOBS,TAB,MDT,LA,MAXIT,TPAR,TOL,ALFA1,ALFA2,
      +           ALPHA,SIGMA,NIT,c1c2,a123)
 C
 C   INPUT: Y(NOBS)    Observations
@@ -879,7 +879,7 @@ C
       implicit double precision (a-h, o-z)
       DIMENSION Y(NOBS),TAB(MDT,5),TPAR(6),c1c2(2),a123(3),A(3)
 	  DIMENSION SIGN9(2), PARAM(5)
-      EXTERNAL S_SEQTN9,S_SEQTN10  
+      EXTERNAL RLSEQTN9,RLSEQTN10  
 C
 C  Read data and table info
 C
@@ -927,10 +927,10 @@ C
         MAXTA=1
         MAXTC=1
         IF (SIG0.NE.0.D0) MAXTC=20
-        CALL S_CRETABI(B1,B2,1,LA,A,MAXTA,MAXTC,MAXIT,TIL,TOL,
+        CALL RLCRETABI(B1,B2,1,LA,A,MAXTA,MAXTC,MAXIT,TIL,TOL,
      +  			ALFA,ALFA,0,TAB,TPAR)
       ELSE
-        CALL S_LNTRP0(MDT,TAB,ALFA,C1,C2,A11,A21,A22,
+        CALL RLLNTRP0(MDT,TAB,ALFA,C1,C2,A11,A21,A22,
      1 			ALPHA1, ALPHA2, DELTA, K)
       ENDIF
 C
@@ -947,11 +947,11 @@ C
         IF (NIT.EQ.1) THEN
           ALF9=ALFA
           NRFN=NRFN+1
-          SIGN9(I9)=S_SEQTN9(SIG0,Y,NOBS,PARAM)
+          SIGN9(I9)=RLSEQTN9(SIG0,Y,NOBS,PARAM)
           GOTO 300
         ENDIF
         I9=3-I9
-        SIGN9(I9)=S_SEQTN9(SIG0,Y,NOBS,PARAM)
+        SIGN9(I9)=RLSEQTN9(SIG0,Y,NOBS,PARAM)
         GOTO 120
       ENDIF
 C
@@ -962,8 +962,8 @@ C
 	  PARAM(1) = A11
 	  PARAM(2) = C1
 	  PARAM(3) = B1
-      FMAX=S_SEQTN10(SMIN,Y,NOBS,PARAM)
-      FMIN=S_SEQTN10(SMAX,Y,NOBS,PARAM)
+      FMAX=RLSEQTN10(SMIN,Y,NOBS,PARAM)
+      FMIN=RLSEQTN10(SMAX,Y,NOBS,PARAM)
       IF     (FMAX.LT.0.D0) THEN
              ITERMy=4
              SIGM10=SMIN
@@ -974,7 +974,7 @@ C
 	   PARAM(1) = A11
 	   PARAM(2) = C1
 	   PARAM(3) = B1
-       CALL S_RGFLD(S_SEQTN10,Y,0.D0,SMIN,SMAX,TOLD,MAXIT,SIGM10,
+       CALL RLRGFLD(RLSEQTN10,Y,0.D0,SMIN,SMAX,TOLD,MAXIT,SIGM10,
      1				ITERMY,NOBS,PARAM)
       ENDIF
       IF (NIT.EQ.1) GOTO 200
@@ -987,7 +987,7 @@ C
 	  PARAM(4) = C2
 	  PARAM(5) = B2
 
-      SIGN9(I9)=S_SEQTN9(SIGM10,Y,NOBS,PARAM)
+      SIGN9(I9)=RLSEQTN9(SIGM10,Y,NOBS,PARAM)
   120 TMP=DABS(SIGN9(I9))
       IF (SIGN9(2).EQ.-9.D0) THEN
         FMIN9=DABS(SIGN9(1))
@@ -1018,7 +1018,7 @@ C
 	  PARAM(3) = C1
 	  PARAM(4) = C2
 	  PARAM(5) = B2
-	  SIGN9(I9) = S_SEQTN9(SIGM10,Y,NOBS,PARAM)
+	  SIGN9(I9) = RLSEQTN9(SIGM10,Y,NOBS,PARAM)
 	  ENDIF
   300 IF (SIGN9(1)*SIGN9(2).GT.0.D0) THEN
         NK=2*NK
@@ -1042,14 +1042,14 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_GAMLIK(Y,N,MAXIT,TOL,ALPHA,SIGMA,YBAR,VAR,ZERO,NIT)
+      SUBROUTINE RLGAMLIK(Y,N,MAXIT,TOL,ALPHA,SIGMA,YBAR,VAR,ZERO,NIT)
 C
 C Solution of (1/n)*Sum(alog(y/ybar)) + alog(alpha) - digama(alpha)=0
 C and         alpha*sigma=ybar for (alpha,sigma)
 C
       implicit double precision (a-h, o-z)
       DIMENSION Y(N)
-      EXTERNAL S_GAMDIGAMA,S_GAMTRIGAM
+      EXTERNAL RLGAMDIGAMA,RLGAMTRIGAM
       DATA NCALL,XLGMN,YLGMN,TIL/0,0.D0,0.D0,1.D-6/
 C
 C Compute sample mean and variance; set initial values
@@ -1057,8 +1057,8 @@ C
       NIT=1
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
       ENDIF
 
       SUMLN=0.D0
@@ -1091,8 +1091,8 @@ C
       IF (ALFA.GT.XLGMN) ALOGX=DLOG(ALFA)
       DEN=ALFA
       IF (ALFA.LT.TIL) DEN=TIL
-      F=ALOGX-S_GAMDIGAMA(DEN)+G
-      FP=1.D0/DEN - S_GAMTRIGAM(DEN)
+      F=ALOGX-RLGAMDIGAMA(DEN)+G
+      FP=1.D0/DEN - RLGAMTRIGAM(DEN)
 C
 C Compute new values
 C
@@ -1107,7 +1107,7 @@ C
       ENDIF
       ALOGX=YLGMN
       IF (ALF0.GT.XLGMN) ALOGX=DLOG(ALF0)
-      ZERO=ALOGX-S_GAMDIGAMA(ALF0)+G
+      ZERO=ALOGX-RLGAMDIGAMA(ALF0)+G
       IF (ABS(ZERO).LT.TOL) GOTO 320
       IF (ABS(ALFA-ALF0).LT.DMIN1(1.D0,DABS(ALF0))*TOL.AND.NSTP.LE.2)
      1    GOTO 300
@@ -1119,7 +1119,7 @@ C Exit
 C
   300 ALOGX=YLGMN
       IF (ALF0.GT.XLGMN) ALOGX=DLOG(ALF0)
-      ZERO=ALOGX-S_GAMDIGAMA(ALF0)+G
+      ZERO=ALOGX-RLGAMDIGAMA(ALF0)+G
   320 ALPHA=ALF0
       SIGMA=YBAR/ALPHA
       RETURN
@@ -1127,16 +1127,16 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      double precision FUNCTION S_GAMMA(SIGMA,ALFA,X)
+      double precision FUNCTION RLGAMMA(SIGMA,ALFA,X)
       implicit double precision (a-h, o-z)
       DATA NCALL,XLGMN,YLGMN,GALIM/0,0.D0,0.D0,0.D0/
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
         GALIM=DLOG(1.D-10)
       ENDIF
-      S_GAMMA=0.D0
+      RLGAMMA=0.D0
       IF (X.EQ.0.D0) RETURN
       S=X/SIGMA
       ALOGS=YLGMN
@@ -1160,13 +1160,13 @@ C
       ALOGAM=(ALF-1.D0)*ALOGS-S-DLOG(SIGMA)-GL
       IF (ALOGAM.LT.GALIM) RETURN
       S=DEXP(ALOGAM)
-      S_GAMMA=S    
+      RLGAMMA=S    
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      double precision FUNCTION S_GAMDIGAMA(X)
+      double precision FUNCTION RLGAMDIGAMA(X)
       implicit double precision (a-h, o-z)
       T=0.D0
       Z=DBLE(X)
@@ -1181,13 +1181,13 @@ C
       S=DLOG(Z) - 1.D0/(2.D0*Z) + Z2*(- 1.D0/12.D0 + Z2*(1.D0/120.D0 +
      + Z2*(-1.D0/252.D0 + Z2*(1.D0/240.D0 + Z2*(- 1.D0/132.D0 + Z2*(
      + 691.D0/(12.D0*2730.D0) - Z2/12.D0)))))) - T
-      S_GAMDIGAMA=S
+      RLGAMDIGAMA=S
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      double precision FUNCTION S_GAMTRIGAM(X)
+      double precision FUNCTION RLGAMTRIGAM(X)
       implicit double precision (a-h, o-z)
       T=0.D0
       Z=DBLE(X)
@@ -1203,24 +1203,24 @@ C
       S=1.D0/Z + Z2/2.D0 + Z3*(1.D0/6.D0 + Z2*(- 1.D0/30.D0 + Z2*(
      + 1.D0/42.D0 + Z2*(- 1.D0/30.D0 + Z2*(5.D0/66.D0 + Z2*(-691.D0/
      + 2730.D0 + Z2*(7.D0/6.D0))))))) - T
-      S_GAMTRIGAM=S
+      RLGAMTRIGAM=S
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_LIMGAM(SIGMA,ALFA,LOWER,UPPER)
+      SUBROUTINE RLLIMGAM(SIGMA,ALFA,LOWER,UPPER)
       implicit double precision (a-h, o-z)
       double precision LOWER
       DATA NCALL,XLGMN,YLGMN,GALIM/0,0.D0,0.D0,0.D0/
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
         GALIM=DLOG(1.D-9)
       ENDIF
       LOWER=0.D0
-      CALL S_LGAMAD(ALFA,GL)
+      CALL RLLGAMAD(ALFA,GL)
       IF (ALFA.LE.5.D0) GOTO 250
       X=ALFA
   100 X=X-0.1D0
@@ -1244,7 +1244,7 @@ C
 c
 c***********************************************************************
 c
-      SUBROUTINE S_SUMLGM(HI,ALPHA,GL)
+      SUBROUTINE RLSUMLGM(HI,ALPHA,GL)
 C
 C  INT  Log(x)*gamma(x,alpha) dx for x=0 to HI
 C
@@ -1254,13 +1254,13 @@ C
       DATA NCALL,PREC/0,0.D0/
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(2,PREC)
+        CALL RLMACHD(2,PREC)
       ENDIF
       GL=0.D0
       IF (HI.LE.0.D0) RETURN
       ALF=ALPHA
       LOGHI=DLOG(HI)
-      CALL S_LGAMAD(ALF+1.D0,GA1)
+      CALL RLLGAMAD(ALF+1.D0,GA1)
       GG=ALF*LOGHI-HI-GA1
       SS=1.D0/ALF
       SUM=DEXP(GG+DLOG(SS))
@@ -1270,14 +1270,14 @@ C
       TERM=DEXP(GG+DLOG(SS))
       SUM=SUM+TERM
       IF (TERM.GT.PREC) GOTO 100
-      CALL S_INGAMD(HI,ALPHA,GX)
+      CALL RLINGAMD(HI,ALPHA,GX)
       GL=LOGHI*GX-SUM
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_SUMLG2(HI,ALPHA,GL)
+      SUBROUTINE RLSUMLG2(HI,ALPHA,GL)
 C
 C  INT  [LOG(x)]^2*Gamma(x,ALPHA) dx for x=0 to HI
 C
@@ -1287,7 +1287,7 @@ C
       DATA NCALL,PREC/0,0.D0/
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(2,PREC)
+        CALL RLMACHD(2,PREC)
       ENDIF
       GL=0.D0
       IF (HI.LE.0.) RETURN
@@ -1296,7 +1296,7 @@ C
       SSUM=0.D0
   100 ALFA=ALFA+1.D0
       ALF=ALFA
-      CALL S_LGAMAD(ALF+1.D0,GA1)
+      CALL RLLGAMAD(ALF+1.D0,GA1)
       GG=ALF*LOGHI-HI-GA1
       SS=1.D0/ALF
       SUM=DEXP(GG+DLOG(SS))
@@ -1306,74 +1306,74 @@ C
       TERM=DEXP(GG+DLOG(SS))
       SUM=SUM+TERM
       IF (TERM.GT.PREC) GOTO 200
-      CALL S_INGAMD(HI,ALFA,GX)
+      CALL RLINGAMD(HI,ALFA,GX)
       SUM=LOGHI*GX-SUM
       TRM=SUM/ALFA
       SSUM=SSUM+TRM
       IF (DABS(TRM).GT.1.D-8) GOTO 100
-      CALL S_INGAMD(HI,ALPHA,GX)
+      CALL RLINGAMD(HI,ALPHA,GX)
       GL=LOGHI*LOGHI*GX-2.D0*SSUM
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_INTGAM(IOPT,XL,XU,ALFA,SUM)
+      SUBROUTINE RLINTGAM(IOPT,XL,XU,ALFA,SUM)
       implicit double precision (a-h, o-z)
       DOUBLE PRECISION LO,HI,ALF,X1,X2,VAL1,VAL2
       LO=DBLE(XL)
       HI=DBLE(XU)
       ALF=DBLE(ALFA)
       SIGM=1.
-      CALL S_LIMGAM(SIGM,ALFA,XLOW,XUP)
+      CALL RLLIMGAM(SIGM,ALFA,XLOW,XUP)
       X1=LO
       X2=HI
       IF (X1.GT.DBLE(XUP)) X1=DBLE(XUP)
       IF (X2.GT.DBLE(XUP)) X2=DBLE(XUP)
       VAL1=0.D0
       GOTO (10,20,30,40,50,60) IOPT
-   10 IF (X1.NE.0.D0) CALL S_INGAMD(X1,ALF,VAL1)
-      CALL S_INGAMD(X2,ALF,VAL2)
+   10 IF (X1.NE.0.D0) CALL RLINGAMD(X1,ALF,VAL1)
+      CALL RLINGAMD(X2,ALF,VAL2)
       SUM=(VAL2-VAL1)
       RETURN
-   20 IF (X1.NE.0.D0) CALL S_INGAMD(X1,ALF+1.D0,VAL1)
-      CALL S_INGAMD(X2,ALF+1.D0,VAL2)
+   20 IF (X1.NE.0.D0) CALL RLINGAMD(X1,ALF+1.D0,VAL1)
+      CALL RLINGAMD(X2,ALF+1.D0,VAL2)
       SUM=(ALF*(VAL2-VAL1))
       RETURN
-   30 IF (X1.NE.0.D0) CALL S_INGAMD(X1,ALF+2.D0,VAL1)
-      CALL S_INGAMD(X2,ALF+2.D0,VAL2)
+   30 IF (X1.NE.0.D0) CALL RLINGAMD(X1,ALF+2.D0,VAL1)
+      CALL RLINGAMD(X2,ALF+2.D0,VAL2)
       SUM=(ALF*(ALF+1.D0)*(VAL2-VAL1))
       RETURN
-   40 IF (X1.NE.0.D0) CALL S_SUMLGM(X1,ALF,VAL1)
-      CALL S_SUMLGM(X2,ALF,VAL2)
+   40 IF (X1.NE.0.D0) CALL RLSUMLGM(X1,ALF,VAL1)
+      CALL RLSUMLGM(X2,ALF,VAL2)
       SUM=(VAL2-VAL1)
       RETURN
-   50 IF (X1.NE.0.D0) CALL S_SUMLGM(X1,ALF+1.D0,VAL1)
-      CALL S_SUMLGM(X2,ALF+1.D0,VAL2)
+   50 IF (X1.NE.0.D0) CALL RLSUMLGM(X1,ALF+1.D0,VAL1)
+      CALL RLSUMLGM(X2,ALF+1.D0,VAL2)
       SUM=(ALF*(VAL2-VAL1))
       RETURN
-   60 IF (X1.NE.0.) CALL S_SUMLG2(X1,ALF,VAL1)
-      CALL S_SUMLG2(X2,ALF,VAL2)
+   60 IF (X1.NE.0.) CALL RLSUMLG2(X1,ALF,VAL1)
+      CALL RLSUMLG2(X2,ALF,VAL2)
       SUM=(VAL2-VAL1)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_INGAMD(X,P,G)
+      SUBROUTINE RLINGAMD(X,P,G)
 
       implicit double precision (a-h, o-z)
       DOUBLE PRECISION X,PN(6),P,G,GP,GIN,OFLO,FACTOR,RN,TERM,TOL,
-     1                 A,B,AN,DIF,S_XEXPD
-      EXTERNAL S_XEXPD
+     1                 A,B,AN,DIF,RLXEXPD
+      EXTERNAL RLXEXPD
       DATA TOL/1.0D-8/
       G=0.D0
       IF (X.EQ.0.D0) RETURN
-      CALL S_MACHD(6,OFLO)
+      CALL RLMACHD(6,OFLO)
       OFLO=OFLO*1.D-15
-      CALL S_LGAMAD(P,GP)
+      CALL RLLGAMAD(P,GP)
       GIN=0.D0
-      FACTOR=S_XEXPD(P*DLOG(X)-X-GP)
+      FACTOR=RLXEXPD(P*DLOG(X)-X-GP)
       IF (X.GT.1.D0.AND.X.GE.P) GOTO 30
 C
 C  CALCULATION BY SERIES EXPANSION
@@ -1423,7 +1423,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_LGAMAD(X,GL)
+      SUBROUTINE RLLGAMAD(X,GL)
 
       implicit double precision (a-h, o-z)
       DOUBLE PRECISION X,GL,V,F,Z
@@ -1445,40 +1445,40 @@ C
       RETURN
       END
 
-      subroutine s_sdigama(s,result)
+      subroutine rlsdigama(s,result)
       implicit double precision (a-h, o-z)
-       double precision s,result,s_gamdigama
-       external s_gamdigama
-       result=s_gamdigama(s)
+       double precision s,result,rlgamdigama
+       external rlgamdigama
+       result=rlgamdigama(s)
       end
 c
 c***********************************************************************
 c
-      subroutine s_strigamma(s,result)
+      subroutine rlstrigamma(s,result)
       implicit double precision (a-h, o-z)
-       external s_gamtrigam
-       result=s_gamtrigam(s)
+       external rlgamtrigam
+       result=rlgamtrigam(s)
       end
 C
 C======================================================================
 C
-      DOUBLE PRECISION FUNCTION S_EXU(Z,
+      DOUBLE PRECISION FUNCTION RLEXU(Z,
      * JPSI,JPS0,SIGM,
      1 A11,A21,A22,C1,C2,B1,B2)
       implicit double precision (a-h, o-z)
       dummy = jpsi+jps0+sigm+a11+a21+a22+c1+c2+b1+b2
-      S_EXU=DBLE(Z)
+      RLEXU=DBLE(Z)
       RETURN 
       END
 
 
-      SUBROUTINE S_AUXVAS(til,m,q,alfa,sigm,a11,
+      SUBROUTINE RLAUXVAS(til,m,q,alfa,sigm,a11,
      1 a21,a22,b1,b2,c1,c2,xb,yb,ns,digam,beta)
 	  implicit double precision (a-h, o-z)
 	  double precision M(4)
       dimension Q(4),wgt(2),xb(8),yb(8,2)
 	  dimension work(320), iwork(80)
-      external s_psipsi,s_gamma,s_dpsi,s_psis
+      external rlpsipsi,rlgamma,rldpsi,rlpsis
       tild=dble(til)
       key=1
       limit=80
@@ -1490,7 +1490,7 @@ C
       ts=0.d0
       do 10 i=1,ns-1
       wgt(2)=dble(i)
-      call s_intgrd(s_psis,wgt,2,s_dpsi,s_gamma,xb(i),xb(i+1),
+      call rlintgrd(rlpsis,wgt,2,rldpsi,rlgamma,xb(i),xb(i+1),
      1		tild,0.d0,key,limit,t,errst,neval,ier,work,iwork,
      2		alfa,sigm,
      3		a11,a21,a22,b1,b2,c1,c2,yb,digam,beta)
@@ -1506,7 +1506,7 @@ C
       ts=0.d0
       do 20 i=1,ns-1
       wgt(2)=i
-      call s_intgrd(s_psipsi,wgt,2,s_dpsi,s_gamma,xb(i),xb(i+1),
+      call rlintgrd(rlpsipsi,wgt,2,rldpsi,rlgamma,xb(i),xb(i+1),
      1		tild,0.d0,key,limit,t,errst,neval,ier,work,iwork,
      2		alfa,sigm,
      3		a11,a21,a22,b1,b2,c1,c2,yb,digam,beta)
@@ -1520,7 +1520,7 @@ C
 
 c================================================================
 
-      double precision FUNCTION S_SCORC(X,IS,SIGM,C1,C2)
+      double precision FUNCTION RLSCORC(X,IS,SIGM,C1,C2)
 c
 c       SCORES CORRIGES
 c       IS=1   df/dtau=SC1=S-C1
@@ -1530,22 +1530,22 @@ c
       DATA NCALL,XLGMN,YLGMN/0,0.D0,0.D0/
       IF(NCALL.EQ.0)THEN
          NCALL=1
-         CALL s_MACHd(4,XLGMN)
-         CALL s_machd(5,YLGMN)
+         CALL RLMACHD(4,XLGMN)
+         CALL rlmachd(5,YLGMN)
       ENDIF
       S=X/SIGM
       GOTO (10,20) IS
    20 ALOGS=YLGMN
       IF (S.GT.XLGMN) ALOGS=DLOG(S)
-      S_SCORC=ALOGS-C2
+      RLSCORC=ALOGS-C2
       RETURN
-   10 S_SCORC=S-C1
+   10 RLSCORC=S-C1
       RETURN
       END
 C
 C------------------------------------------------------------
 C
-      double precision FUNCTION S_SCOR(X,alfa,sigm,is,digam)
+      double precision FUNCTION RLSCOR(X,alfa,sigm,is,digam)
 c
 c       is=1   S1=s-alf
 c       is=2   S2=log(x)-digama(alfa)
@@ -1554,22 +1554,22 @@ c
       DATA NCALL,XLGMN,YLGMN/0,0.D0,0.D0/
       IF(NCALL.EQ.0)THEN
          NCALL=1
-         CALL S_MACHd(4,XLGMN)
-         CALL S_machd(5,YLGMN)
+         CALL RLMACHd(4,XLGMN)
+         CALL RLmachd(5,YLGMN)
       ENDIF
       S=X/SIGM
       GOTO (10,20) IS
    20 ALOGS=YLGMN
       IF(S.GT.XLGMN) ALOGS=DLOG(S)
-      S_SCOR=ALOGS-digam
+      RLSCOR=ALOGS-digam
       RETURN
-   10 S_SCOR=(S-alfa)
+   10 RLSCOR=(S-alfa)
       RETURN
       END
 CC
 CC=============================================================
 C
-      double precision FUNCTION S_ZSCOR(X,IZ,SIGM,A11,
+      double precision FUNCTION RLZSCOR(X,IZ,SIGM,A11,
      1				A21,A22,C1,C2)
 C
 C       scores combines
@@ -1577,13 +1577,13 @@ C       iz=1  z1=a11*sc1
 C       iz=2  z2=a21*sc1+a22*sc2
 C
       implicit double precision (a-h, o-z)
-      EXTERNAL S_SCORC
-       sc1=s_scorc(x,1,SIGM,C1,C2)
-       sc2=s_scorc(x,2,SIGM,C1,C2)
+      EXTERNAL RLSCORC
+       sc1=rlscorc(x,1,SIGM,C1,C2)
+       sc2=rlscorc(x,2,SIGM,C1,C2)
        GOTO (10,20) IZ
-   10   S_ZSCOR=a11*sc1
+   10   RLZSCOR=a11*sc1
         RETURN
-   20   S_ZSCOR=a21*sc1+a22*sc2
+   20   RLZSCOR=a21*sc1+a22*sc2
         RETURN
         END
 C=============================================================
@@ -1592,7 +1592,7 @@ C   routines auxvas-auxvasp
 c==============================================================
 c
 
-      DOUBLE PRECISION FUNCTION S_DPSI(X,JPSI,JPS0,SIGM,
+      DOUBLE PRECISION FUNCTION RLDPSI(X,JPSI,JPS0,SIGM,
      1			A11,A21,A22,C1,C2,B1,B2)
 C
 C    jpsi=1  psi=psi1(z1)
@@ -1600,24 +1600,24 @@ c    jpsi=2  psi=psi2(z2)
 c    jps0=-1 psi=-b   jps0=0 psi=z  jps0=1 psi=b
 C
       implicit double precision (a-h, o-z)
-      EXTERNAL S_ZSCOR
+      EXTERNAL RLZSCOR
         IZ=JPSI
-        ZS=S_ZSCOR(X,IZ,SIGM,A11,A21,A22,C1,C2)
+        ZS=RLZSCOR(X,IZ,SIGM,A11,A21,A22,C1,C2)
         BS=B2
         IF (JPSI.EQ.1) BS=B1
         IF (JPS0.EQ.0) THEN
-          S_DPSI=DBLE(ZS)
+          RLDPSI=DBLE(ZS)
         ELSEIF (JPS0.EQ.-1) THEN
-          S_DPSI=-DBLE(BS)
+          RLDPSI=-DBLE(BS)
         ELSEIF (JPS0.EQ.1) THEN
-          S_DPSI=DBLE(BS)
+          RLDPSI=DBLE(BS)
         ENDIF
       RETURN
       END
 C
 C--------------------------------------------------------------
 C
-      DOUBLE PRECISION FUNCTION S_PSIS(Dx,WGT,N,EXPSI,EXGAM,
+      DOUBLE PRECISION FUNCTION RLPSIS(Dx,WGT,N,EXPSI,EXGAM,
      1			alfa, sigm, a11, a21, a22,
      2			b1, b2, c1, c2, yb, digam, beta)
 C
@@ -1627,7 +1627,7 @@ c     IOPT=2  psis=psi2*s1  IOPT=4 psis=psi2*s2
 C
       implicit double precision (a-h, o-z)
       dimension wgt(n),yb(8,2)
-      external s_scor,expsi,exgam
+      external rlscor,expsi,exgam
 
 C to avoid warnings when compiling
       dummy = beta
@@ -1645,23 +1645,23 @@ C to avoid warnings when compiling
        ps2=expsi(dx,jpsi,jps0,sigm,a11,a21,a22,c1,c2,b1,b2)
       endif
         is=1
-        S1=s_scor(dx,alfa,sigm,is, digam)
+        S1=rlscor(dx,alfa,sigm,is, digam)
         is=2
-        S2=s_scor(dx,alfa,sigm,is, digam)
+        S2=rlscor(dx,alfa,sigm,is, digam)
       goto(10,20,30,40) IOPT
-  10  s_psis=ps1*s1*ans
+  10  rlpsis=ps1*s1*ans
       return
-  20  s_psis=ps2*s1*ans
+  20  rlpsis=ps2*s1*ans
       return
-  30  s_psis=ps1*s2*ans
+  30  rlpsis=ps1*s2*ans
       return
-  40  s_psis=ps2*s2*ans
+  40  rlpsis=ps2*s2*ans
       return
       END
 C
 C--------------------------------------------------------------
 C
-      DOUBLE PRECISION FUNCTION S_PSIPSI(Dx,WGT,N,EXPSI,EXGAM,
+      DOUBLE PRECISION FUNCTION RLPSIPSI(Dx,WGT,N,EXPSI,EXGAM,
      1			alfa, sigm, a11, a21, a22,
      2			b1, b2, c1, c2, yb, digam, beta)
 C
@@ -1687,32 +1687,32 @@ C to avoid warnings
       jps0=int(yb(i,2))
       ps2=expsi(x,jpsi,jps0,sigm,a11,a21,a22,c1,c2,b1,b2)
       goto (10,20,30,40) iopt
-  10  s_psipsi=ps1*ps1*dble(ans)
+  10  rlpsipsi=ps1*ps1*dble(ans)
       return
-  20  s_psipsi=ps1*ps2*dble(ans)
+  20  rlpsipsi=ps1*ps2*dble(ans)
       return
-  30  s_psipsi=ps2*ps1*dble(ans)
+  30  rlpsipsi=ps2*ps1*dble(ans)
       return
-  40  s_psipsi=ps2*ps2*dble(ans)
+  40  rlpsipsi=ps2*ps2*dble(ans)
       return
       end
 c
 c----------------------------------------------------------------------
 c
-      SUBROUTINE S_BRKPTS(XLOWER,UPPER,xb,yb,ns,sigm,
+      SUBROUTINE RLBRKPTS(XLOWER,UPPER,xb,yb,ns,sigm,
      1 		a11,a21,a22,c1,c2,b1,b2)
       implicit double precision (a-h, o-z)
       DIMENSION XB(8),YB(8,2),Z0(8)
-      external s_zscor
+      external rlzscor
       DATA Z0/8*0.D0/
       xb(1)=-b1/A11+C1
       xb(2)= b1/A11+C1
       xb(3)=xlower
       xb(4)=upper
-      call s_solvx(b2,1.D-3,nsol,xb(5),yb,A21,A22,C1,C2)
+      call rlsolvx(b2,1.D-3,nsol,xb(5),yb,A21,A22,C1,C2)
       ns=8
       if(xb(7).eq.0.D0) ns=6
-      call s_srt2(xb,z0,8,1,ns)
+      call rlsrt2(xb,z0,8,1,ns)
       jup=ns
       jl0=0
       do 20 j=1,ns
@@ -1734,9 +1734,9 @@ c
       do 40 j=1,ns-1
       x=(xb(j)+xb(j+1))/2.d0
       iz=1
-      zs1=s_zscor(x,1,SIGM,A11,A21,A22,C1,C2)
+      zs1=rlzscor(x,1,SIGM,A11,A21,A22,C1,C2)
       iz=2
-      zs2=s_zscor(x,2,SIGM,A11,A21,A22,C1,C2)
+      zs2=rlzscor(x,2,SIGM,A11,A21,A22,C1,C2)
       tmp=dabs(zs1)
       yb(j,1)=0.d0
       yb(j,2)=0.d0
@@ -1750,13 +1750,13 @@ c
 c=====================================================================
 c
 
-      SUBROUTINE S_VARGAM(MDT,ALPHA,SIGMA,TAB,TPAR,TIL,
+      SUBROUTINE RLVARGAM(MDT,ALPHA,SIGMA,TAB,TPAR,TIL,
      +                  M,Q,MI,V,VSIGA,VMOY,message)
       implicit double precision (a-h, o-z)
       double precision M(4), MI(4), MIT(4)
       dimension TAB(MDT,5),B(4),Q(4),TPAR(6),
      +     V(4),VSIGA(4),THETA(2),XB(8),YB(8,2)
-      EXTERNAL S_GAMDIGAMA,S_GAMTRIGAM
+      EXTERNAL RLGAMDIGAMA,RLGAMTRIGAM
 C     
       MESSAGE=0
       IF (ALPHA.NE.0.D0.AND.SIGMA.NE.0.D0) THEN
@@ -1766,7 +1766,7 @@ C
         alpha2=tpar(4)
         k=int(tpar(5))
         DELTA=tpar(6)        
-        CALL S_LNTRP0(MDT,TAB,ALPHA,C1,C2,A11,A21,A22,
+        CALL RLLNTRP0(MDT,TAB,ALPHA,C1,C2,A11,A21,A22,
      1  		ALPHA1, ALPHA2, DELTA, K)
         b1=tpar(1)
         b2=tpar(2)
@@ -1778,18 +1778,18 @@ C
       B(2)=0.D0
       B(3)=0.D0
       B(4)=1.D0
-      DIGAM=S_GAMDIGAMA(ALFA)
-      TRIGM=S_GAMTRIGAM(ALFA)
+      DIGAM=RLGAMDIGAMA(ALFA)
+      TRIGM=RLGAMTRIGAM(ALFA)
       TMPSIG=SIGM
       SIGM=1.D0
-      CALL S_LIMGAM(1.D0,ALFA,XLOWER,UPPER)
-      CALL S_BRKPTS(XLOWER,UPPER,XB,YB,NS,SIGM,A11,A21,A22,C1,C2,
+      CALL RLLIMGAM(1.D0,ALFA,XLOWER,UPPER)
+      CALL RLBRKPTS(XLOWER,UPPER,XB,YB,NS,SIGM,A11,A21,A22,C1,C2,
      1				b1,b2)
 C
 C                  M    =-int (dpsi/dtheta)=int(psi*s)
 c                  Q    = int(psi * psi^T)
 C
-      CALL S_AUXVAS(TIL,m,q,alfa,sigm,a11,
+      CALL RLAUXVAS(TIL,m,q,alfa,sigm,a11,
      1 a21,a22,b1,b2,c1,c2,xb,yb,ns,digam,trigm)
 
 C auxvas is causing some trouble... 
@@ -1800,18 +1800,18 @@ C  VARIANCE ASS :
 c     V(tau,alfa) : V    =M^-1 * Q * M^-T
 c     V(sigm,alfa): Vsiga=B * V * B
 c
-      CALL S_INVERS(M,MI)
-      CALL S_TRNSPO(MI,MIT)
-      CALL S_MULTIP(MI,Q,MIT,V)
-      CALL S_MULTIP(B,V,B,VSIGA)
-      CALL S_MULT2(THETA,VSIGA,THETA,VMOY)
+      CALL RLINVERS(M,MI)
+      CALL RLTRNSPO(MI,MIT)
+      CALL RLMULTIP(MI,Q,MIT,V)
+      CALL RLMULTIP(B,V,B,VSIGA)
+      CALL RLMULT2(THETA,VSIGA,THETA,VMOY)
       SIGM=TMPSIG
       RETURN
       END
 c
 c======================================================================
-c Attention TRANSP existe dans SPLUS 
-      SUBROUTINE S_TRNSPO(A,AT)
+c Attention TRANSP existe dans ROBLIB 
+      SUBROUTINE RLTRNSPO(A,AT)
       implicit double precision (a-h, o-z)
       dimension A(4),AT(4)
       AT(1)=A(1)
@@ -1824,7 +1824,7 @@ c Attention TRANSP existe dans SPLUS
 C
 C------------------------------------------------------------------
 C
-      SUBROUTINE S_MULTIP(A,B,C,D)
+      SUBROUTINE RLMULTIP(A,B,C,D)
       implicit double precision (a-h, o-z)
       dimension B(4),C(4),D(4),A(4),X(4)
 C
@@ -1843,7 +1843,7 @@ C
 C
 C--------------------------------------------------------------------------
 c
-      SUBROUTINE S_MULT2(X,B,Y,D)
+      SUBROUTINE RLMULT2(X,B,Y,D)
       implicit double precision (a-h, o-z)
       dimension X(2),Y(2),B(4)
 C
@@ -1855,7 +1855,7 @@ C
 C
 C--------------------------------------------------------------------------
 C
-      SUBROUTINE S_INVERS(A,AINV)
+      SUBROUTINE RLINVERS(A,AINV)
       implicit double precision (a-h, o-z)
       DOUBLE PRECISION DET
       dimension AINV(4),A(4)
@@ -1878,7 +1878,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_SRT2(A,B,N,K1,K2)
+      SUBROUTINE RLSRT2(A,B,N,K1,K2)
       implicit double precision(a-h, o-z)
       DIMENSION A(N),B(N)
       N1=K2-K1+1
@@ -1912,7 +1912,7 @@ C
 C----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_INTGRD(F,FARR,N,FEXT,GEXT,A,B,EPSABS,EPSREL,KEY,
+      SUBROUTINE RLINTGRD(F,FARR,N,FEXT,GEXT,A,B,EPSABS,EPSREL,KEY,
      * 			 LIMIT,
      1           RESULT,ABSERR,NEVAL,IER,WORK,IWORK,alfa,sigm,
      2			 a11,a21,a22,b1,b2,c1,c2,YB,DIGAM,beta)
@@ -1933,7 +1933,7 @@ C
       BLIST=ALIST+LIMIT
       RLIST=BLIST+LIMIT
       ELIST=RLIST+LIMIT
-      CALL S_QAGE1D(F,FARR,N,FEXT,GEXT,A,B,EPSABS,EPSREL,KEY,LIMIT,
+      CALL RLQAGE1D(F,FARR,N,FEXT,GEXT,A,B,EPSABS,EPSREL,KEY,LIMIT,
      1     RESULT,ABSERR,NEVAL,IER,
      2     WORK,WORK(BLIST),WORK(RLIST),WORK(ELIST),IWORK,LAST,
      3     alfa,sigm,
@@ -1944,7 +1944,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_QAGE1D(F,FARR,N,FEXT,GEXT,A,B,EPSABS,EPSREL,KEY,
+      SUBROUTINE RLQAGE1D(F,FARR,N,FEXT,GEXT,A,B,EPSABS,EPSREL,KEY,
      *  LIMIT,
      *  RESULT,ABSERR,NEVAL,IER,ALIST,BLIST,RLIST,ELIST,IORD,LAST,
      2  alfa,sigm,
@@ -1993,9 +1993,9 @@ C           UFLOW  IS THE SMALLEST POSITIVE MAGNITUDE.
 C           OFLOW  IS THE LARGEST MAGNITUDE.
 C
 C***FIRST EXECUTABLE STATEMENTS
-      CALL S_MACHD(7,EPMACH)
-      CALL S_MACHD(4,UFLOW)
-      CALL S_MACHD(6,OFLOW)
+      CALL RLMACHD(7,EPMACH)
+      CALL RLMACHD(4,UFLOW)
+      CALL RLMACHD(6,OFLOW)
 C
 C           TEST ON VALIDITY OF PARAMETERS
 C           ------------------------------
@@ -2021,7 +2021,7 @@ C
       C = dble(KEYF)
       NEVAL = 0
       IF (KEYF.EQ.1)
-     *  CALL S_Q1K15D(F,FARR,N,FEXT,GEXT,A,B,RESULT,ABSERR,DEFABS,
+     *  CALL RLQ1K15D(F,FARR,N,FEXT,GEXT,A,B,RESULT,ABSERR,DEFABS,
      *  RESABS,
      *   alfa,sigm,
      *	 a11,a21,a22,b1,b2,c1,c2,yb,digam,beta)
@@ -2062,12 +2062,12 @@ C
         AA2 = BB1
         BB2 = BLIST(MAXERR)
         IF (KEYF.EQ.1)
-     *  CALL S_Q1K15D(F,FARR,N,FEXT,GEXT,AA1,BB1,AREA1,ERROR1,
+     *  CALL RLQ1K15D(F,FARR,N,FEXT,GEXT,AA1,BB1,AREA1,ERROR1,
      *          RESABS,DEFAB1,
      *  		alfa,sigm,
      2			a11,a21,a22,b1,b2,c1,c2,yb,digam,beta)
         IF (KEYF.EQ.1)
-     *  CALL S_Q1K15D(F,FARR,N,FEXT,GEXT,AA2,BB2,AREA2,ERROR2,
+     *  CALL RLQ1K15D(F,FARR,N,FEXT,GEXT,AA2,BB2,AREA2,ERROR2,
      *          RESABS,DEFAB2,
      *  		alfa,sigm,
      2			a11,a21,a22,b1,b2,c1,c2,yb,digam,beta)
@@ -2121,7 +2121,7 @@ C           CALL SUBROUTINE QSORTD TO MAINTAIN THE DESCENDING ORDERING
 C           IN THE LIST OF ERROR ESTIMATES AND SELECT THE SUBINTERVAL
 C           WITH THE LARGEST ERROR ESTIMATE (TO BE BISECTED NEXT).
 C
-   20   CALL S_QSORTD(LIMIT,LAST,MAXERR,ERRMAX,ELIST,IORD,NRMAX)
+   20   CALL RLQSORTD(LIMIT,LAST,MAXERR,ERRMAX,ELIST,IORD,NRMAX)
 C***JUMP OUT OF DO-LOOP
         IF(IER.NE.0.OR.ERRSUM.LE.ERRBND) GO TO 40
    30 CONTINUE
@@ -2142,7 +2142,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_Q1K15D
+      SUBROUTINE RLQ1K15D
      *  (F,FARR,N,FEXT,GEXT,A,B,RESULT,ABSERR,RESABS,RESASC,
      *  alfa,sigm,
      *	a11,a21,a22,b1,b2,c1,c2,yb,digam,beta)
@@ -2205,9 +2205,9 @@ C           UFLOW IS THE SMALLEST POSITIVE MAGNITUDE.
 C           OFLOW IS THE LARGEST MAGNITUDE.
 C
 C***FIRST EXECUTABLE STATEMENTS
-      CALL S_MACHD(7,EPMACH)
-      CALL S_MACHD(4,UFLOW)
-      CALL S_MACHD(6,OFLOW)
+      CALL RLMACHD(7,EPMACH)
+      CALL RLMACHD(4,UFLOW)
+      CALL RLMACHD(6,OFLOW)
 
       CENTR = 5.0D-01*(A+B)
       HLGTH = 5.0D-01*(B-A)
@@ -2266,7 +2266,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_QSORTD(LIMIT,LAST,MAXERR,ERMAX,ELIST,IORD,NRMAX)
+      SUBROUTINE RLQSORTD(LIMIT,LAST,MAXERR,ERMAX,ELIST,IORD,NRMAX)
       DOUBLE PRECISION ELIST,ERMAX,ERRMAX,ERRMIN
       INTEGER I,IBEG,IDO,IORD,ISUCC,J,JBND,JUPBN,K,LAST,LIMIT,MAXERR,
      *  NRMAX

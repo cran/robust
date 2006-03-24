@@ -3,7 +3,7 @@ C     ROBUST BOUNDED INFLUENCE ESTIMATION
 C     MATHSOFT, INC.
 C     10/25/99
 C=======================================================================
-      FUNCTION S_UPCVBI(S,IUCV,A,B)
+      FUNCTION RLUPCVBI(S,IUCV,A,B)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DATA GAM,DSPI/1.E-6,2.506628274631001D0/
@@ -14,9 +14,9 @@ C     IUCV: I, CLASSICAL IF IUCV=0,
 C              HUBER     IF IUCV=1,
 C              H-K       IF IUCV=2,
 C              K-W       IF IUCV=3,
-C              MALLOWS_U IF IUCV=4.
+C              MALLOWRLU IF IUCV=4.
 C-----------------------------------------------------------------------
-      S_UPCVBI=0.D0
+      RLUPCVBI=0.D0
       IF (IUCV.EQ.0) RETURN
       ZED=S
       IF (IUCV.EQ.1) GOTO 100
@@ -29,8 +29,8 @@ C-----------------------------------------------------------------------
       IF (S .GT. GAM) GOTO 110
       ZED=GAM
  110  Z2=ZED*ZED
-      IF (Z2 .GT. B2) S_UPCVBI=-2.D0*B2/Z2/ZED
-      IF (Z2 .LT. A2) S_UPCVBI=-2.D0*A2/Z2/ZED
+      IF (Z2 .GT. B2) RLUPCVBI=-2.D0*B2/Z2/ZED
+      IF (Z2 .LT. A2) RLUPCVBI=-2.D0*A2/Z2/ZED
       RETURN
  200  IF (S .LE. 0.D0) RETURN
       IF (S .LE. GAM) ZED=GAM
@@ -38,22 +38,22 @@ C-----------------------------------------------------------------------
       Q=A/ZED
       Q2=Q*Q
       PD=DEXP(-Q2/2.D0)/DSPI
-      S_UPCVBI=2.D0*PD*(-A/Z2)
+      RLUPCVBI=2.D0*PD*(-A/Z2)
       RETURN
  300  IF (S .LE. 0.D0) RETURN
       IF (S .LE. GAM) ZED=GAM
       Q=A/ZED
-      CALL S_GAUSBI(Q,PC)
-      S_UPCVBI=-4.D0*(Q*Q)*(1.D0-PC)/ZED
+      CALL RLGAUSBI(Q,PC)
+      RLUPCVBI=-4.D0*(Q*Q)*(1.D0-PC)/ZED
       RETURN
  400  IF (S .LT. A) RETURN
       IF (S .GT. GAM) GOTO 410
       ZED=GAM
- 410  IF (S .GT. A) S_UPCVBI=-A/(ZED*ZED)
+ 410  IF (S .GT. A) RLUPCVBI=-A/(ZED*ZED)
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_BET0BI(WGT,N,ITYPE,ISQW,TOL,BT0)
+      SUBROUTINE RLBET0BI(WGT,N,ITYPE,ISQW,TOL,BT0)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(N)
@@ -62,7 +62,7 @@ C-----------------------------------------------------------------------
 C     COMPUTE THE CONSTANT BETA0 FOR NORMAL ERRORS
 C-----------------------------------------------------------------------
       P=0.75D0
-      CALL S_QUNTBI(P,BT0)
+      CALL RLQUNTBI(P,BT0)
       IF (ITYPE .NE. 2) RETURN
       XN=DBLE(N)
       IF (ISQW .EQ. 0) GOTO 10
@@ -78,8 +78,8 @@ C-----------------------------------------------------------------------
       DO 30 I=1,N
          IF (WGT(I) .LE. ZERO) GOTO 30
          X=BT0/WGT(I)
-         CALL S_GAUSBI(X,A)
-         CALL S_XERFBI(2,X,B)
+         CALL RLGAUSBI(X,A)
+         CALL RLXERFBI(2,X,B)
          SMF=SMF+A
          SMFP=SMFP+B/WGT(I)
  30   CONTINUE
@@ -97,7 +97,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_NLGMBI(N,GL)
+      SUBROUTINE RLNLGMBI(N,GL)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DATA PI/3.1415926535898D0/
@@ -116,7 +116,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_XERPBI(IP,XLCNST,S,F)
+      SUBROUTINE RLXERPBI(IP,XLCNST,S,F)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DATA CMIN/-0.2257913526D0/
@@ -124,7 +124,7 @@ C-----------------------------------------------------------------------
       S2=-S*S/2.D0
       PP=DBLE(IP)
       IF (XLCNST.GT.CMIN .OR. XLCNST.EQ.0.D0) GOTO 30
-      CALL S_NLGMBI(IP,XLGM)
+      CALL RLNLGMBI(IP,XLGM)
       XLCNST=(1.D0-PP/2.D0)*DLOG(2.D0)-XLGM
  30   F=0.D0
       IF (S .LE. 0.D0) RETURN
@@ -133,7 +133,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      FUNCTION S_2PHIBI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,FPSI)
+      FUNCTION RL2PHIBI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,FPSI)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(N),INDEX(7),TUNINGC(9)
@@ -143,15 +143,15 @@ C     AUXILIARY ROUTINE FOR KIEDCU
 C-----------------------------------------------------------------------
       R=S
       I=INDEX(6)
-      CALL S_XERFBI(2,R,PHI)
+      CALL RLXERFBI(2,R,PHI)
       IF (INDEX(5) .EQ. 3) R=R/WGT(I)
-      S_2PHIBI=FPSI(R,INDEX(4),TUNINGC(5))**2.D0*PHI
+      RL2PHIBI=FPSI(R,INDEX(4),TUNINGC(5))**2.D0*PHI
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_GAUSBI(X,P)
+      SUBROUTINE RLGAUSBI(X,P)
 C.......................................................................
-      DOUBLE PRECISION X, ROOT2, SPLUSERF, SPLUSERFC,P
+      DOUBLE PRECISION X, ROOT2, ROBLIBERF, ROBLIBERFC,P
       DATA ROOT2 /1.4142135623730950488D0/
 C-----------------------------------------------------------------------
 C     COMPUTES THE GAUSSIAN DISTRIBUTION FUNCTION
@@ -162,14 +162,14 @@ C-----------------------------------------------------------------------
       IF (X .EQ. 0.D0) THEN
          P = 0.5D0
       ELSEIF(X .GT. 0.D0) THEN
-         P = (1.D0+SPLUSERF(X/ROOT2))/2.D0
+         P = (1.D0+ROBLIBERF(X/ROOT2))/2.D0
       ELSE
-         P = SPLUSERFC(-X/ROOT2)/2.D0
+         P = ROBLIBERFC(-X/ROOT2)/2.D0
       ENDIF
       RETURN
       END
 C=======================================================================
-      FUNCTION S_UCVBI(S,IUCV,A,B)
+      FUNCTION RLUCVBI(S,IUCV,A,B)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DATA GAM,DSPI/1.E-6,2.506628274631001D0/
@@ -183,7 +183,7 @@ C     IUCV=3: KRASKER-WELCH
 C     IUCV=4: MALLOW UNSTANDARDIZED
 C     IUCV=5: USERFD AS ON PAGE 139 OF MARAZZI (1993) WITH A2=4.0
 C-----------------------------------------------------------------------
-      S_UCVBI=1.D0
+      RLUCVBI=1.D0
       IF (IUCV.EQ.0) RETURN
       ZED=S
       IF (IUCV.EQ.1) GOTO 100
@@ -197,56 +197,56 @@ C-----------------------------------------------------------------------
       IF (S .GT. GAM) GOTO 110
       ZED=GAM
  110  Z2=ZED*ZED
-      IF (Z2 .GT. B2) S_UCVBI=B2/Z2
-      IF (Z2 .LT. A2) S_UCVBI=A2/Z2
+      IF (Z2 .GT. B2) RLUCVBI=B2/Z2
+      IF (Z2 .LT. A2) RLUCVBI=A2/Z2
       RETURN
  200  IF (S .LE. 0.D0) RETURN
       IF (S .LE. GAM) ZED=GAM
       Q=A/ZED
-      CALL S_GAUSBI(Q,PC)
-      S_UCVBI=2.D0*PC-1.D0
+      CALL RLGAUSBI(Q,PC)
+      RLUCVBI=2.D0*PC-1.D0
       RETURN
  300  IF (S .LE. 0.D0) RETURN
       IF (S .LE. GAM) ZED=GAM
       Q=A/ZED
       Q2=Q*Q
-      CALL S_GAUSBI(Q,PC)
+      CALL RLGAUSBI(Q,PC)
       PD=DEXP(-Q2/2.D0)/DSPI
-      S_UCVBI=Q2+(1.D0-Q2)*(2.D0*PC-1.D0)-2.D0*Q*PD
+      RLUCVBI=Q2+(1.D0-Q2)*(2.D0*PC-1.D0)-2.D0*Q*PD
       RETURN
  400  IF (S .LE. A) RETURN
       IF (S .GT. GAM) GOTO 410
       ZED=GAM
- 410  S_UCVBI=A/ZED
+ 410  RLUCVBI=A/ZED
       RETURN
- 500  S_UCVBI=A*1.D12
-      IF (S .GT. 1.E-6) S_UCVBI=A/(S*S)
+ 500  RLUCVBI=A*1.D12
+      IF (S .GT. 1.E-6) RLUCVBI=A/(S*S)
       RETURN
       END
 C=======================================================================
-      FUNCTION S_WWWBI(Z,IWWW,IUCV,A2,B2)
+      FUNCTION RLWWWBI(Z,IWWW,IUCV,A2,B2)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z) 
       DATA GAM/1.D-6/
 C-----------------------------------------------------------------------
 C     COMPUTES THE VALUE OF THE W BAR-FUNCTION
 C-----------------------------------------------------------------------
-      S_WWWBI=1.D0
+      RLWWWBI=1.D0
       IF (IWWW .EQ. 0) RETURN
       IF (IWWW .EQ. 1) GOTO 100
       IF (IWWW .EQ. 2) GOTO 200
       IF (IWWW .EQ. 3) GOTO 300
  100  IF (Z .GT. GAM) GOTO 110
       Z=GAM
- 110  S_WWWBI=1.D0/Z
+ 110  RLWWWBI=1.D0/Z
       RETURN
- 200  S_WWWBI=S_UCVBI(Z,IUCV,A2,B2)
+ 200  RLWWWBI=RLUCVBI(Z,IUCV,A2,B2)
       RETURN
- 300  S_WWWBI=DSQRT(S_UCVBI(Z,IUCV,A2,B2))
+ 300  RLWWWBI=DSQRT(RLUCVBI(Z,IUCV,A2,B2))
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_XERFBI(KODE,X,P)
+      SUBROUTINE RLXERFBI(KODE,X,P)
 C.......................................................................
       DOUBLE PRECISION X,X2,P,SPI
       DATA SPI/2.506628274631D0/
@@ -259,21 +259,21 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_EPSHBI(C,EPSI2,EPSIP)
+      SUBROUTINE RLEPSHBI(C,EPSI2,EPSIP)
 C.......................................................................
       DOUBLE PRECISION C,EPSI2,EPSIP,PC,PD,C2
 C-----------------------------------------------------------------------
 C     EXPECTED VALUE OF PSI(X,C)**2 AND PSP(X,C)
 C-----------------------------------------------------------------------
-      CALL S_GAUSBI(C,PC)
-      CALL S_XERFBI(2,C,PD)
+      CALL RLGAUSBI(C,PC)
+      CALL RLXERFBI(2,C,PD)
       C2=C*C
       EPSI2=C2+(1.D0-C2)*(2.D0*PC-1.D0)-2.D0*C*PD
       EPSIP=(2.D0*PC-1.D0)
       RETURN
       END
 C=======================================================================
-      FUNCTION S_PPHIBI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,FPSI)
+      FUNCTION RLPPHIBI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,FPSI)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z) 
       DIMENSION WGT(N),INDEX(7),TUNINGC(9)
@@ -283,14 +283,14 @@ C     AUXILIARY ROUTINE FOR KIEDCU.
 C-----------------------------------------------------------------------
       R=S
       I=INDEX(6)
-      CALL S_XERFBI(2,R,PHI)
+      CALL RLXERFBI(2,R,PHI)
       PHI=R*PHI
       IF (INDEX(5) .EQ. 3) R=R/WGT(I)
-      S_PPHIBI=FPSI(R,INDEX(4),TUNINGC(5))*PHI
+      RLPPHIBI=FPSI(R,INDEX(4),TUNINGC(5))*PHI
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_QK15BI(F,FARR,N,FEXT,A,RESULT,ABSERR,RESABS,
+      SUBROUTINE RLQK15BI(F,FARR,N,FEXT,A,RESULT,ABSERR,RESABS,
      +     RESASC,SIGM,INDEX,TUNINGC,XLCNST)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -396,7 +396,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_QSRTBI(LIMIT,LAST,MAXERR,ERMAX,ELIST,IORD,NRMAX)
+      SUBROUTINE RLQSRTBI(LIMIT,LAST,MAXERR,ERMAX,ELIST,IORD,NRMAX)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION ELIST(LAST),IORD(LAST)
@@ -467,7 +467,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_IGRDBI(F,FARR,N,FEXT,A,EPSREL,LIMIT,RESULT,
+      SUBROUTINE RLIGRDBI(F,FARR,N,FEXT,A,EPSREL,LIMIT,RESULT,
      +     ABSERR,NEVAL,IER,SIGM,INDEX,TUNINGC,XLCNST,
      +     ALIST,BLIST,RLIST,ELIST,IORD)
 C.......................................................................
@@ -525,7 +525,7 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     FIRST APPROXIMATION TO THE INTEGRAL
 C-----------------------------------------------------------------------
-      CALL S_QK15BI(F,FARR,N,FEXT,A,RESULT,ABSERR,DEFABS,RESABS,
+      CALL RLQK15BI(F,FARR,N,FEXT,A,RESULT,ABSERR,DEFABS,RESABS,
      +     SIGM,INDEX,TUNINGC,XLCNST)
       LAST = 1
       RLIST(1) = RESULT
@@ -561,10 +561,10 @@ C-----------------------------------------------------------------------
          A2 = B1
          B2 = BLIST(MAXERR)
          TUNINGC(8) = B1
-         CALL S_QK15BI(F,FARR,N,FEXT,A1,AREA1,ERROR1,RESABS,
+         CALL RLQK15BI(F,FARR,N,FEXT,A1,AREA1,ERROR1,RESABS,
      +        DEFAB1,SIGM,INDEX,TUNINGC,XLCNST)
          TUNINGC(8) = B2
-         CALL S_QK15BI(F,FARR,N,FEXT,A2,AREA2,ERROR2,RESABS,
+         CALL RLQK15BI(F,FARR,N,FEXT,A2,AREA2,ERROR2,RESABS,
      +        DEFAB2,SIGM,INDEX,TUNINGC,XLCNST)
 C-----------------------------------------------------------------------
 C     IMPROVE PREVIOUS APPROXIMATIONS TO INTEGRAL
@@ -616,11 +616,11 @@ C-----------------------------------------------------------------------
          ELIST(MAXERR) = ERROR2
          ELIST(LAST) = ERROR1
 C-----------------------------------------------------------------------
-C     CALL SUBROUTINE S_QSRTBI TO MAINTAIN THE DESCENDING ORDERING
+C     CALL SUBROUTINE RLQSRTBI TO MAINTAIN THE DESCENDING ORDERING
 C     IN THE LIST OF ERROR ESTIMATES AND SELECT THE SUBINTERVAL
 C     WITH THE LARGEST ERROR ESTIMATE (TO BE BISECTED NEXT).
 C-----------------------------------------------------------------------
- 20      CALL S_QSRTBI(LIMIT,LAST,MAXERR,ERRMAX,ELIST,IORD,NRMAX)
+ 20      CALL RLQSRTBI(LIMIT,LAST,MAXERR,ERRMAX,ELIST,IORD,NRMAX)
          IF(IER.NE.0.OR.ERRSUM.LE.ERRBND) GO TO 40
  30   CONTINUE
 C-----------------------------------------------------------------------
@@ -636,23 +636,23 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_EPSUBI(EXPSI,ERREST,EPSI2,EPSIP,SIGM,INDEX,
+      SUBROUTINE RLEPSUBI(EXPSI,ERREST,EPSI2,EPSIP,SIGM,INDEX,
      +     TUNINGC,XLCNST)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(1),INDEX(7),TUNINGC(9),IWRK(40)
       DIMENSION WRK1(40),WRK2(40),WRK3(40),WRK4(40)
-      EXTERNAL S_2PHIBI,S_PPHIBI,EXPSI
+      EXTERNAL RL2PHIBI,RLPPHIBI,EXPSI
 C-----------------------------------------------------------------------
 C     EXPECTED VALUES OF PSI(X)**2 AND PSP(X)
 C     (WHERE X IS A STANDARD NORMAL DEVIATE)
 C-----------------------------------------------------------------------
       LIMIT=40
-      CALL S_IGRDBI(S_2PHIBI,WGT,1,EXPSI,0.D0,TUNINGC(9),LIMIT,
+      CALL RLIGRDBI(RL2PHIBI,WGT,1,EXPSI,0.D0,TUNINGC(9),LIMIT,
      +     EPSI2,ERRST1,NEVAL1,IER1,SIGM,INDEX,TUNINGC,XLCNST,
      +     WRK1,WRK2,WRK3,WRK4,IWRK)
       EPSI2=2.D0*EPSI2
-      CALL S_IGRDBI(S_PPHIBI,WGT,1,EXPSI,0.D0,TUNINGC(9),LIMIT,
+      CALL RLIGRDBI(RLPPHIBI,WGT,1,EXPSI,0.D0,TUNINGC(9),LIMIT,
      +     EPSIP,ERRST2,NEVAL2,IER2,SIGM,INDEX,TUNINGC,XLCNST,
      +     WRK1,WRK2,WRK3,WRK4,IWRK)
       EPSIP=2.D0*EPSIP
@@ -662,14 +662,14 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      FUNCTION S_INS1BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXPSI)
+      FUNCTION RLINS1BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXPSI)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(N),IWRK(20),WRK1(20),WRK2(20),WRK3(20),WRK4(20)
       DIMENSION INDEX(7),TUNINGC(9)
-      EXTERNAL S_PPHIBI,EXPSI
+      EXTERNAL RLPPHIBI,EXPSI
 C-----------------------------------------------------------------------
-C     S_INS1BI(S)=E[ETA'(|ZI|)]*dG(S)
+C     RLINS1BI(S)=E[ETA'(|ZI|)]*dG(S)
 C     SERVES TO COMPUTE S1 WHEN OF THE FORM B1
 C-----------------------------------------------------------------------
       IPP =INDEX(1)
@@ -683,7 +683,7 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
       ANS=1.D0
       Z=DSQRT(ZBAR2+BET2*S*S)
-      WGT(I)=S_WWWBI(Z,INDEX(2),INDEX(3),TUNINGC(3),TUNINGC(4))
+      WGT(I)=RLWWWBI(Z,INDEX(2),INDEX(3),TUNINGC(3),TUNINGC(4))
 C-----------------------------------------------------------------------
 C     WEIGHTS FOR SCHWEPPE ESTIMATORS WHEN FUNCTION PSI IS NOT 
 C     FROM HUBER TYP
@@ -691,7 +691,7 @@ C-----------------------------------------------------------------------
       IF (IPSI.EQ.3) GOTO 15
       LIMIT=20
       ERRST1=0.D0
-      CALL S_IGRDBI(S_PPHIBI,WGT,N,EXPSI,0.D0,0.D0,LIMIT,RES,
+      CALL RLIGRDBI(RLPPHIBI,WGT,N,EXPSI,0.D0,0.D0,LIMIT,RES,
      +     ERREST,NEVAL,IER,SIGM,INDEX,TUNINGC,XLCNST,WRK1,WRK2,
      +     WRK3,WRK4,IWRK)
       IER1=MAX0(IER1,IER)
@@ -704,29 +704,29 @@ C     WEIGHTS FOR SCHWEPPE ESTIMATORS WHEN FUNCTION PSI IS
 C     FROM HUBER TYP
 C-----------------------------------------------------------------------
  15   C0=C*WGT(I)
-      CALL S_EPSHBI(C0,EPSI2,RES1)
+      CALL RLEPSHBI(C0,EPSI2,RES1)
  10   IF(IPP.GT.0) THEN
          SBAR=S/SIGM
-         CALL S_XERPBI(IPP,XLCNST,SBAR,ANS)
+         CALL RLXERPBI(IPP,XLCNST,SBAR,ANS)
          ANS=ANS/SIGM
       ENDIF
 C-----------------------------------------------------------------------
 C     FOR MALLOWS AND SCHWEPPE CASES, E[ETA'(|ZI|)]dG(S)
 C-----------------------------------------------------------------------
-      IF (ITP.LT.3) S_INS1BI=WGT(I)*ANS
-      IF (ITP.EQ.3) S_INS1BI=RES1*ANS
+      IF (ITP.LT.3) RLINS1BI=WGT(I)*ANS
+      IF (ITP.EQ.3) RLINS1BI=RES1*ANS
       WGT(I)=ZBAR2
       RETURN
       END
 C=======================================================================
-      FUNCTION S_INS2BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXPSI)
+      FUNCTION RLINS2BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXPSI)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(N),IWRK(20),WRK1(20),WRK2(20),WRK3(20),WRK4(20)
       DIMENSION INDEX(7),TUNINGC(9)
-      EXTERNAL S_2PHIBI,EXPSI
+      EXTERNAL RL2PHIBI,EXPSI
 C-----------------------------------------------------------------------
-C     S_INS2BI(S)=E[ETA**2(|ZI|)]*dG(S)
+C     RLINS2BI(S)=E[ETA**2(|ZI|)]*dG(S)
 C     SERVES TO COMPUTE S2 WHEN OF THE FORM B1
 C-----------------------------------------------------------------------
       IPP =INDEX(1)
@@ -740,7 +740,7 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
       ANS=1.D0
       Z=DSQRT(ZBAR2+BET2*S*S)
-      WGT(I)=S_WWWBI(Z,INDEX(2),INDEX(3),TUNINGC(3),TUNINGC(4))
+      WGT(I)=RLWWWBI(Z,INDEX(2),INDEX(3),TUNINGC(3),TUNINGC(4))
 C-----------------------------------------------------------------------
 C     WEIGHTS FOR SCHWEPPE ESTIMATORS 
 C     (FUNCTION PSI IS NOT FROM HUBER TYPE)
@@ -748,7 +748,7 @@ C-----------------------------------------------------------------------
       IF (IPSI.EQ.3) GOTO 15
       LIMIT=20
       ERRST1=0.D0
-      CALL S_IGRDBI(S_2PHIBI,WGT,N,EXPSI,0.D0,0.D0,LIMIT,RES,
+      CALL RLIGRDBI(RL2PHIBI,WGT,N,EXPSI,0.D0,0.D0,LIMIT,RES,
      +     ERREST,NEVAL,IER,SIGM,INDEX,TUNINGC,XLCNST,WRK1,WRK2,
      +     WRK3,WRK4,IWRK)
       IER1=MAX0(IER1,IER)
@@ -760,28 +760,28 @@ C-----------------------------------------------------------------------
 C     WEIGHTS FOR SCHWEPPE ESTIMATORS (FUNCTION PSI IS FROM HUBER TYPE)
 C-----------------------------------------------------------------------
  15   C1=C*WGT(I)
-      CALL S_EPSHBI(C1,RES1,EPSIP)
+      CALL RLEPSHBI(C1,RES1,EPSIP)
 C-----------------------------------------------------------------------
 C     MALLOWS et SCHWEPPE E[ETA**2]*dG(S)
 C-----------------------------------------------------------------------
  10   IF (IPP.GT.0) THEN
          SBAR=S/SIGM
-         CALL S_XERPBI(IPP,XLCNST,SBAR,ANS)
+         CALL RLXERPBI(IPP,XLCNST,SBAR,ANS)
          ANS=ANS/SIGM
       ENDIF
-      IF (ITP.LT.3) S_INS2BI=WGT(I)*WGT(I)*ANS
-      IF (ITP.EQ.3) S_INS2BI=RES1*ANS
+      IF (ITP.LT.3) RLINS2BI=WGT(I)*WGT(I)*ANS
+      IF (ITP.EQ.3) RLINS2BI=RES1*ANS
       WGT(I)=ZBAR2
       RETURN
       END
 C=======================================================================
-      FUNCTION S_INS3BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXPSI)
+      FUNCTION RLINS3BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXPSI)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(N),INDEX(7),TUNINGC(9)
-      EXTERNAL EXPSI,S_INS1BI
+      EXTERNAL EXPSI,RLINS1BI
 C-----------------------------------------------------------------------
-C     S_INS3BI(S)=1/n*SUM{E[ETA'(|ZI|)]}*dG(S)
+C     RLINS3BI(S)=1/n*SUM{E[ETA'(|ZI|)]}*dG(S)
 C     TO COMPUTE S1 WHEN OF THE FORM B2
 C-----------------------------------------------------------------------
       SUM=0.D0
@@ -789,19 +789,19 @@ C-----------------------------------------------------------------------
          I=J
          INDEX(6)=I
          TUNINGC(1)=WGT(I)
-         SUM=SUM+S_INS1BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXPSI)
+         SUM=SUM+RLINS1BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXPSI)
  10   CONTINUE
-      S_INS3BI=SUM*S*S/DBLE(N)
+      RLINS3BI=SUM*S*S/DBLE(N)
       RETURN
       END
 C=======================================================================
-      FUNCTION S_INS4BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXPSI)
+      FUNCTION RLINS4BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXPSI)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(N),INDEX(7),TUNINGC(9)
-      EXTERNAL EXPSI,S_INS2BI
+      EXTERNAL EXPSI,RLINS2BI
 C-----------------------------------------------------------------------
-C     S_INS4BI(S)=1/n*SUM{E[ETA**2(|ZI|)]}*dG(S)
+C     RLINS4BI(S)=1/n*SUM{E[ETA**2(|ZI|)]}*dG(S)
 C     TO COMPUTE S2 WHEN OF THE FORM B2
 C-----------------------------------------------------------------------
       SUM=0.D0
@@ -809,19 +809,19 @@ C-----------------------------------------------------------------------
          I=J
          INDEX(6)=I
          TUNINGC(1)=WGT(I)
-         SUM=SUM+S_INS2BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXPSI)
+         SUM=SUM+RLINS2BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXPSI)
  10   CONTINUE
-      S_INS4BI=SUM*S*S/DBLE(N)
+      RLINS4BI=SUM*S*S/DBLE(N)
       RETURN
       END
 C======================================================================
-      FUNCTION S_UZEDBI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXU)
+      FUNCTION RLUZEDBI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXU)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(N),INDEX(7),TUNINGC(9)
       EXTERNAL EXU
 C-----------------------------------------------------------------------
-C     S_UZEDBI(S)=U(SQRT(ZBAR2+BET2*S^2))*dG(S)
+C     RLUZEDBI(S)=U(SQRT(ZBAR2+BET2*S^2))*dG(S)
 C-----------------------------------------------------------------------
       IPP=INDEX(1)
       ZBAR2=TUNINGC(1)
@@ -832,20 +832,20 @@ C-----------------------------------------------------------------------
       ANS=1.D0
       GOTO 20
  15   SBAR=S/SIGM
-      CALL S_XERPBI(IPP,XLCNST,SBAR,ANS)
+      CALL RLXERPBI(IPP,XLCNST,SBAR,ANS)
       ANS=ANS/SIGM
       Z=DSQRT(ZBAR2+BET2*S*S)
- 20   S_UZEDBI=EXU(Z,INDEX(3),TUNINGC(3),TUNINGC(4))*ANS
+ 20   RLUZEDBI=EXU(Z,INDEX(3),TUNINGC(3),TUNINGC(4))*ANS
       RETURN
       END
 C=======================================================================
-      FUNCTION S_UZD2BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXU)
+      FUNCTION RLUZD2BI(S,WGT,N,SIGM,INDEX,TUNINGC,XLCNST,EXU)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(N),INDEX(7),TUNINGC(9)
       EXTERNAL EXU
 C-----------------------------------------------------------------------
-C     S_UZD2BI(S)=AVE{U(SQRT(ZBAR2+BET2*S**2))*S**2*dG(S)}
+C     RLUZD2BI(S)=AVE{U(SQRT(ZBAR2+BET2*S**2))*S**2*dG(S)}
 C-----------------------------------------------------------------------
       IPP=INDEX(1)
       BET2=TUNINGC(2)
@@ -858,20 +858,20 @@ C-----------------------------------------------------------------------
  10   CONTINUE
       TUNINGC(1)=ZBAR2
       SBAR=S/SIGM
-      CALL S_XERPBI(IPP,XLCNST,SBAR,ANS)
+      CALL RLXERPBI(IPP,XLCNST,SBAR,ANS)
       XN=DBLE(N)*SIGM
-      S_UZD2BI=(U/XN)*S*S*ANS
+      RLUZD2BI=(U/XN)*S*S*ANS
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_REF0BI(INDEX,TUNINGC,XLCNST,IALFA,SIGM,MAXIT,
+      SUBROUTINE RLREF0BI(INDEX,TUNINGC,XLCNST,IALFA,SIGM,MAXIT,
      +     TOL,NIT,ALFA,BETA,REFF)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(1),INDEX(7),TUNINGC(9)
       DIMENSION IWORK(20),WORK1(20),WORK2(20),WORK3(20),WORK4(20)
-      EXTERNAL S_INS1BI,S_INS2BI,S_INS3BI,S_INS4BI,S_PSIM2,S_UZEDBI,
-     +     S_UZD2BI,S_UCVBI
+      EXTERNAL RLINS1BI,RLINS2BI,RLINS3BI,RLINS4BI,RLPSIM2,RLUZEDBI,
+     +     RLUZD2BI,RLUCVBI
       DATA ZERO,ONE /0.D0,1.D0/
 C-----------------------------------------------------------------------
 C     INDEX: (IPP,IWWW,IUCV,IPSI,ITYPE,I,IER1)
@@ -890,9 +890,9 @@ C-----------------------------------------------------------------------
       IF (ITYP.EQ.3) GOTO 5
       IF (IPSI.EQ.3) THEN
          IF (C .LE. ZERO) C=1.345D0
-         CALL S_EPSHBI(C,G1,G0)
+         CALL RLEPSHBI(C,G1,G0)
       ELSE
-         CALL S_EPSUBI(S_PSIM2,ERREST,G1,G0,SIGM,INDEX,TUNINGC,XLCNST)
+         CALL RLEPSUBI(RLPSIM2,ERREST,G1,G0,SIGM,INDEX,TUNINGC,XLCNST)
       ENDIF
       IF (ITYP.NE.1 .AND. (IPP.GT.0 .OR. ITYP.NE.2)) GOTO 5
       ALFA=G1
@@ -926,9 +926,9 @@ C-----------------------------------------------------------------------
 C     STEP 1: SOLVE FOR ALFA
 C-----------------------------------------------------------------------
       IF (IPP .EQ. 0) 
-     +     ANS1=S_UZEDBI(DS,WGT,1,SIGM,INDEX,TUNINGC,XLCNST,S_UCVBI)
+     +     ANS1=RLUZEDBI(DS,WGT,1,SIGM,INDEX,TUNINGC,XLCNST,RLUCVBI)
       IF (IPP.GT.0) 
-     +     CALL S_IGRDBI(S_UZEDBI,WGT,1,S_UCVBI,ZERO,ZERO,
+     +     CALL RLIGRDBI(RLUZEDBI,WGT,1,RLUCVBI,ZERO,ZERO,
      +     LIMIT,ANS1,ERRSTD,NEVAL,IER,SIGM,INDEX,TUNINGC,XLCNST,
      +     WORK1,WORK2,WORK3,WORK4,IWORK)
       TUNINGC(1)=ONE/ANS1
@@ -940,7 +940,7 @@ C-----------------------------------------------------------------------
 C     STEP 2: SOLVE FOR BETA
 C-----------------------------------------------------------------------
       WGT(1)=DSQRT(TUNINGC(1))
-      CALL S_IGRDBI(S_UZD2BI,WGT,1,S_UCVBI,ZERO,ZERO,LIMIT,
+      CALL RLIGRDBI(RLUZD2BI,WGT,1,RLUCVBI,ZERO,ZERO,LIMIT,
      +     ANS2,ERRSTD,NEVAL,IER,SIGM,INDEX,TUNINGC,XLCNST,
      +     WORK1,WORK2,WORK3,WORK4,IWORK)
       TUNINGC(2)=P/ANS2
@@ -962,11 +962,11 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C  STEP 4: COMPUTE S1 AND S2 FOR THE QUALITATIVE COVARIATE
 C-----------------------------------------------------------------------
-      CALL S_IGRDBI(S_INS2BI,WGT,1,S_PSIM2,ZERO,ZERO,LIMIT,
+      CALL RLIGRDBI(RLINS2BI,WGT,1,RLPSIM2,ZERO,ZERO,LIMIT,
      +     ANS2,ERRSTD,NEVAL,IER,SIGM,INDEX,TUNINGC,XLCNST,
      +     WORK1,WORK2,WORK3,WORK4,IWORK)
       INDEX(7)=0
-      CALL S_IGRDBI(S_INS1BI,WGT,1,S_PSIM2,ZERO,ZERO,LIMIT,
+      CALL RLIGRDBI(RLINS1BI,WGT,1,RLPSIM2,ZERO,ZERO,LIMIT,
      +     ANS1,ERRSTD,NEVAL,IER,SIGM,INDEX,TUNINGC,XLCNST,
      +     WORK1,WORK2,WORK3,WORK4,IWORK)
       INDEX(7)=0
@@ -974,11 +974,11 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     COMPUTE S1 AND S2 FOR THE QUANTITATIVE COVARIATES
 C-----------------------------------------------------------------------
- 50   CALL S_IGRDBI(S_INS3BI,WGT,1,S_PSIM2,ZERO,ZERO,LIMIT,
+ 50   CALL RLIGRDBI(RLINS3BI,WGT,1,RLPSIM2,ZERO,ZERO,LIMIT,
      +     ANS3,ERRSTD,NEVAL,IER,SIGM,INDEX,TUNINGC,XLCNST,
      +     WORK1,WORK2,WORK3,WORK4,IWORK)
       INDEX(7)=0
-      CALL S_IGRDBI(S_INS4BI,WGT,1,S_PSIM2,ZERO,ZERO,LIMIT,
+      CALL RLIGRDBI(RLINS4BI,WGT,1,RLPSIM2,ZERO,ZERO,LIMIT,
      +     ANS4,ERRSTD,NEVAL,IER,SIGM,INDEX,TUNINGC,XLCNST,
      +     WORK1,WORK2,WORK3,WORK4,IWORK)
       INDEX(7)=0
@@ -988,8 +988,8 @@ C-----------------------------------------------------------------------
       FONCT=TRCOV+P*P*(ANS4/ANS3**2.D0)
       REFF=(TRCVLS)/FONCT
       GOTO 70
- 60   ANS2=S_INS2BI(DS,WGT,1,SIGM,INDEX,TUNINGC,XLCNST,S_PSIM2)
-      ANS1=S_INS1BI(DS,WGT,1,SIGM,INDEX,TUNINGC,XLCNST,S_PSIM2)
+ 60   ANS2=RLINS2BI(DS,WGT,1,SIGM,INDEX,TUNINGC,XLCNST,RLPSIM2)
+      ANS1=RLINS1BI(DS,WGT,1,SIGM,INDEX,TUNINGC,XLCNST,RLPSIM2)
       FONCT=ANS2/ANS1**2
       REFF=ONE/FONCT
  70   IF (ITYP.EQ.3) RETURN
@@ -997,11 +997,11 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_COLBI(V1,V2,MLT,M,IOUT)
+      SUBROUTINE RLCOLBI(V1,V2,MLT,M,IOUT)
 C.......................................................................
       DOUBLE PRECISION V1(M),V2(M),MLT
 C-----------------------------------------------------------------------
-C     AUXILIARY ROUTINE FOR S_LARSBI
+C     AUXILIARY ROUTINE FOR RLLARSBI
 C-----------------------------------------------------------------------
       DO 220 I=1,M
          IF (I .EQ. IOUT) GOTO 220
@@ -1010,9 +1010,9 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_ICHGBI(A,B)
+      SUBROUTINE RLICHGBI(A,B)
 C.......................................................................
-C     AUXILIARY ROUTINE FOR S_LARSBI
+C     AUXILIARY ROUTINE FOR RLLARSBI
 C-----------------------------------------------------------------------
       DOUBLE PRECISION A,B,C
       C=A
@@ -1021,8 +1021,8 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_LARSBI(X,Y,N,NP,MDX,MDT,TOL,NIT,K,KODE,
-     +     SIGMA,THETA,RS,SC1,SC2,SC3,SC4,BET0)
+      SUBROUTINE RLLARSBI(X,Y,N,NP,MDX,MDT,TOL,NIT,K,
+     +     KODE,SIGMA,THETA,RS,SC1,SC2,SC3,SC4,BET0)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION X(MDX,NP),Y(N),THETA(MDT),RS(N),SC1(N),SC2(NP),
@@ -1115,10 +1115,10 @@ C     CHECK FOR LINEAR DEPENDENCE IN STAGE I.
 C-----------------------------------------------------------------------
  150  IF (TEST .OR. .NOT.STAGE) GOTO 170
       DO 160 I=1,N
-         CALL S_ICHGBI(X(I,KR),X(I,IN))
+         CALL RLICHGBI(X(I,KR),X(I,IN))
  160  CONTINUE
-      CALL S_ICHGBI(SC3(KR),SC3(IN))
-      CALL S_ICHGBI(SC4(KR),SC4(IN))
+      CALL RLICHGBI(SC3(KR),SC3(IN))
+      CALL RLICHGBI(SC4(KR),SC4(IN))
       KR=KR+1
       GOTO 260
  170  IF (TEST) GOTO 180
@@ -1148,7 +1148,7 @@ C-----------------------------------------------------------------------
          IF (J .EQ. IN) GOTO 230
          D=X(OUT,J)
          SC3(J)=SC3(J)-D*SC3(IN)
-         CALL S_COLBI(X(1,J),X(1,IN),D,N,OUT)
+         CALL RLCOLBI(X(1,J),X(1,IN),D,N,OUT)
  230  CONTINUE
       SUMIN=SUMIN-SC3(IN)*THETA(OUT)
       DO 240 I=1,N
@@ -1159,7 +1159,7 @@ C-----------------------------------------------------------------------
  240  CONTINUE
       SC3(IN)=-SC3(IN)/PIVOT
       X(OUT,IN)=1.D0/PIVOT
-      CALL S_ICHGBI(SC1(OUT),SC4(IN))
+      CALL RLICHGBI(SC1(OUT),SC4(IN))
       KOUNT=KOUNT+1
       IF (.NOT.STAGE) GOTO 270
 C-----------------------------------------------------------------------
@@ -1167,10 +1167,10 @@ C     INTERCHANGE ROWS IN STAGE I.
 C-----------------------------------------------------------------------
       KL=KL+1
       DO 250 J=KR,NP
-         CALL S_ICHGBI(X(OUT,J),X(KOUNT,J))
+         CALL RLICHGBI(X(OUT,J),X(KOUNT,J))
  250  CONTINUE
-      CALL S_ICHGBI(THETA(OUT),THETA(KOUNT))
-      CALL S_ICHGBI(SC1(OUT),SC1(KOUNT))
+      CALL RLICHGBI(THETA(OUT),THETA(KOUNT))
+      CALL RLICHGBI(SC1(OUT),SC1(KOUNT))
  260  IF (KOUNT+KR .NE. NP+1) GOTO 70
 C-----------------------------------------------------------------------
 C     STAGE II. DETERMINE THE VECTOR TO ENTER THE BASIS.
@@ -1241,12 +1241,12 @@ C-----------------------------------------------------------------------
          Y(I)=DABS(RS(I))
  500  CONTINUE
       N2=N/2+1
-      CALL S_STORM2(Y,N,N2,SIGMA)
+      CALL RLSTORM2(Y,N,N2,SIGMA)
       SIGMA=SIGMA/BET0
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_SRT1BI(A,N,K1,K2)
+      SUBROUTINE RLSRT1BI(A,N,K1,K2)
 C.......................................................................
       DOUBLE PRECISION A(N),X
 C----------------------------------------------------------------------
@@ -1277,7 +1277,7 @@ C----------------------------------------------------------------------
  90   CONTINUE
       END
 C=======================================================================
-      SUBROUTINE S_KEDHBI(WGT,N,C,ITYPE,D,E)
+      SUBROUTINE RLKEDHBI(WGT,N,C,ITYPE,D,E)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(N),E(N),D(N)
@@ -1289,8 +1289,8 @@ C-----------------------------------------------------------------------
 C     MALLOWS CASE
 C-----------------------------------------------------------------------
       C2=C*C
-      CALL S_GAUSBI(C,PC)
-      CALL S_XERFBI(2,C,PD)
+      CALL RLGAUSBI(C,PC)
+      CALL RLXERFBI(2,C,PD)
       G1=C2+(1.D0-C2)*(2.D0*PC-1.D0)-2.D0*C*PD
       F1=2.D0*PC-1.D0
       DO 20 I=1,N
@@ -1304,15 +1304,15 @@ C-----------------------------------------------------------------------
  30   DO 40 I=1,N
          Z=C*WGT(I)
          Z2=Z*Z
-         CALL S_GAUSBI(Z,PC)
-         CALL S_XERFBI(2,Z,PD)
+         CALL RLGAUSBI(Z,PC)
+         CALL RLXERFBI(2,Z,PD)
          E(I)=Z2+(1.D0-Z2)*(2.D0*PC-1.D0)-2.D0*Z*PD
          D(I)=2.D0*PC-1.D0
  40   CONTINUE
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_KTASBI(X,D,E,N,NP,MDX,MDSC,NCOV,TAU,IA,F,F1,
+      SUBROUTINE RLKTASBI(X,D,E,N,NP,MDX,MDSC,NCOV,TAU,IA,F,F1,
      +     IAINV,A,S1INV,S2,AINV,COV,SC)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -1331,14 +1331,14 @@ C-----------------------------------------------------------------------
       DO 35 L=1,NCOV
          S1INV(L)=A(L)
  35   CONTINUE
-      IF (F1 .GT. DZERO) CALL S_SCALM2(S1INV,F1,NN,1,NN)
+      IF (F1 .GT. DZERO) CALL RLSCALM2(S1INV,F1,NN,1,NN)
  40   CONTINUE
 C-----------------------------------------------------------------------
 C     IF IA.EQ.0 SET S1INV=F1*(A**T)*A
 C-----------------------------------------------------------------------
       IF (IA .NE. 0) GOTO 45
-      CALL S_MTT1M2(A,S1INV,NP,NN)
-      IF (F1 .GT. DZERO) CALL S_SCALM2(S1INV,F1,NN,1,NN)
+      CALL RLMTT1M2(A,S1INV,NP,NN)
+      IF (F1 .GT. DZERO) CALL RLSCALM2(S1INV,F1,NN,1,NN)
  45   CONTINUE
 C-----------------------------------------------------------------------
 C     COMPUTE S2=X**T*E*X/N (AND STORE IT IN S2).
@@ -1366,7 +1366,7 @@ C     SUCH THAT S1INV=S1**(-1)=A**T*A (IF IAINV.EQ.1 STORE THE INVERSE
 C     OF A IN AINV)
 C-----------------------------------------------------------------------
       IF (IA .EQ. -1 .OR. IA .EQ. 0) GOTO 80
-      CALL S_MCHLM2(COV,NP,NN,INFO)
+      CALL RLMCHLM2(COV,NP,NN,INFO)
       IF (INFO .EQ. 0) GOTO 65
       RETURN
  65   CONTINUE
@@ -1374,17 +1374,17 @@ C-----------------------------------------------------------------------
          IF (IAINV .EQ. 1) AINV(L)=COV(L)
          A(L)=COV(L)
  70   CONTINUE
-      CALL S_MINVM2(A,NP,NN,TAU,ISING)
+      CALL RLMINVM2(A,NP,NN,TAU,ISING)
       IF (ISING.EQ.0) GOTO 75
       RETURN
  75   CONTINUE
-      CALL S_MTT1M2(A,S1INV,NP,NN)
- 80   CALL S_MSSDBI(S2,S1INV,SC,NP,NN,MDSC)
+      CALL RLMTT1M2(A,S1INV,NP,NN)
+ 80   CALL RLMSSDBI(S2,S1INV,SC,NP,NN,MDSC)
 C-----------------------------------------------------------------------
 C     COMPUTE COV=F*S1**(-1)*S2*S1**(-1)
 C-----------------------------------------------------------------------
-      CALL S_MSF1BI(S1INV,SC,COV,NP,NN,MDSC)
-      IF (F .GT. DZERO) CALL S_SCALM2(COV,F,NN,1,NN)
+      CALL RLMSF1BI(S1INV,SC,COV,NP,NN,MDSC)
+      IF (F .GT. DZERO) CALL RLSCALM2(COV,F,NN,1,NN)
 C-----------------------------------------------------------------------
 C     IF IAINV.EQ.1 (AND IA.NE.1) COMPUTE THE INVERSE
 C     OF A AND STORE IT IN AINV
@@ -1393,11 +1393,11 @@ C-----------------------------------------------------------------------
       DO 90 L=1,NN
          AINV(L)=A(L)
  90   CONTINUE
-      CALL S_MINVM2(AINV,NP,NN,TAU,ISING)
+      CALL RLMINVM2(AINV,NP,NN,TAU,ISING)
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_MLYDBI(A,Y,N,NN,NY,IYE)
+      SUBROUTINE RLMLYDBI(A,Y,N,NN,NY,IYE)
 C.......................................................................
       DOUBLE PRECISION A(NN),Y(NY),SM,DZERO
       DATA DZERO/0.D0/
@@ -1424,7 +1424,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_NRM2BI(X,N,INCX,MDX,XNRM)
+      SUBROUTINE RLNRM2BI(X,N,INCX,MDX,XNRM)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION X(MDX)
@@ -1504,7 +1504,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_WEDVBI(X,NVAR,NCOV,MDX,ITYPW,INIT,NFIRST,A,SC)
+      SUBROUTINE RLWEDVBI(X,NVAR,NCOV,MDX,ITYPW,INIT,NFIRST,A,SC)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION A(NCOV),X(MDX,NVAR),SC(NFIRST)
@@ -1527,7 +1527,7 @@ C-----------------------------------------------------------------------
       IF (INIT.EQ.1) RETURN
       IF (ITYPW.EQ.2) GOTO 100
  20   DO 50 J=1,NVAR
-         CALL S_LMDDBI(X(1,J),SC,NFIRST,1,XME,XMD,XSD)
+         CALL RLLMDDBI(X(1,J),SC,NFIRST,1,XME,XMD,XSD)
          SQDEV2=DSQRT(XSD**2+XME**2)
          JJ=(J*J+J)/2
          IF (SQDEV2 .GT. TL) GOTO 40
@@ -1538,7 +1538,7 @@ C-----------------------------------------------------------------------
       RETURN
  100  DO 150 J=1,NVAR
          JJ=J*(J+1)/2
-         CALL S_LMDDBI(X(1,J),SC,NFIRST,1,XME,XMD,XSD)
+         CALL RLLMDDBI(X(1,J),SC,NFIRST,1,XME,XMD,XSD)
          DEV2=XSD**2+XME**2
          IF (DEV2 .GT. TL) GOTO 145
          A(JJ)=9999.D0
@@ -1548,7 +1548,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_GRADBI(X,HBRS,N,NP,MDX,GRAD)
+      SUBROUTINE RLGRADBI(X,HBRS,N,NP,MDX,GRAD)
 C.......................................................................
       DOUBLE PRECISION X(MDX,NP),HBRS(N),GRAD(NP),SUM
 C-----------------------------------------------------------------------
@@ -1562,7 +1562,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_MSFDBI(A,B,C,N,NN,M,MDB,MDC)
+      SUBROUTINE RLMSFDBI(A,B,C,N,NN,M,MDB,MDC)
 C.......................................................................
       DOUBLE PRECISION A(NN),B(MDB,M),C(MDC,M),DZERO,SM
       DATA DZERO/0.D0/
@@ -1591,7 +1591,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_MTT3BI(A,B,C,N,NN)
+      SUBROUTINE RLMTT3BI(A,B,C,N,NN)
 C.......................................................................
       DOUBLE PRECISION A(NN),B(NN),C(NN),SM,DZERO
       DATA DZERO/0.D0/
@@ -1619,28 +1619,28 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_PRSFBI(SU1,NP,NCOV,TAU,INFO)
+      SUBROUTINE RLPRSFBI(SU1,NP,NCOV,TAU,INFO)
 C.......................................................................
       DOUBLE PRECISION SU1(NCOV), TAU
 C-----------------------------------------------------------------------
 C     PRESCRIPTION F0 (TO BE USED WITH IALG=1)
 C-----------------------------------------------------------------------
-      CALL S_MCHLM2(SU1,NP,NCOV,INFO)
+      CALL RLMCHLM2(SU1,NP,NCOV,INFO)
       IF (INFO.EQ.0) GOTO 100
       INFO=1
       RETURN
- 100  CALL S_MINVM2(SU1,NP,NCOV,TAU,INFO)
+ 100  CALL RLMINVM2(SU1,NP,NCOV,TAU,INFO)
       IF (INFO .NE. 0) INFO=2
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_WFAGBI(X,A,GWT,NOBS,NVAR,NVARQ,NCOV,MDX,TAU,MAXIT,
+      SUBROUTINE RLWFAGBI(X,A,GWT,NOBS,NVAR,NVARQ,NCOV,MDX,TAU,MAXIT,
      +     ICNV,ITYPW,IGWT,TOL,NIT,DIST,SU,SA,ST,SD,SZ,IUCV,A2,B2)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION A(NCOV),X(MDX,NVAR),DIST(NOBS),GWT(NOBS),SA(NCOV),
      +     ST(NCOV),SD(NVAR),SZ(NVAR),SU(NOBS),WUP(1)
-      INTEGER S_ICNVBI
+      INTEGER RLICNVBI
       DATA ZERO,ONE/0.D0,1.D0/
 C-----------------------------------------------------------------------
 C     FIXED POINT ALGORITHM FOR THE COMPUTATION OF THE MATRIX A
@@ -1670,7 +1670,7 @@ C-----------------------------------------------------------------------
 C     STEP 1: COMPUTE WEIGHTED COVARIANCE (ST) AND AUXILIARY VALUES
 C-----------------------------------------------------------------------
  100  IF (ITYPW.EQ.1) THEN
-         CALL S_UCOWBI(X,A,ST,NOBS,NVAR,NVARQ,NCOV,MDX,MDX,NU,IALG,ICNV,
+         CALL RLUCOWBI(X,A,ST,NOBS,NVAR,NVARQ,NCOV,MDX,MDX,NU,IALG,ICNV,
      +        IGWT,NIT,GWT,DELTA,DIST,SU,WUP,X,SD,IUCV,A2,B2)
       ELSE
          DO 130 I=1,NCOV
@@ -1681,12 +1681,12 @@ C-----------------------------------------------------------------------
             DO 150 J=1,NVAR
                SD(J)=X(L,J)
  150        CONTINUE
-            CALL S_MSFDBI(A,SD,SZ,NVAR,NCOV,1,NVAR,NVAR)
-            CALL S_NRM2BI(SZ,NVAR,1,NVAR,ZNR)
+            CALL RLMSFDBI(A,SD,SZ,NVAR,NCOV,1,NVAR,NVAR)
+            CALL RLNRM2BI(SZ,NVAR,1,NVAR,ZNR)
             DISTL=ZNR
             IF (ICNV.NE.1) DELTA=DMAX1(DELTA,DABS(DISTL-DIST(L)))
             DIST(L)=DISTL
-            U=S_UCVBI(DISTL,IUCV,A2,B2)
+            U=RLUCVBI(DISTL,IUCV,A2,B2)
             SU(L)=U
             IF (IGWT.EQ.1) U=U*GWT(L)
             IJ=0
@@ -1704,13 +1704,13 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     STEP 2: CHECK CONVERGENCE
 C-----------------------------------------------------------------------
-      ITMP = S_ICNVBI(NCOV,DELTA,A,SA,TOL,ICNV)
+      ITMP = RLICNVBI(NCOV,DELTA,A,SA,TOL,ICNV)
       IF (NIT .EQ. MAXIT .OR. ITMP .EQ. 1) GOTO 500
 C-----------------------------------------------------------------------
 C     STEP 3: FIND IMPROVEMENT MATRIX ST FOR A
 C-----------------------------------------------------------------------
       INFO=0
-      CALL S_PRSFBI(ST,NVAR,NCOV,TAU,INFO)
+      CALL RLPRSFBI(ST,NVAR,NCOV,TAU,INFO)
 C-----------------------------------------------------------------------
 C     STEP 4: SET SA:=A AND A:=(ST)*SA IF ITYPW.EQ.1 ELSE A:=(ST**T)*ST
 C-----------------------------------------------------------------------
@@ -1718,16 +1718,16 @@ C-----------------------------------------------------------------------
          SA(IJ)=A(IJ)
  410  CONTINUE
       IF (ITYPW.EQ.1) THEN
-         CALL S_MTT3BI(SA,ST,A,NVAR,NCOV)
+         CALL RLMTT3BI(SA,ST,A,NVAR,NCOV)
       ELSE
-         CALL S_MTT1M2(ST,A,NVAR,NCOV)
+         CALL RLMTT1M2(ST,A,NVAR,NCOV)
       ENDIF
       NIT=NIT+1
       GOTO 100
  500  RETURN
       END
 C=======================================================================
-      SUBROUTINE S_QUNTBI(P,X)
+      SUBROUTINE RLQUNTBI(P,X)
 C.......................................................................
       DOUBLE PRECISION C(6),P,P1,T,X,XN,XZ
       DATA C(1),C(2),C(3),C(4),C(5),C(6)/
@@ -1749,7 +1749,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_MSSDBI(A,B,C,N,NN,MDC)
+      SUBROUTINE RLMSSDBI(A,B,C,N,NN,MDC)
 C.......................................................................
       DOUBLE PRECISION A(NN),B(NN),C(MDC,N),SM,DZERO
       DATA DZERO/0.D0/
@@ -1782,7 +1782,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_MSF1BI(A,B,C,N,NN,MDB)
+      SUBROUTINE RLMSF1BI(A,B,C,N,NN,MDB)
 C.......................................................................
       DOUBLE PRECISION A(NN),B(MDB,N),C(NN),SM,DZERO
       DATA DZERO/0.D0/
@@ -1810,7 +1810,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_LMDDBI(X,Y,N,ISORT,XME,XMD,XSD)
+      SUBROUTINE RLLMDDBI(X,Y,N,ISORT,XME,XMD,XSD)
 C.......................................................................
       DOUBLE PRECISION XME,X1,X2,XMD,XSD,X(N),Y(N),ZERO
       DATA ZERO/0.D0/
@@ -1828,7 +1828,7 @@ C-----------------------------------------------------------------------
       DO 20 I=1,N
          Y(I)=X(I)
  20   CONTINUE
-      IF (ISORT .NE. 0) CALL S_SRT1BI(Y,N,1,N)
+      IF (ISORT .NE. 0) CALL RLSRT1BI(Y,N,1,N)
       XME=Y(KM)
       IF (KM*2 .EQ. N) XME=(XME+Y(KM+1))/2.D0
       K=0
@@ -1852,7 +1852,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_UCOWBI(X,SA,ST,N,NP,NQ,NCOV,MDX,MDZ,NU,
+      SUBROUTINE RLUCOWBI(X,SA,ST,N,NP,NQ,NCOV,MDX,MDZ,NU,
      +     IALG,ICNV,IGWT,NIT,GWT,ZMAX,DIST,SU,SUP,SZ,SD,IUCV,A2,B2)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -1878,17 +1878,17 @@ C-----------------------------------------------------------------------
          DO 50 J=1,NP
             SD(J)=X(L,J)
  50      CONTINUE
-         CALL S_MLYDBI(SA,SD,NP,NCOV,NP,1)
-         CALL S_NRM2BI(SD(NQP1),NP-NQ,1,NP-NQ,ZNR)
+         CALL RLMLYDBI(SA,SD,NP,NCOV,NP,1)
+         CALL RLNRM2BI(SD(NQP1),NP-NQ,1,NP-NQ,ZNR)
          DISTL = ZNR
          IF (NQ .NE. 0) DISTL=DISTL/SQPMQ
          IF (ICNV .EQ. 2) ZMAX=DMAX1(ZMAX,DABS(DISTL-DIST(L)))
          DIST(L)=DISTL
-         U=S_UCVBI(DISTL,IUCV,A2,B2) 
+         U=RLUCVBI(DISTL,IUCV,A2,B2) 
          SU(L)=U
          IF (IGWT .EQ. 1) U=U*GWT(L)
          IF (IALG .EQ. 1) GOTO 80
-         UP=S_UPCVBI(DISTL,IUCV,A2,B2)
+         UP=RLUPCVBI(DISTL,IUCV,A2,B2)
          IF (NQ .NE. 0) UP=UP/SQPMQ
          SUP(L)=UP
          IF (IALG .EQ. 2) GOTO 80
@@ -1909,26 +1909,26 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      FUNCTION S_ICNVBI(NCOV,DELTA,SA,SA0,TOL,ICNV)
+      FUNCTION RLICNVBI(NCOV,DELTA,SA,SA0,TOL,ICNV)
 C.......................................................................
       DOUBLE PRECISION SA(NCOV),SA0(NCOV),SDMAX,DELTA,TOL
-      INTEGER S_ICNVBI
+      INTEGER RLICNVBI
 C-----------------------------------------------------------------------
 C     CHECK CONVERGENCE
 C-----------------------------------------------------------------------
-      S_ICNVBI=0
+      RLICNVBI=0
       IF (ICNV .EQ. 1) THEN
          DO 10 IJ=1,NCOV
             SA0(IJ)=SA(IJ)-SA0(IJ)
  10      CONTINUE
-         CALL S_NRM2BI(SA0,NCOV,1,NCOV,SDMAX)
+         CALL RLNRM2BI(SA0,NCOV,1,NCOV,SDMAX)
          DELTA=SDMAX
       ENDIF
-      IF (DELTA .LT. TOL) S_ICNVBI=1
+      IF (DELTA .LT. TOL) RLICNVBI=1
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_C0HKBI(X,N,NP,MDX,CONST)
+      SUBROUTINE RLC0HKBI(X,N,NP,MDX,CONST)
 C.......................................................................
       DOUBLE PRECISION SUMNRM,CONST,XNRM,X(MDX,NP)
 C-----------------------------------------------------------------------
@@ -1936,14 +1936,14 @@ C     INITIALIZE THE TUNING CONSTANT FOR HAMPEL-KRASKER ESTIMATOR
 C-----------------------------------------------------------------------
       SUMNRM=0.D0
       DO 10 I=1,N
-         CALL S_NRM2BI(X(I,1),NP,MDX,MDX*NP-I+1,XNRM)
+         CALL RLNRM2BI(X(I,1),NP,MDX,MDX*NP-I+1,XNRM)
          SUMNRM=SUMNRM+XNRM
  10   CONTINUE
       CONST=DBLE(NP)*DSQRT(1.5707963D0)/(SUMNRM/DBLE(N))
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_C0MUBI(X,N,NP,MDX,CONST)
+      SUBROUTINE RLC0MUBI(X,N,NP,MDX,CONST)
 C.......................................................................
       DOUBLE PRECISION SUMNRM,CONST,XNRM,X(MDX,NP)
 C-----------------------------------------------------------------------
@@ -1951,14 +1951,14 @@ C     INITIALIZE THE TUNING CONSTANT FOR MALLOWS(U) ESTIMATOR
 C-----------------------------------------------------------------------
       SUMNRM=0.D0
       DO 10 I=1,N
-         CALL S_NRM2BI(X(I,1),NP,MDX,MDX*NP-I+1,XNRM)
+         CALL RLNRM2BI(X(I,1),NP,MDX,MDX*NP-I+1,XNRM)
          SUMNRM=SUMNRM+XNRM
  10   CONTINUE
       CONST=DBLE(NP)/(SUMNRM/DBLE(N))
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_FUDGBI(SS,NP,NCOV,XKAP,GAMMA)
+      SUBROUTINE RLFUDGBI(SS,NP,NCOV,XKAP,GAMMA)
 C.......................................................................
       DOUBLE PRECISION SS(NCOV),E,XKAP,GAMMA,SII
 C-----------------------------------------------------------------------
@@ -1974,7 +1974,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_HUBBI(RS,WGT,WGT2,SIGMB,N,ITYPE,IPS,XK)
+      SUBROUTINE RLHUBBI(RS,WGT,WGT2,SIGMB,N,ITYPE,IPS,XK)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION RS(N),WGT(N),WGT2(N)
@@ -1988,7 +1988,7 @@ C     HUBER-TYPE
 C-----------------------------------------------------------------------
       DO 10 I=1,N
          S=RS(I)/SIGMB
-         RS(I)=S_PSIM2(S,IPS,XK)*SIGMB
+         RS(I)=RLPSIM2(S,IPS,XK)*SIGMB
  10   CONTINUE
       RETURN
 C-----------------------------------------------------------------------
@@ -2001,7 +2001,7 @@ C-----------------------------------------------------------------------
          RS(I)=ZERO
          GOTO 30
  25      S=RS(I)/SIGMB
-         RS(I)=S_PSIM2(S,IPS,XK)*SW
+         RS(I)=RLPSIM2(S,IPS,XK)*SW
  30   CONTINUE
       RETURN
 C-----------------------------------------------------------------------
@@ -2013,12 +2013,12 @@ C-----------------------------------------------------------------------
          RS(I)=ZERO
          GOTO 50
  45      S=RS(I)/SW
-         RS(I)=S_PSIM2(S,IPS,XK)*SW
+         RS(I)=RLPSIM2(S,IPS,XK)*SW
  50   CONTINUE
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_KEDCBI(WGT,RS,N,SIGMA,ITYPE,D,E,IPS,XK)
+      SUBROUTINE RLKEDCBI(WGT,RS,N,SIGMA,ITYPE,D,E,IPS,XK)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(N),RS(N),D(N),E(N)
@@ -2036,8 +2036,8 @@ C-----------------------------------------------------------------------
          E(I)=ZERO
          GOTO 10
  5       X=RS(I)/SIGMA
-         D(I)=S_PSPM2(X,IPS,XK)*WGT(I)
-         E(I)=(S_PSIM2(X,IPS,XK)*WGT(I))**2
+         D(I)=RLPSPM2(X,IPS,XK)*WGT(I)
+         E(I)=(RLPSIM2(X,IPS,XK)*WGT(I))**2
  10   CONTINUE
       RETURN
 C-----------------------------------------------------------------------
@@ -2049,13 +2049,13 @@ C-----------------------------------------------------------------------
          E(I)=ZERO
          GOTO 40
  30      X=RS(I)/SIGMA/WGT(I)
-         D(I)=S_PSPM2(X,IPS,XK)
-         E(I)=(S_PSIM2(X,IPS,XK)*WGT(I))**2
+         D(I)=RLPSPM2(X,IPS,XK)
+         E(I)=(RLPSIM2(X,IPS,XK)*WGT(I))**2
  40   CONTINUE
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_PRSHBI(SU1,SS,DIST,SU,SUP,SV,SVPZ,N,NP,NCOV)
+      SUBROUTINE RLPRSHBI(SU1,SS,DIST,SU,SUP,SV,SVPZ,N,NP,NCOV)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION DIST(N),SU1(NCOV),SS(NCOV),SU(N),SUP(N)
@@ -2102,7 +2102,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_BETHBI(WGT,N,D,ITYPE,BETA)
+      SUBROUTINE RLBETHBI(WGT,N,D,ITYPE,BETA)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION WGT(N)
@@ -2116,8 +2116,8 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     HUBER CASE
 C-----------------------------------------------------------------------
-      CALL S_GAUSBI(D,PC)
-      CALL S_XERFBI(2,D,DC)
+      CALL RLGAUSBI(D,PC)
+      CALL RLXERFBI(2,D,DC)
       BETA=-D*DC+PC-0.5D0+C2*(1.D0-PC)
       IF (ITYPE.EQ.1) RETURN
 C-----------------------------------------------------------------------
@@ -2134,8 +2134,8 @@ C-----------------------------------------------------------------------
  30   DO 40 I=1,N
          W2=WGT(I)*WGT(I)
          CW=D*WGT(I)
-         CALL S_GAUSBI(CW,PC)
-         CALL S_XERFBI(2,CW,DC)
+         CALL RLGAUSBI(CW,PC)
+         CALL RLXERFBI(2,CW,DC)
          B=C2*(1.D0-PC)+(-CW*DC+PC-0.5D0)/W2
          SM=SM+B*W2/XN
  40   CONTINUE
@@ -2143,7 +2143,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_RNAGBI(X,Y,THETA,WGT,COV,SIGMAI,N,NP,MDX,MDT,NCOV,
+      SUBROUTINE RLRNAGBI(X,Y,THETA,WGT,COV,SIGMAI,N,NP,MDX,MDT,NCOV,
      +     GAM,TOL,TAU,ITYPE,IOPT,ISIGMA,ICNV,MAXIT,MAXIS,NIT,SIGMAF,
      +     QS1,RS,DELTA,GRAD,HESSNV,SD,SW,SF,SG,SH,IP,SX,IPS,XK,
      +     BETA,BET0)
@@ -2152,7 +2152,7 @@ C.......................................................................
       DIMENSION X(MDX,NP),Y(N),THETA(MDT),WGT(N),COV(NCOV),RS(N),
      +     DELTA(NP),GRAD(NP),SD(N),HESSNV(NCOV),
      +     SF(NP),SG(NP),SH(NP),SW(N),SX(MDX,NP)
-      INTEGER IP(NP),S_ICTHM2,S_ISIGM2
+      INTEGER IP(NP),RLICTHM2,RLISIGM2
       LOGICAL FIRST
       DATA ZERO,TL/0.D0,1.D-10/
 C----------------------------------------------------------------------
@@ -2164,7 +2164,7 @@ C----------------------------------------------------------------------
       SIGMA=SIGMAI
       SIGMB=SIGMA
       IASG=IABS(ISIGMA)
-      PSP0=S_PSPM2(ZERO,IPS,XK)
+      PSP0=RLPSPM2(ZERO,IPS,XK)
       INTCH=1
       ITYP=ITYPE
 C----------------------------------------------------------------------
@@ -2191,26 +2191,26 @@ C----------------------------------------------------------------------
 C----------------------------------------------------------------------
 C     STEP 2. COMPUTE RESIDUALS
 C----------------------------------------------------------------------
- 200  CALL S_RESDM2(X,Y,THETA,N,NP,MDX,RS)
+ 200  CALL RLRESDM2(X,Y,THETA,N,NP,MDX,RS)
 C----------------------------------------------------------------------
 C     STEP 3. COMPUTE A NEW VALUE SIGMB FOR SIGMA
 C----------------------------------------------------------------------
       IF (ISIGMA .LT. 0 .AND. NIT .EQ. 1) GOTO 300
       IF (ISIGMA .EQ. 0) GOTO 300
       SIGMA=SIGMB
-      CALL S_RSIGM2(RS,WGT,SIGMA,N,NP,TOL,ITYP,ISIGMA,MAXIS,
+      CALL RLRSIGM2(RS,WGT,SIGMA,N,NP,TOL,ITYP,ISIGMA,MAXIS,
      +     NIS,SIGMB,SW,SD,IPS,XK,BETA,BET0)
       IF (SIGMB .GT. TL) GOTO 300
       RETURN
- 300  CALL S_QRSSM2(RS,WGT,SW,N,ITYP,SIGMB,CONST,QS0,IPS,XK)
+ 300  CALL RLQRSSM2(RS,WGT,SW,N,ITYP,SIGMB,CONST,QS0,IPS,XK)
 C----------------------------------------------------------------------
 C     STEP 4. COMPUTE THE (UNSCALED) NEGATIVE GRADIENT
 C----------------------------------------------------------------------
  400  DO 410 I=1,N
          SD(I)=RS(I)
  410  CONTINUE
-      CALL S_HUBBI(SD,WGT,WGT,SIGMB,N,ITYP,IPS,XK)
-      CALL S_GRADBI(X,SD,N,NP,MDX,GRAD)
+      CALL RLHUBBI(SD,WGT,WGT,SIGMB,N,ITYP,IPS,XK)
+      CALL RLGRADBI(X,SD,N,NP,MDX,GRAD)
 C----------------------------------------------------------------------
 C     STEP 5. COMPUTE WEIGHTS AND APPLY THEM TO X; STORE RESULT IN SX
 C----------------------------------------------------------------------
@@ -2220,7 +2220,7 @@ C----------------------------------------------------------------------
          SDI=0.D0
          IF (WGT(I) .LE. ZERO) GOTO 520
          IF (ITYP .EQ. 3) T=T/WGT(I)
- 510     SDI=S_PSPM2(T,IPS,XK)
+ 510     SDI=RLPSPM2(T,IPS,XK)
  520     SQD=DSQRT(SDI)
          IF (ITYP .EQ. 2) SQD=SQD*SW(I)
          DO 530 J=1,NP
@@ -2231,14 +2231,14 @@ C----------------------------------------------------------------------
 C----------------------------------------------------------------------
 C     STEP 6. COMPUTE GENERALIZED INVERSE OF UNSCALED HESSIAN MATRIX
 C----------------------------------------------------------------------
- 600  CALL S_RMTRM2(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
+ 600  CALL RLRMTRM2(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
       IF (K.EQ.0) RETURN 
-      CALL S_KIASM2(SX,K,NP,MDX,NN,1.D0,1.D0,HESSNV)
-      CALL S_KFASM2(SX,HESSNV,K,NP,MDX,NN,1.D0,DELTA,SG,IP)
+      CALL RLKIASM2(SX,K,NP,MDX,NN,1.D0,1.D0,HESSNV)
+      CALL RLKFASM2(SX,HESSNV,K,NP,MDX,NN,1.D0,DELTA,SG,IP)
 C----------------------------------------------------------------------
 C     STEP 7. COMPUTE THE INCREMENT VECTOR
 C----------------------------------------------------------------------
-      CALL S_MSFDBI(HESSNV,GRAD,DELTA,NP,NN,1,NP,NP)
+      CALL RLMSFDBI(HESSNV,GRAD,DELTA,NP,NN,1,NP,NP)
       DO 710 J=1,NP
          DELTA(J)=GAM*DELTA(J)
          IF (FIRST) THEN
@@ -2252,9 +2252,9 @@ C----------------------------------------------------------------------
 C----------------------------------------------------------------------
 C     STEP 8. IF NECESSARY DETERMINE ANOTHER STEP LENGTH.
 C----------------------------------------------------------------------
-      CALL S_RESDM2(X,Y,THETA,N,NP,MDX,RS)
+      CALL RLRESDM2(X,Y,THETA,N,NP,MDX,RS)
       IF (.NOT.FIRST) QSF=QS1
-      CALL S_QRSSM2(RS,WGT,SW,N,ITYP,SIGMB,CONST,QS1,IPS,XK)
+      CALL RLQRSSM2(RS,WGT,SW,N,ITYP,SIGMB,CONST,QS1,IPS,XK)
       IF (QS1 .LE. QS0) GOTO 900
       IF (.NOT.FIRST) GOTO 880
       FIRST=.FALSE.
@@ -2289,7 +2289,7 @@ C----------------------------------------------------------------------
          IF (WGT(I) .LE. ZERO) GOTO 840
          IF (ITYP .EQ. 2) GOTO 835
          T=T/WGT(I)
- 835     SDI=S_PSIM2(T,IPS,XK)/T
+ 835     SDI=RLPSIM2(T,IPS,XK)/T
  840     PI=DSQRT(SDI)
          IF (ITYP .EQ. 2) PI=PI*SW(I)
          DO 845 J=1,NP
@@ -2307,8 +2307,8 @@ C     STEP 9. STOP ITERATIONS IF DESIRED PRECISION HAS BEEN REACHED
 C----------------------------------------------------------------------
  900  IF (ISIGMA .LT. 0 .AND. NIT .EQ. 1) GOTO 950
       IF (NIT .EQ. MAXIT) GOTO 990
-      IF (S_ICTHM2(NP,NCOV,DELTA,SIGMA,COV,TOL,ICNV) .EQ. 1
-     +     .AND. S_ISIGM2(SIGMA,SIGMB,TOL) .EQ. 1) GOTO 990
+      IF (RLICTHM2(NP,NCOV,DELTA,SIGMA,COV,TOL,ICNV) .EQ. 1
+     +     .AND. RLISIGM2(SIGMA,SIGMB,TOL) .EQ. 1) GOTO 990
  950  NIT=NIT+1
       GOTO 200
  990  SIGMAF=SIGMB
@@ -2316,7 +2316,7 @@ C----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_UDATBI(SS,SA0,SA,GAMMA,NP,NCOV)
+      SUBROUTINE RLUDATBI(SS,SA0,SA,GAMMA,NP,NCOV)
 C.......................................................................
       DOUBLE PRECISION SS(NCOV),SA0(NCOV),SA(NCOV),GAMMA,GAMD
       IJ=0
@@ -2328,17 +2328,17 @@ C.......................................................................
             IF (I.EQ.J) SA(IJ)=1.D0+SA(IJ)
  10      CONTINUE
  20   CONTINUE
-      CALL S_MTT3BI(SA0,SA,SA,NP,NCOV)
+      CALL RLMTT3BI(SA0,SA,SA,NP,NCOV)
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_WNAGBI(X,A,NOBS,NVAR,NCOV,MDX,MAXIT,ICNV,TOL,
+      SUBROUTINE RLWNAGBI(X,A,NOBS,NVAR,NCOV,MDX,MAXIT,ICNV,TOL,
      +     XFUD,NIT,DIST,SA,SS,SU,SUP,ST,SD,IUCV,A2,B2)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION X(MDX,NVAR),DIST(NOBS),A(NCOV),SA(NCOV),SS(NCOV),
      +     ST(NCOV),SU(NOBS),SUP(NOBS),SD(NVAR)
-      INTEGER S_ICNVBI
+      INTEGER RLICNVBI
       DATA ZERO,ONE/0.D0,1.D0/
 C-----------------------------------------------------------------------
 C     NEWTON-HUBER ALGORITHM FOR THE COMPUTATION OF SCATTER MATRIX A
@@ -2367,31 +2367,31 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     STEP 1: COMPUTE WEIGHTED COVARIANCE (ST) AND AUXILIARY VALUES
 C-----------------------------------------------------------------------
- 100  CALL S_UCOWBI(X,A,ST,NOBS,NVAR,NVARQ,NCOV,MDX,MDX,
+ 100  CALL RLUCOWBI(X,A,ST,NOBS,NVAR,NVARQ,NCOV,MDX,MDX,
      +     NU,IALG,ICNV,0,NIT,DIST,DELTA,DIST,SU,SUP,X,SD,IUCV,A2,B2)
 C-----------------------------------------------------------------------
 C     STEP 2: CHECK CONVERGENCE
 C-----------------------------------------------------------------------
-      IF (NIT .EQ. MAXIT .OR. S_ICNVBI(NCOV,DELTA,A,SA,TOL,ICNV) .EQ. 1)
+      IF (NIT .EQ. MAXIT .OR. RLICNVBI(NCOV,DELTA,A,SA,TOL,ICNV) .EQ. 1)
      +     GOTO 500
 C-----------------------------------------------------------------------
 C     STEP 3: FIND IMPROVEMENT MATRIX SS FOR A
 C-----------------------------------------------------------------------
-      CALL S_PRSHBI(ST,SS,DIST,SU,SUP,XN,0.D0,NOBS,NVAR,NCOV)
+      CALL RLPRSHBI(ST,SS,DIST,SU,SUP,XN,0.D0,NOBS,NVAR,NCOV)
 C-----------------------------------------------------------------------
 C     STEP 4: COMPUTE GAM0 AND SET A:=(I-GAM0*SS)*SA
 C-----------------------------------------------------------------------
       DO 410 IJ=1,NCOV
          SA(IJ)=A(IJ)
  410  CONTINUE
-      CALL S_FUDGBI(SS,NVAR,NCOV,XFUD,GAM0)
-      CALL S_UDATBI(SS,SA,A,GAM0,NVAR,NCOV)
+      CALL RLFUDGBI(SS,NVAR,NCOV,XFUD,GAM0)
+      CALL RLUDATBI(SS,SA,A,GAM0,NVAR,NCOV)
       NIT=NIT+1
       GOTO 100
   500 RETURN
       END
 C======================================================================
-      SUBROUTINE S_WWWABI(N,SVALS,FVALS,IWWW,IUCV,A2,B2)
+      SUBROUTINE RLWWWABI(N,SVALS,FVALS,IWWW,IUCV,A2,B2)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z) 
       DIMENSION SVALS(N),FVALS(N)
@@ -2399,7 +2399,7 @@ C-----------------------------------------------------------------------
 C     COMPUTES THE VALUE OF THE W BAR-FUNCTION
 C-----------------------------------------------------------------------
       DO 50 I=1,N
-         FVALS(I)=S_WWWBI(SVALS(I),IWWW,IUCV,A2,B2)
+         FVALS(I)=RLWWWBI(SVALS(I),IWWW,IUCV,A2,B2)
  50   CONTINUE
       RETURN
       END

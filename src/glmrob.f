@@ -4,7 +4,7 @@ C
 C	Matias - Jeff
 C
 C		
-      SUBROUTINE S_GINTAC(X,Y,NI,OI,MDX,MDT,N,NP,NCOV,ICASE,MAXTT,
+      SUBROUTINE RLGINTAC(X,Y,NI,OI,MDX,MDT,N,NP,NCOV,ICASE,MAXTT,
      +     MAXTA,TAU,TOLT,TOLA,B,C,NITT,NITA,SIGMA,A,THETA,CI,DIST,
      +     RW1,RW2,IW1,DW1,IPS,XK)
 C.......................................................................
@@ -29,7 +29,7 @@ C
       IST=NCOV+1
       ISD=IST+NCOV
       ISU=ISD+NP
-      CALL S_GITAC2(X,Y,NI,OI,MDX,MDT,N,NP,NCOV,ICASE,MAXTT,MAXTA,
+      CALL RLGITAC2(X,Y,NI,OI,MDX,MDT,N,NP,NCOV,ICASE,MAXTT,MAXTA,
      +     TAU,TOLT,TOLA,B,C,NITT,NITA,SIGMA,A,THETA,CI,DIST,RW1,
      +     RW1(IWG),RW1(ISC),RW1(ISF),RW1(ISG),RW1(ISH),RW1(ISY),
      +     RW1(ISW),RW2,IW1,DW1,DW1(IST),DW1(ISD),DW1(ISU),IPS,XK)
@@ -38,7 +38,7 @@ C
  
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_GITAC2(X,Y,NI,OI,MDX,MDT,N,NP,NCOV,ICASE,MAXTT,
+      SUBROUTINE RLGITAC2(X,Y,NI,OI,MDX,MDT,N,NP,NCOV,ICASE,MAXTT,
      +     MAXTA,TAU,TOLT,TOLA,B,C,NITT,NITA,SIGMA,A,THETA,CI,
      +     DIST,COV,WGT,SC,SF,SG,SH,SY,SW,SX,SP,SA,ST,SD,SU,IPS,XK)
 C.......................................................................
@@ -54,7 +54,7 @@ C
       INTEGER NI(N),SP(NP)
       DATA ZERO,ONE/0.D0,1.D0/	
 C
-C these are for the function ucv_glmrob (ex ucv) in s_wyfalg
+C these are for the function ucv_glmrob (ex ucv) in rlwyfalg
 C     
       IUCV=1
       A2=ZERO
@@ -69,13 +69,13 @@ C convergence criteria for wyfalg
 C
 C INITIAL VALUE FOR A
 C
-      CALL S_WEDVBI(X,NP,NCOV,MDX,1,INIT,NFIRST,A,SY)
+      CALL RLWEDVBI(X,NP,NCOV,MDX,1,INIT,NFIRST,A,SY)
 
 C
 C COMPUTES A (FIXED POINT ALGORITHM)
 C 	(I REMOVED THE ARGUMENT "NITMON")
 C
-      CALL S_WFAGBI(X,A,SW,N,NP,0,NCOV,MDX,TAU,MAXTA,ICNV,ITYPW,
+      CALL RLWFAGBI(X,A,SW,N,NP,0,NCOV,MDX,TAU,MAXTA,ICNV,ITYPW,
      +     0,TOLA,NITA,WGT,SU,SA,ST,SD,SD,IUCV,A2,B2)
 
       IPS=3
@@ -84,7 +84,7 @@ C
       DO 5 I=1,N
          S=WGT(I)
          IF (S.LE.1.D-3) S=1.D-3
-         WGT(I)=S_PSIM2(S,IPS,XK)/S
+         WGT(I)=RLPSIM2(S,IPS,XK)/S
  5    CONTINUE
       DO 30 L=1,N
          IF (ICASE.EQ.3) GOTO 10
@@ -109,14 +109,14 @@ C
 C SOLVE L1 PROBLEM
 C
 C INITIAL BETA -> BET0
-      CALL S_BET0BI(WGT,N,2,1,TOLT,BET0)
-      CALL S_LARSBI(SX,SY,N,NP,MDX,MDT,TAU,NIT,K,KODE,
+      CALL RLBET0BI(WGT,N,2,1,TOLT,BET0)
+      CALL RLLARSBI(SX,SY,N,NP,MDX,MDT,TAU,NIT,K,KODE,
      +     SIG0,THETA,SW,CI,SF,SG,SH,BET0)
       
 c
 c     sig0 == 0 !!!!
 c
-c     maybe this is making sigma=0 in s_rwagM2
+c     maybe this is making sigma=0 in RLrwagM2
 c
       
       IF (SIG0 .LE. TAU) SIG0=ONE
@@ -141,8 +141,8 @@ C
          SU(L)=Y(L)
  50   CONTINUE
       ITYP=2
-      CALL S_KEDHBI(WGT,N,CPSI,ITYP,CI,SW)
-      CALL S_KTASBI(X,CI,SW,N,NP,MDX,MDX,NCOV,TAU,IA,F1,F0,IAINV,
+      CALL RLKEDHBI(WGT,N,CPSI,ITYP,CI,SW)
+      CALL RLKTASBI(X,CI,SW,N,NP,MDX,MDX,NCOV,TAU,IA,F1,F0,IAINV,
      +     SC,SF,SG,SH,COV,SX)
 
       ISIGMA=2
@@ -154,7 +154,7 @@ C
 C
 C     should the first bet0 be beta in the following?
 C
-      CALL S_RWAGM2(X,SY,THETA,WGT,COV,PSP0,SIG0,N,NP,MDX,
+      CALL RLRWAGM2(X,SY,THETA,WGT,COV,PSP0,SIG0,N,NP,MDX,
      +     NCOV,TOLT,GAMT,TAU,ITYP,ISIGMA,ICNV,MAXTT,MAXIS,
      +     NITT,SIGMA,Y,SC,CI,SF,SG,SH,SP,SW,SX,IPS,XK,BET0,BET0)
 
@@ -170,15 +170,15 @@ C     IF (NITT.EQ.MAXTT) IERR=1
          DO 80 J=1,NP
             SD(J)=X(I,J)
  80      CONTINUE
-         CALL S_MLYDBI(A,SD,NP,NCOV,NP,1)
-         CALL S_NRM2BI(SD,NP,1,NP,Z)
+         CALL RLMLYDBI(A,SD,NP,NCOV,NP,1)
+         CALL RLNRM2BI(SD,NP,1,NP,Z)
          DIST(I)=Z
  90   CONTINUE
       RETURN
       END  
 
 C-----------------------------------------------------------------------
-      SUBROUTINE S_MACHD(I,X)
+      SUBROUTINE RLMACHD(I,X)
 C.......................................................................
 C
 C
@@ -238,7 +238,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_GFEDCA(VTHETA,CI,WA,NI,OI,N,ICASE,D,E)
+      SUBROUTINE RLGFEDCA(VTHETA,CI,WA,NI,OI,N,ICASE,D,E)
 C.......................................................................
 C
 C  D AND E MATRICES FOR THE COV. MATRIX OF THE COEFF. ESTIMATES
@@ -248,12 +248,12 @@ C
       DATA ZERO,ONE/0.D0,1.D0/
       DATA PREC/0.D0/
 
-      IF (PREC.EQ.ZERO) CALL S_MACHD(2,PREC)
+      IF (PREC.EQ.ZERO) CALL RLMACHD(2,PREC)
       DO 500 I=1,N
          GI=VTHETA(I)+OI(I)
          CC=CI(I)
          AA=WA(I)
-         PI=S_GFUN(ICASE,1,GI)
+         PI=RLGFUN(ICASE,1,GI)
          IF (ICASE.EQ.1) THEN
 C==>      LOGISTIC BERNOULLI
             TEMP=-PI-CC
@@ -274,7 +274,7 @@ C==>      LOGISTIC BINOMIAL
             DNI=DBLE(MI)
             MED=1+MI/2
             DO 200 J=0,MI
-               CALL S_PROBIN(J,MI,PI,PJ)
+               CALL RLPROBIN(J,MI,PI,PJ)
                FJME=DBLE(J)-DNI*PI
                TMP=FJME-CC
                TT=DMIN1(AA,DABS(TMP))
@@ -295,7 +295,7 @@ C==>      LOGISTIC POISSON
             EI=ZERO
             MI=INT(100.*PI)
             DO 300 J=0,MI
-               CALL S_PRPOIS(PI,J,PJ)
+               CALL RLPRPOIS(PI,J,PJ)
                FJME=DBLE(J)-PI
                TMP=FJME-CC
                TT=DMIN1(AA,DABS(TMP))
@@ -317,7 +317,7 @@ C==>      LOGISTIC POISSON
 C     
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_PROBIN(K,N,P,PK)
+      SUBROUTINE RLPROBIN(K,N,P,PK)
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
       DOUBLE PRECISION LPL
       DATA NCALL,KL,LPL,EMIN,SML,ALSML/0,0,0.D0,0.D0,0.D0,0.D0/
@@ -325,9 +325,9 @@ C
 
       PK=0.D0
       IF (NCALL.EQ.0) THEN
-         CALL S_MACHD(3,EMIN)
-         CALL S_MACHD(4,SML)
-         CALL S_MACHD(5,ALSML)
+         CALL RLMACHD(3,EMIN)
+         CALL RLMACHD(4,SML)
+         CALL RLMACHD(5,ALSML)
          NCALL=1
       ENDIF
  10   IF (P .NE. 0.D0) GO TO 15
@@ -350,7 +350,7 @@ C
          LPL=DBLE(N)*ALQ
          IF (LPL.GT.EMIN) PK=DEXP(LPL)
       ELSEIF (KL+1.NE.K.OR.LPL.LE.ALSML) THEN 
-         CALL S_BINPRD(K,N,P,S1,PK)
+         CALL RLBINPRD(K,N,P,S1,PK)
          GOTO 900 
       ELSE
          LPL=LPL+DLOG(DBLE(N-K+1))+ALP-DLOG(DBLE(K))-ALQ
@@ -366,16 +366,16 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_PRPOIS(E,K,PK)
+      SUBROUTINE RLPRPOIS(E,K,PK)
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
       DOUBLE PRECISION LPL,LE
       DATA NCALL,KL,LPL,LE,ESML,XLMN,YLMN/0,0,0.D0,0.D0,0.D0,0.D0,0.D0/
 
       PK=0.D0
       IF (NCALL.EQ.0) THEN
-         CALL S_MACHD(3,ESML)
-         CALL S_MACHD(4,XLMN)
-         CALL S_MACHD(5,YLMN)
+         CALL RLMACHD(3,ESML)
+         CALL RLMACHD(4,XLMN)
+         CALL RLMACHD(5,YLMN)
          NCALL=1
       ENDIF
       IF (K.GT.1100000) THEN
@@ -399,7 +399,7 @@ C       problems
       IF (K.EQ.0) THEN
          LPL = -E
       ELSEIF (KL+1.NE.K.OR.LPL.LE.YLMN) THEN
-         CALL S_POISSN(E,K,S1,PK)      
+         CALL RLPOISSN(E,K,S1,PK)      
          GOTO 900 
       ELSE
          LPL=LPL+LE-DLOG(DBLE(K))
@@ -415,7 +415,7 @@ C       problems
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_POISSN(LAMBDA,K,PS,PK)
+      SUBROUTINE RLPOISSN(LAMBDA,K,PS,PK)
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
       DOUBLE PRECISION LAMBDA,IAX,JAX,LPK,MEDIAN
 
@@ -423,8 +423,8 @@ C
       PK = 0.D0
 C      PGT = 0.D0
 
-      CALL S_MACHD(3,EXMIN)
-      CALL S_MACHD(4,XLGMN)
+      CALL RLMACHD(3,EXMIN)
+      CALL RLMACHD(4,XLGMN)
 C
 C     Returns the lower tail and point probabilities
 C     associated with a Poisson distribution.
@@ -456,17 +456,17 @@ C
       IF (A.EQ.1.D0) THEN
          LPK = -X
       ELSE
-         CALL S_NLGMBI(I2A,GL)
+         CALL RLNLGMBI(I2A,GL)
          LPK=-X+(A-1.D0)*DLOG(X)-GL
       ENDIF
-      PK = S_XEXPD(LPK)
+      PK = RLXEXPD(LPK)
       MEDIAN = A - 0.33D0
       IF (X.LE.MEDIAN) THEN
 C
 C       Compute PS = 1 - PK*IAX
 C
          IF (LPK.GE.EXMIN) THEN
-            CALL S_INTGM0(X,A,IAX)
+            CALL RLINTGM0(X,A,IAX)
             PS = 1.D0 - PK*IAX
          ELSE IF (2*X.LE.A) THEN
             PS = 1.D0
@@ -476,9 +476,9 @@ C
             IF (ARG.LE.EXMIN) THEN
                PS = 1.D0
             ELSE
-               CALL S_INTGM0(X,A,IAX)
+               CALL RLINTGM0(X,A,IAX)
                ARG = LPK + DLOG(IAX)
-               PS = 1.D0 - S_XEXPD(ARG)
+               PS = 1.D0 - RLXEXPD(ARG)
             ENDIF
          ENDIF
       ELSE
@@ -486,7 +486,7 @@ C
 C       Compute PS = PK*JAX
 C
          IF (LPK.GE.EXMIN) THEN
-            CALL S_INTGM1(X,A,JAX)
+            CALL RLINTGM1(X,A,JAX)
             PS = PK*JAX
          ELSE
             Q = (A-1.D0)/X
@@ -494,9 +494,9 @@ C
             IF (ARG.LE.EXMIN) THEN
                PS = 0.D0
             ELSE
-               CALL S_INTGM1(X,A,JAX)
+               CALL RLINTGM1(X,A,JAX)
                ARG = LPK + DLOG(JAX)
-               PS = S_XEXPD(ARG)
+               PS = RLXEXPD(ARG)
             ENDIF
          ENDIF
       ENDIF
@@ -505,7 +505,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_INTGM0(X,A,IAX)
+      SUBROUTINE RLINTGM0(X,A,IAX)
 C
 C     Computes I(A,X) = Integral from t=0 to t=X of
 C                        (t/X)**(A-1) * EXP(X-t)
@@ -538,7 +538,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_INTGM1(X,A,JAX)
+      SUBROUTINE RLINTGM1(X,A,JAX)
 C
 C     Computes J(A,X) = Integral from t=X to t=infinity of
 C                        (t/X)**(A-1) * EXP(X-t)
@@ -571,7 +571,7 @@ C
 C
 C----------------------------------------------------------------------
 C
-      SUBROUTINE S_BINPRD(K,N,P,PS,PK)
+      SUBROUTINE RLBINPRD(K,N,P,PS,PK)
 C.......................................................................
 C
 C
@@ -579,8 +579,8 @@ C
 C     
       PK = 0.D0
       PS = 0.D0
-      CALL S_MACHD(4,SML)
-      CALL S_MACHD(5,ALSML)
+      CALL RLMACHD(4,SML)
+      CALL RLMACHD(5,ALSML)
  10   IF (P .NE. 0.D0) GO TO 15
       PS = 1.D0
       IF (K .NE. 0) GO TO 900
@@ -603,7 +603,7 @@ C
  25   ALQN = XN*DLOG(Q1)
       ICNT = ALQN/ALSML
       ALQN = ALQN-ICNT*ALSML
-      PK = S_XEXPD(ALQN)
+      PK = RLXEXPD(ALQN)
       IF (K1 .EQ. 0) GO TO 35
       QP = P1/Q1
       XJ = 0.D0
@@ -627,7 +627,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      double precision FUNCTION S_GFUN(ICASE,NI,GI)
+      double precision FUNCTION RLGFUN(ICASE,NI,GI)
 C.......................................................................
 C
 C  G-FUNCTION FOR LOGISTIC REGRESSION
@@ -636,31 +636,31 @@ C
       DATA NCALL,DMIN,DMAX,XBIG/0,0.D0,0.D0,0.D0/
 
       IF (NCALL.EQ.1) GOTO 10
-      CALL S_MACHD(3,DMIN)
-      CALL S_MACHD(6,XBIG)
+      CALL RLMACHD(3,DMIN)
+      CALL RLMACHD(6,XBIG)
       XBIG=XBIG/10.D0
       DMAX=DLOG(XBIG)
       NCALL=1
  10   IF (ICASE.LE.2) THEN
 C==>    LOGISTIC BERNOUILLI OR BINOMIAL
          IF (GI.LE.DMIN) THEN
-            S_GFUN=0.D0
+            RLGFUN=0.D0
          ELSEIF (GI.GE.DMAX) THEN
-            S_GFUN=DBLE(NI)
+            RLGFUN=DBLE(NI)
          ELSE
             EXGI=DEXP(GI)
-            S_GFUN=DBLE(NI)*EXGI/(1.D0+EXGI)
+            RLGFUN=DBLE(NI)*EXGI/(1.D0+EXGI)
          ENDIF
       ELSE
 C==>    LOGISTIC POISSON (ICASE=3)
-         S_GFUN=S_XEXPD(GI)
+         RLGFUN=RLXEXPD(GI)
       ENDIF
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      double precision FUNCTION S_XEXPD(X)
+      double precision FUNCTION RLXEXPD(X)
 C.......................................................................
 C
 C     Extended exp() function
@@ -668,25 +668,25 @@ C
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
       DATA NCALL,DMIN,DMAX,XBIG/0,0.D0,0.D0,0.D0/
       IF (NCALL.EQ.0) THEN
-         CALL S_MACHD(3,DMIN)
-         CALL S_MACHD(6,XBIG)
+         CALL RLMACHD(3,DMIN)
+         CALL RLMACHD(6,XBIG)
          XBIG=XBIG/10.D0
          DMAX=DLOG(XBIG)
          NCALL=1
       ENDIF
       IF (X.LE.DMIN) THEN
-         S_XEXPD=0.D0
+         RLXEXPD=0.D0
       ELSEIF (X.GE.DMAX) THEN
-         S_XEXPD=XBIG
+         RLXEXPD=XBIG
       ELSE
-         S_XEXPD=DEXP(X)
+         RLXEXPD=DEXP(X)
       ENDIF
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_GYMAIN(X,Y,NI,COV,A,THETA,OI,MDX,N,NP,NCOV,B,GAM,TAU,
+      SUBROUTINE RLGYMAIN(X,Y,NI,COV,A,THETA,OI,MDX,N,NP,NCOV,B,GAM,TAU,
      +     ICASE,IUGL,IOPT,IALG,ICNVT,ICNVA,MAXIT,MAXTT,MAXTA,MAXTC,
      +     TOL,TOLT,TOLA,TOLC,NIT,CI,WA,VTHETA,
      +     DELTA,GRAD,HESSNV,RW1,RW2,IW1,DW1, TRACE)
@@ -711,7 +711,7 @@ C
       IST=NCOV+1
       ISD=IST+NCOV
       ISU=ISD+NP
-      CALL S_GMAIN2(X,Y,NI,COV,A,THETA,OI,MDX,N,NP,NCOV,B,GAM,TAU,
+      CALL RLGMAIN2(X,Y,NI,COV,A,THETA,OI,MDX,N,NP,NCOV,B,GAM,TAU,
      +     ICASE,IUGL,IOPT,IALG,ICNVT,ICNVA,MAXIT,MAXTT,MAXTA,MAXTC,
 C
 C     NITMNT,NITMNA,
@@ -725,7 +725,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_GMAIN2(X,Y,NI,COV,A,THETA,OI,MDX,N,NP,NCOV,B,
+      SUBROUTINE RLGMAIN2(X,Y,NI,COV,A,THETA,OI,MDX,N,NP,NCOV,B,
      1     GAM,
      1     TAU,
      1     ICASE,IUGL,IOPT,IALG,ICNVT,ICNVA,MAXIT,MAXTT,MAXTA,
@@ -742,8 +742,8 @@ C
      +     THETA(NP),DELTA(NP),GRAD(NP),COV(NCOV),HESSNV(NCOV),
      +     SC(NCOV),SE(NCOV),SF(NP),SG(NP),SH(NP),SX(MDX,NP),OI(N),
      +     A(NCOV),SA(NCOV),SD(NP),ST(NCOV),SU(N)
-      INTEGER SP(NP),NI(N),S_ICTHM2, TRACE, OURNIT(2)
-      EXTERNAL S_ICTHM2
+      INTEGER SP(NP),NI(N),RLICTHM2, TRACE, OURNIT(2)
+      EXTERNAL RLICTHM2
       DATA ZERO/0.D0/
 C
 C  STEP 0 : INITIALIZATIONS
@@ -758,8 +758,8 @@ C  ------
          DO 20 J=1,NP
             SD(J)=X(I,J)
  20      CONTINUE
-         CALL S_MLYDBI(A,SD,NP,NCOV,NP,1)
-         CALL S_NRM2BI(SD,NP,1,NP,ZNR)
+         CALL RLMLYDBI(A,SD,NP,NCOV,NP,1)
+         CALL RLNRM2BI(SD,NP,1,NP,ZNR)
          IF (ZNR.GT.ZMIN) GOTO 30
          ZNR=ZMIN
  30      WA(I)=B/ZNR
@@ -781,7 +781,7 @@ C     ICASE==3 -> Poisson
 C
 C     It looks like IOPT==1
 C
-      CALL S_GYTST2(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,
+      CALL RLGYTST2(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,
      +     TOLT,TAU,1D-6,15,IOPT,ICASE,ICNVT,MAXTT,
      +     NITT,Q0,DELTA,
      +     F0,F1,F2,VTHETA,GRAD,HESSNV,SE,SF,SG,SH,SC,SX,SP)
@@ -800,16 +800,16 @@ C
  200  CONTINUE
 
 C
-C     S_ICTHM2 checks if the vector DELTA is small enough
+C     RLICTHM2 checks if the vector DELTA is small enough
 C
 
-      IF (S_ICTHM2(NP,NCOV,DELTA,1.D0,COV,TOL,ICNVT).EQ.1) 
+      IF (RLICTHM2(NP,NCOV,DELTA,1.D0,COV,TOL,ICNVT).EQ.1) 
      +     RETURN
 
 C
 C  STEP 3 : COMPUTE THE A MATRIX AND THE ai's
 C  ------
-      CALL S_GYASTP(X,Y,NI,VTHETA,CI,A,OI,B,IUGL,ICASE,N,NP,NCOV,
+      CALL RLGYASTP(X,Y,NI,VTHETA,CI,A,OI,B,IUGL,ICASE,N,NP,NCOV,
      +     MDX,TAU,MAXTA,
      +     ICNVA,TOLA,NITA,WA,SU,SA,ST,SD)
 
@@ -823,7 +823,7 @@ C  ------
 C
 C  STEP 4 : COMPUTE THE ci's 
 C  ------
-      CALL S_GICSTP(ICASE,IALG,NI,VTHETA,WA,OI,N,TOLC,MAXTC,CI)
+      CALL RLGICSTP(ICASE,IALG,NI,VTHETA,WA,OI,N,TOLC,MAXTC,CI)
 C
 C  STEP 5 : SET NIT:=NIT+1 AND GOTO STEP 1
 C  ------
@@ -835,7 +835,7 @@ C  ------
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_GYTST2(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,
+      SUBROUTINE RLGYTST2(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,
      +     TOL,TAU,ZETA,IQ,IOPT,ICASE,ICNV,MAXIT,
      +     NIT,Q0,DELTA,F0,F1,F2,VTHETA,GRAD,HESSNV,SE,SF,SG,SH,ST,
      +     SX,IP)
@@ -847,9 +847,9 @@ C
       DIMENSION X(MDX,NP),Y(N),THETA(NP),WA(N),COV(NCOV),DELTA(NP),
      +     F0(N),F1(N),F2(N),CI(N),VTHETA(N),GRAD(NP),HESSNV(NCOV),
      +     SE(NP),SF(NP),SG(NP),SH(NP),ST(NP),SX(MDX,NP),OI(N)
-      INTEGER NI(N),IP(NP),S_ICTHM2
+      INTEGER NI(N),IP(NP),RLICTHM2
       LOGICAL FIRST,NULF2
-      EXTERNAL S_ICTHM2
+      EXTERNAL RLICTHM2
 
       INTCH=1
       SE(1)=0.D0
@@ -863,8 +863,8 @@ C
 C  STEP 2.   COMPUTE CURRENT OBJECTIVE FUNCTION VALUE AND (-)DERIVATIVES
 C  ------
  200  continue
-      CALL S_MFYD(X,THETA,VTHETA,N,NP,MDX,NP,1,N,1)
-      CALL S_LRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,1,1,F0,F1,F2,Q0)
+      CALL RLMFYD(X,THETA,VTHETA,N,NP,MDX,NP,1,N,1)
+      CALL RLLRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,1,1,F0,F1,F2,Q0)
 C
 C     we use ICASE in the line above
 C
@@ -873,7 +873,7 @@ C
 C  STEP 3.   COMPUTE THE NEGATIVE GRADIENT
 C  ------
 C
-      CALL S_GRADBI(X,F1,N,NP,MDX,GRAD)
+      CALL RLGRADBI(X,F1,N,NP,MDX,GRAD)
 C
 C  STEP 4.  COMPUTE THE GENERALIZED INVERSE OF THE NEGATIVE HESSIAN MAT.
 C  ------
@@ -889,7 +889,7 @@ C
          IF (NULF2) THEN
             K=0
          ELSE
-            CALL S_RMTRM2(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
+            CALL RLRMTRM2(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
          ENDIF
 C     
          L=0
@@ -901,18 +901,18 @@ C
  420        CONTINUE
  425     CONTINUE
          IF (K.EQ.0) GOTO 500
-         CALL S_KIASM2(SX,K,NP,MDX,NCOV,1.D0,1.D0,HESSNV)
-         CALL S_KFASM2(SX,HESSNV,K,NP,MDX,NCOV,1.D0,DELTA,
-     +        SG,IP) 
+         CALL RLKIASM2(SX,K,NP,MDX,NCOV,1.D0,1.D0,HESSNV)
+         CALL RLKFASM2(SX,HESSNV,K,NP,MDX,NCOV,1.D0,
+     +        DELTA,SG,IP) 
 C
 C  STEP 5.   COMPUTE THE INCREMENT VECTOR
 C  ------
 C
  500     continue 
-         CALL S_MSFDBI(HESSNV,GRAD,DELTA,NP,NCOV,1,NP,NP)
+         CALL RLMSFDBI(HESSNV,GRAD,DELTA,NP,NCOV,1,NP,NP)
          GAM0=GAM
          IF (K.LT.NP.AND.IOPT.NE.2) THEN
-            CALL S_DOTPM2(DELTA,DELTA,NP,1,1,NP,NP,GAM0)
+            CALL RLDOTPM2(DELTA,DELTA,NP,1,1,NP,NP,GAM0)
             IF (GAM0.GT.1.D0) GAM0=1.D0/DSQRT(GAM0)
          ENDIF
          DO 510 J=1,NP
@@ -929,9 +929,9 @@ C
 C  STEP 6.   DETERMINE THE STEP-LENGTH
 C  ------
 C
-         CALL S_MFYD(X,THETA,VTHETA,N,NP,MDX,NP,1,N,1)
+         CALL RLMFYD(X,THETA,VTHETA,N,NP,MDX,NP,1,N,1)
          IF (.NOT.FIRST) Q01=Q0L
-         CALL S_LRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,0,0,F0,F1,
+         CALL RLLRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,0,0,F0,F1,
      +        F2,Q0L)
 C
 C     the above line only computes F0
@@ -946,14 +946,14 @@ C     It looks like IOPT==1
 C
          IF (IOPT.EQ.1) THEN
             IF (ICASE.LE.2) THEN
-                 CALL S_DBINOM(Y,CI,VTHETA,WA,NI,F0,OI,N,1.D-6,F2)
+                 CALL RLDBINOM(Y,CI,VTHETA,WA,NI,F0,OI,N,1.D-6,F2)
 	    endif
             IF (ICASE.EQ.3) THEN
-                 CALL S_DPOISS(Y,CI,VTHETA,WA,F0,OI,N,1.D-6,F2)
+                 CALL RLDPOISS(Y,CI,VTHETA,WA,F0,OI,N,1.D-6,F2)
 	    endif
             GOTO 400
          ELSE
-            CALL S_STPLRG(ICASE,X,Y,CI,OI,ZETA,IQ,THETA,DELTA,WA,
+            CALL RLSTPLRG(ICASE,X,Y,CI,OI,ZETA,IQ,THETA,DELTA,WA,
      +           NI,GRAD,N,NP,MDX,Q0,Q01,GAM0,ST,F0,VTHETA)
             GOTO 700
          ENDIF   
@@ -967,18 +967,18 @@ C
 C  STEP 7. STOP ITERATIONS IF DESIRED PRECISION HAS BEEN REACHED
 C  -------
  700     IF (NIT.EQ.MAXIT) GOTO 730
-         IF (S_ICTHM2(NP,NCOV,DELTA,1.D0,COV,TOL,ICNV).EQ.1) GOTO 730
+         IF (RLICTHM2(NP,NCOV,DELTA,1.D0,COV,TOL,ICNV).EQ.1) GOTO 730
  720     NIT=NIT+1
          GOTO 200
  730     continue 
-	 CALL S_MFYD(X,THETA,VTHETA,N,NP,MDX,NP,1,N,1)
-         CALL S_LRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,1,1,F0,F1,F2,Q0)
+	 CALL RLMFYD(X,THETA,VTHETA,N,NP,MDX,NP,1,N,1)
+         CALL RLLRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,1,1,F0,F1,F2,Q0)
          RETURN
          END
 C     
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_MFYD(A,Y,Z,M,N,MDA,NY,IYE,NZ,IZE)
+      SUBROUTINE RLMFYD(A,Y,Z,M,N,MDA,NY,IYE,NZ,IZE)
 C.......................................................................
 C
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
@@ -989,7 +989,7 @@ C
       DO 20 I=1,M
 C      DO 20 I=1,NZ
          IZ=IZ+IZE
-         CALL S_DOTPM2(A(I,1),Y,N,MDA,IYE,NA1,NY,R)
+         CALL RLDOTPM2(A(I,1),Y,N,MDA,IYE,NA1,NY,R)
          Z(IZ)=R
  20   CONTINUE
       RETURN
@@ -997,7 +997,7 @@ C      DO 20 I=1,NZ
 C
 C-----------------------------------------------------------------------
 C
-      DOUBLE PRECISION FUNCTION S_DXLOG(X,XMIN,YMIN)
+      DOUBLE PRECISION FUNCTION RLDXLOG(X,XMIN,YMIN)
 C.......................................................................
 C
       DOUBLE PRECISION X,XMIN,YMIN
@@ -1005,18 +1005,18 @@ C
 C  EXTENDED NATURAL LOGARITHM FUNCTION
 C
       IF (X.LE.0.D0) THEN
-         S_DXLOG=0.D0
+         RLDXLOG=0.D0
       ELSEIF (X.LE.XMIN) THEN
-         S_DXLOG=YMIN
+         RLDXLOG=YMIN
       ELSE
-        S_DXLOG=DLOG(X)
+        RLDXLOG=DLOG(X)
       ENDIF
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_DBINOM(Y,CI,VTHETA,WA,NI,F0,OI,N,KAP,D)
+      SUBROUTINE RLDBINOM(Y,CI,VTHETA,WA,NI,F0,OI,N,KAP,D)
 C.......................................................................
 C
 C  APPROXIMATION FOR D(I) IN THE THETA STEP. BINOMIAL CASE.
@@ -1028,10 +1028,10 @@ C
       DATA NCALL,DMIN,XMIN,YMIN,DMAX/0,0.D0,0.D0,0.D0,0.D0/
 
       IF (NCALL.EQ.1) GOTO 10
-      CALL S_MACHD(3,DMIN)
-      CALL S_MACHD(4,XMIN)
-      CALL S_MACHD(5,YMIN)
-      CALL S_MACHD(6,XBIG)
+      CALL RLMACHD(3,DMIN)
+      CALL RLMACHD(4,XMIN)
+      CALL RLMACHD(5,YMIN)
+      CALL RLMACHD(6,XBIG)
       XBIG=XBIG/10.D0
       DMAX=DLOG(XBIG)
       NCALL=1
@@ -1050,19 +1050,19 @@ C
                GOTO 500
             ELSEIF (-YY+ENI.LE.AI) THEN
                IF (ENI.GT.YY) THEN
-                  CALL S_TS12BI(YY,AI,ENO,OO,XMIN,YMIN,T01,S01,T2,S2)
+                  CALL RLTS12BI(YY,AI,ENO,OO,XMIN,YMIN,T01,S01,T2,S2)
                   IF (GG.GE.T01) GOTO 300
  100              ENI=ENI+1
                   IF (-YY+ENI.LE.AI) GOTO 100
-                  CALL S_TS12BI(YY,AI,ENI,OO,XMIN,YMIN,T1,S1,T2,S2)
+                  CALL RLTS12BI(YY,AI,ENI,OO,XMIN,YMIN,T1,S1,T2,S2)
                   T01=GG+(S1-S01)/AI
                   DNI=ENI
                   DI=(S1-S2)/(2.D0*AI) - T01
-                  CALL S_BIGGBI(T01,DNI,DMIN,DMAX,S2)
+                  CALL RLBIGGBI(T01,DNI,DMIN,DMAX,S2)
                   ELG0=(-YY*T01+ENI*S2)
-                  CALL S_BIGGBI(T1,DNI,DMIN,DMAX,S2)
+                  CALL RLBIGGBI(T1,DNI,DMIN,DMAX,S2)
                   ELG1=(-YY*T1+ENI*S2)
-                  CALL S_BIGGBI(T2,DNI,DMIN,DMAX,S2)
+                  CALL RLBIGGBI(T2,DNI,DMIN,DMAX,S2)
                   ELG2=(-YY*T2+ENI*S2)
                   IF (ELG0.LE.DMAX1(ELG1,ELG2)) GOTO 300
                   D(I)=DABS(AI/DI)
@@ -1075,9 +1075,9 @@ C
             S2=ENI/4.D0
             IF (-YY+ENI.GT.AI) THEN
                T2=(YY+AI)/(ENI-YY-AI)
-               T2=S_DXLOG(T2,XMIN,YMIN)-OO
+               T2=RLDXLOG(T2,XMIN,YMIN)-OO
                IF (T2.LT.0.D0) THEN
-                  S2=S_GFUN(2,1,T2+OO)
+                  S2=RLGFUN(2,1,T2+OO)
                   S2=S2*(1.D0-S2)*ENI
                ENDIF
             ENDIF
@@ -1087,7 +1087,7 @@ C
             D(I)=KAP
             GOTO 500
          ENDIF
- 200	 CALL S_TS12BI(YY,AI,ENI,OO,XMIN,YMIN,T1,S1,T2,S2)
+ 200	 CALL RLTS12BI(YY,AI,ENI,OO,XMIN,YMIN,T1,S1,T2,S2)
          ELG0=F0(I)
          ELG1=(-AI*T1+S1)
          ELG2=( AI*T2+S2)
@@ -1096,21 +1096,21 @@ C
             D(I)=DABS(AI/DI)
          ELSE
             IF (T2.LE.0.D0) THEN
-               S2=S_GFUN(2,1,T2+OO)
+               S2=RLGFUN(2,1,T2+OO)
                D(I)=S2*(1.D0-S2)*ENI
             ELSEIF (T1.LE.0.D0.AND.T2.GT.0.D0) THEN
                D(I)=ENI/4.D0
             ELSE
-               S1=S_GFUN(2,1,T1+OO)
+               S1=RLGFUN(2,1,T1+OO)
                D(I)=S1*(1.D0-S1)*ENI
             ENDIF
          ENDIF
          GOTO 500
  300     T1=(YY-AI)/(ENI-YY+AI)
-         T1=S_DXLOG(T1,XMIN,YMIN)-OO
+         T1=RLDXLOG(T1,XMIN,YMIN)-OO
  350     S2=ENI/4.D0
          IF (T1.GT.0.D0) THEN
-            S2=S_GFUN(2,1,T1+OO)
+            S2=RLGFUN(2,1,T1+OO)
             S2=S2*(1.D0-S2)*ENI
          ENDIF
          D(I)=S2
@@ -1120,12 +1120,12 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_BIGGBI(X,DNI,DMIN,DMAX,Y)
+      SUBROUTINE RLBIGGBI(X,DNI,DMIN,DMAX,Y)
 C.......................................................................
 C
       DOUBLE PRECISION DNI,DMIN,DMAX,X,Y  
 C
-C  AUXILIARY SUBROUTINE FOR S_DBINOM (BINOMIAL CASE).
+C  AUXILIARY SUBROUTINE FOR RLDBINOM (BINOMIAL CASE).
 C
       IF (X.LE.DMIN) THEN
          Y=0.D0 
@@ -1139,29 +1139,29 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_TS12BI(YI,AI,DNI,OI,XMIN,YMIN,T1,S1,T2,S2)
+      SUBROUTINE RLTS12BI(YI,AI,DNI,OI,XMIN,YMIN,T1,S1,T2,S2)
 C.......................................................................
 C
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
 C
-C  AUXILIARY SUBROUTINE FOR S_DBINOM (BINOMIAL CASE).
+C  AUXILIARY SUBROUTINE FOR RLDBINOM (BINOMIAL CASE).
 C
       T1=(YI-AI)/(DNI-YI+AI)
-      T1=S_DXLOG(T1,XMIN,YMIN)-OI
+      T1=RLDXLOG(T1,XMIN,YMIN)-OI
       S1=DNI/(DNI-YI+AI)
-      S1=S_DXLOG(S1,XMIN,YMIN)
+      S1=RLDXLOG(S1,XMIN,YMIN)
       S1=-(YI-AI)*T1+DNI*S1
       T2=(YI+AI)/(DNI-YI-AI)
-      T2=S_DXLOG(T2,XMIN,YMIN)-OI
+      T2=RLDXLOG(T2,XMIN,YMIN)-OI
       S2=DNI/(DNI-YI-AI)
-      S2=S_DXLOG(S2,XMIN,YMIN)
+      S2=RLDXLOG(S2,XMIN,YMIN)
       S2=-(YI+AI)*T2+DNI*S2
       RETURN
       END
 C     
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_DPOISS(Y,CI,VTHETA,WA,F0,OI,N,KAP,D)
+      SUBROUTINE RLDPOISS(Y,CI,VTHETA,WA,F0,OI,N,KAP,D)
 C.......................................................................
 C
 C  APPROXIMATION FOR D(I) IN THE THETA STEP. POISSON CASE.
@@ -1174,10 +1174,10 @@ C
 C     They've just set up NCALL==0!!
 C
       IF (NCALL.EQ.1) GOTO 10
-      CALL S_MACHD(3,DMIN)
-      CALL S_MACHD(4,XMIN)
-      CALL S_MACHD(5,YMIN)
-      CALL S_MACHD(6,XBIG)
+      CALL RLMACHD(3,DMIN)
+      CALL RLMACHD(4,XMIN)
+      CALL RLMACHD(5,YMIN)
+      CALL RLMACHD(6,XBIG)
       XBIG=XBIG/10.D0
       DMAX=DLOG(XBIG)
       NCALL=1
@@ -1188,11 +1188,11 @@ C
          YY=Y(I)-CI(I)
          AI=WA(I)
          IF (YY.GT.AI) THEN
-            CALL S_TS12PO(YY,AI,OO,XMIN,YMIN,T1,S1,T2,S2)
+            CALL RLTS12PO(YY,AI,OO,XMIN,YMIN,T1,S1,T2,S2)
          ELSEIF (YY.GT.-AI) THEN
-            T2=S_DXLOG(YY+AI,XMIN,YMIN)-OO
+            T2=RLDXLOG(YY+AI,XMIN,YMIN)-OO
             IF (GG.LE.T2.OR.YY.LE.0.D0) GOTO 300
-            ENO=S_DXLOG(YY,XMIN,YMIN)
+            ENO=RLDXLOG(YY,XMIN,YMIN)
             IF (F0(I).LT.AI*(ENO-GG)/2.D0+YY*(1.D0-ENO)) GOTO 300
             D(I)=AI/DABS(ENO-GG)
             GOTO 500
@@ -1221,23 +1221,23 @@ C
 C     
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_TS12PO(YI,AI,OI,XMIN,YMIN,T1,S1,T2,S2)
+      SUBROUTINE RLTS12PO(YI,AI,OI,XMIN,YMIN,T1,S1,T2,S2)
 C.......................................................................
 C
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
 C
 C  AUXILIARY SUBROUTINE FOR DPOISS (POISSON CASE).
 C
-      T1=S_DXLOG(YI-AI,XMIN,YMIN)-OI
+      T1=RLDXLOG(YI-AI,XMIN,YMIN)-OI
       S1=-(YI-AI)*T1+(YI-AI)
-      T2=S_DXLOG(YI+AI,XMIN,YMIN)-OI
+      T2=RLDXLOG(YI+AI,XMIN,YMIN)-OI
       S2=-(YI+AI)*T2+(YI+AI)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_LRFNCT(ICASE,Y,C,VTHETA,OI,WA,NN,N,I0,I1,I2,F0,F1,
+      SUBROUTINE RLLRFNCT(ICASE,Y,C,VTHETA,OI,WA,NN,N,I0,I1,I2,F0,F1,
      +     F2,SF0)
 C.......................................................................
 C
@@ -1251,10 +1251,10 @@ C
 C     They've just set NCALL==0!!
 C
       IF (NCALL.EQ.1) GOTO 10
-      CALL S_MACHD(3,DMIN)
-      CALL S_MACHD(4,XMIN)
-      CALL S_MACHD(5,YMIN)
-      CALL S_MACHD(6,XBIG)
+      CALL RLMACHD(3,DMIN)
+      CALL RLMACHD(4,XMIN)
+      CALL RLMACHD(5,YMIN)
+      CALL RLMACHD(6,XBIG)
       XBIG=XBIG/10.D0 
       DMAX=DLOG(XBIG)
       NCALL=1
@@ -1280,10 +1280,10 @@ C==>    BERNOUILLI OR BINOMIAL CASE
                GOTO 100
             ENDIF
             T1=(YI-AI)/(ENI-YI+AI)
-            T1=S_DXLOG(T1,XMIN,YMIN)-OF
+            T1=RLDXLOG(T1,XMIN,YMIN)-OF
             IF (GI.LT.T1) THEN
                S1=ENI/(ENI-YI+AI)
-               S1=S_DXLOG(S1,XMIN,YMIN)
+               S1=RLDXLOG(S1,XMIN,YMIN)
                S1=-(YI-AI)*T1+ENI*S1
                GOTO 100
             ENDIF
@@ -1295,8 +1295,8 @@ C==>    BERNOUILLI OR BINOMIAL CASE
 C==>    POISSON CASE
             T1=YI-AI 
             T2=YI+AI 
-            T1=S_DXLOG(T1,XMIN,YMIN)-OF
-            T2=S_DXLOG(T2,XMIN,YMIN)-OF
+            T1=RLDXLOG(T1,XMIN,YMIN)-OF
+            T2=RLDXLOG(T2,XMIN,YMIN)-OF
             IF (GI.LT.T1) THEN
                S1=-(YI-AI)*T1+(YI-AI) 
                GOTO 100
@@ -1308,17 +1308,17 @@ C==>    POISSON CASE
             ENDIF
          ELSE
             T2=YI+AI
-            T2=S_DXLOG(T2,XMIN,YMIN)-OF
+            T2=RLDXLOG(T2,XMIN,YMIN)-OF
             IF (GI.LE.T2) GOTO 400
             S2=-(YI+AI)*T2+(YI+AI) 
             GOTO 200
          ENDIF
  50      IF (-YI+ENI.LE.AI) GOTO 300
          T2=(YI+AI)/(ENI-YI-AI)
-         T2=S_DXLOG(T2,XMIN,YMIN)-OF
+         T2=RLDXLOG(T2,XMIN,YMIN)-OF
          IF (GI.LE.T2) GOTO 300
          S2=ENI/(ENI-YI-AI)
-         S2=S_DXLOG(S2,XMIN,YMIN)
+         S2=RLDXLOG(S2,XMIN,YMIN)
          S2=-(YI+AI)*T2+ENI*S2
          GOTO 200
  100     F0I=-AI*GI+S1  
@@ -1338,13 +1338,13 @@ C==>    POISSON CASE
          ELSE
             S1=ENI*DLOG(1.D0+DEXP(GI+OF))
          ENDIF
-         S2=S_GFUN(ICASE,1,GO)
+         S2=RLGFUN(ICASE,1,GO)
          F0I=-YI*GI+S1 
          IF (I0.NE.0) F0(I)=F0I
          IF (I1.NE.0) F1(I)=-YI+ENI*S2
          IF (I2.NE.0) F2(I)=ENI*S2*(1.D0-S2)
          GOTO 450
- 400     EXPGI=S_GFUN(ICASE,1,GO)
+ 400     EXPGI=RLGFUN(ICASE,1,GO)
          F0I=-YI*GI+EXPGI 
          IF (I0.NE.0) F0(I)=F0I
          IF (I1.NE.0) F1(I)=-YI+EXPGI
@@ -1356,7 +1356,7 @@ C==>    POISSON CASE
       END
 C
 C-----------------------------------------------------------------------
-      SUBROUTINE S_STPLRG(ICASE,X,Y,C,OI,ZETA,IQ,THETA,DELTA,WA,NI,
+      SUBROUTINE RLSTPLRG(ICASE,X,Y,C,OI,ZETA,IQ,THETA,DELTA,WA,NI,
      +     GRAD,N,NP,MDX,SF0,SF1,GAM,ST,F0,VTHETA)
 C.......................................................................
 C
@@ -1366,7 +1366,7 @@ C
       DIMENSION X(MDX,NP),Y(N),C(N),THETA(NP),DELTA(NP),WA(N),NI(N),
      +     GRAD(NP),ST(NP),F0(N),VTHETA(N),OI(N)
 
-      CALL S_DOTPM2(DELTA,GRAD,NP,1,1,NP,NP,S0)
+      CALL RLDOTPM2(DELTA,GRAD,NP,1,1,NP,NP,S0)
       IF (DABS(S0).GT.1.D-5) GOTO 10
       ETA=1.D0
       DO 450 NLOOP=1,IQ
@@ -1374,8 +1374,8 @@ C
          DO 400 J=1,NP
             ST(J)=THETA(J)+ETA*DELTA(J)
  400     CONTINUE
-         CALL S_MFYD(X,ST,VTHETA,N,NP,MDX,NP,1,N,1)
-         CALL S_LRFNCT(ICASE,Y,C,VTHETA,OI,WA,NI,N,1,0,0,F0,F0,F0,SF1)
+         CALL RLMFYD(X,ST,VTHETA,N,NP,MDX,NP,1,N,1)
+         CALL RLLRFNCT(ICASE,Y,C,VTHETA,OI,WA,NI,N,1,0,0,F0,F0,F0,SF1)
          IF (SF1.LT.SF0) GOTO 500
  450  CONTINUE
       GOTO 500
@@ -1386,8 +1386,8 @@ C
       DO 200 J=1,NP
          ST(J)=THETA(J)+ETA*DELTA(J)
  200  CONTINUE
-      CALL S_MFYD(X,ST,VTHETA,N,NP,MDX,NP,1,N,1)
-      CALL S_LRFNCT(ICASE,Y,C,VTHETA,OI,WA,NI,N,1,0,0,F0,F0,F0,SF1)
+      CALL RLMFYD(X,ST,VTHETA,N,NP,MDX,NP,1,N,1)
+      CALL RLLRFNCT(ICASE,Y,C,VTHETA,OI,WA,NI,N,1,0,0,F0,F0,F0,SF1)
       IF (SF1.LT.SF0) GOTO 500
       IF ((SF1-SF0)/ETA/S0.GT.ZETA) GOTO 500
       IP=IP+1
@@ -1398,7 +1398,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_GYASTP(X,Y,NI,VTHETA,CI,A,OI,B,IUGL,ICASE,NOBS,NVAR,
+      SUBROUTINE RLGYASTP(X,Y,NI,VTHETA,CI,A,OI,B,IUGL,ICASE,NOBS,NVAR,
      +     NCOV,MDX,TAU,MAXIT,
      +     ICNV,TOL,NIT,DIST,SU,SA,ST,SD)
 C.......................................................................
@@ -1409,7 +1409,7 @@ C
       IMPLICIT DOUBLE PRECISION(A-H,O-Z)
       DIMENSION X(MDX,NVAR),Y(NOBS),OI(NOBS),VTHETA(NOBS),CI(NOBS),
      +     DIST(NOBS),A(NCOV),SA(NCOV),ST(NCOV),SD(NVAR),SU(NOBS)
-      INTEGER NI(NOBS),S_ICNVBI
+      INTEGER NI(NOBS),RLICNVBI
 C
 C  STEP 0 : INITIALIZATION
 C  ------
@@ -1431,19 +1431,19 @@ C  ------
 C
 C  STEP 1: COMPUTE WEIGHTED COVARIANCE (ST) AND AUXILIARY VALUES
 C  ------
- 100  CALL S_UCOWJ(X,Y,NI,VTHETA,OI,CI,A,ST,NOBS,NVAR,NCOV,MDX,
+ 100  CALL RLUCOWJ(X,Y,NI,VTHETA,OI,CI,A,ST,NOBS,NVAR,NCOV,MDX,
      +     ICNV,NIT,DELTA,DIST,SU,SD,IUGL,B,ICASE)
 
 C
 C  STEP 2: CHECK CONVERGENCE
 C  ------
-      IF (NIT.EQ.MAXIT.OR.S_ICNVBI(NCOV,DELTA,A,SA,TOL,ICNV).EQ.1)
+      IF (NIT.EQ.MAXIT.OR.RLICNVBI(NCOV,DELTA,A,SA,TOL,ICNV).EQ.1)
      +     GOTO 500
 C
 C  STEP 3: FIND IMPROVEMENT MATRIX SS=I-ST FOR A
 C  ------ 
  300  INFO=0
-      CALL S_PRSFBI(ST,NVAR,NCOV,TAU,INFO)
+      CALL RLPRSFBI(ST,NVAR,NCOV,TAU,INFO)
 
 C
 C  STEP 4: SET SA:=A AND A:=(I-SS)*SA
@@ -1451,7 +1451,7 @@ C  -------
       DO 410 IJ=1,NCOV
          SA(IJ)=A(IJ)
  410  CONTINUE
-      CALL S_MTT3BI(SA,ST,A,NVAR,NCOV)
+      CALL RLMTT3BI(SA,ST,A,NVAR,NCOV)
       NIT=NIT+1
 
 C
@@ -1462,7 +1462,7 @@ C  ------
 C
 C-----------------------------------------------------------------------
 C
-      double precision FUNCTION S_UGL(UPAR,S,IUGL,ICASE,B)
+      double precision FUNCTION RLUGL(UPAR,S,IUGL,ICASE,B)
 C.......................................................................
 C
 C  PURPOSE
@@ -1474,7 +1474,7 @@ C      DIMENSION UPAR(NPAR)
       DIMENSION UPAR(4)
       DATA STOL,PREC/1.D-6,0.D0/
 
-      IF (PREC.EQ.0.D0) CALL S_MACHD(2,PREC)
+      IF (PREC.EQ.0.D0) CALL RLMACHD(2,PREC)
       YI=UPAR(1)
       ENI=UPAR(2)
       GI=UPAR(3)
@@ -1488,7 +1488,7 @@ C
 C     it seems IUGL==1 (always)
 C
 C====>  OPTION 1 
-         PP=S_GFUN(ICASE,1,GI)
+         PP=RLGFUN(ICASE,1,GI)
          IF (ICASE.EQ.1) THEN
 C==>      LOGISTIC BERNOULLI
             TEMP=DABS(1.D0-PP-CI)
@@ -1497,24 +1497,24 @@ C==>      LOGISTIC BERNOULLI
             TEMP=DABS(-PP-CI)
             T2=A**2
             IF (TEMP.LT.A) T2=TEMP**2 
-            S_UGL=T1*PP+T2*(1.D0-PP)
+            RLUGL=T1*PP+T2*(1.D0-PP)
          ELSEIF (ICASE.EQ.2) THEN
 C==>      LOGISTIC BINOMIAL
             T2=0.D0
             DO 200 J=0,NI
-               CALL S_PROBIN(J,NI,PP,PJ)
+               CALL RLPROBIN(J,NI,PP,PJ)
                TEMP=DABS(DBLE(J)-ENI*PP-CI)
                T1=A**2
                IF (TEMP.LT.A) T1=TEMP**2
                T2=T2+T1*PJ
  200        CONTINUE
-            S_UGL=T2
+            RLUGL=T2
          ELSEIF (ICASE.EQ.3) THEN
 C==>      LOGISTIC POISSON
             MI=INT(100.D0*PP)
             T2=0.D0
             DO 300 J=0,MI
-               CALL S_PRPOIS(PP,J,PJ)
+               CALL RLPRPOIS(PP,J,PJ)
                FJME=DBLE(J)-PP
                TEMP=DABS(FJME-CI)
                T1=A**2
@@ -1522,21 +1522,21 @@ C==>      LOGISTIC POISSON
                IF (FJME.GT.0.D0 .AND. T1*PJ.LT.PREC) GOTO 350
                T2=T2+T1*PJ
  300        CONTINUE
- 350        S_UGL=T2
+ 350        RLUGL=T2
          ENDIF
       ELSE
 C====>  OPTION 2 (IUGL=2)
-         PP=S_GFUN(ICASE,NI,GI)
+         PP=RLGFUN(ICASE,NI,GI)
          TEMP=DABS(YI-PP-CI)
-         S_UGL=A**2
-         IF (TEMP.LT.A) S_UGL=TEMP**2
+         RLUGL=A**2
+         IF (TEMP.LT.A) RLUGL=TEMP**2
       ENDIF
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_UCOWJ(X,Y,NI,VTHETA,OI,CI,SA,ST,N,NP,NCOV,MDX,
+      SUBROUTINE RLUCOWJ(X,Y,NI,VTHETA,OI,CI,SA,ST,N,NP,NCOV,MDX,
      +     ICNT,NIT,ZMAX,DIST,SU,SD,IUGL,B,ICASE)
 C.......................................................................
 C
@@ -1560,8 +1560,8 @@ C
          DO 50 J=1,NP
             SD(J)=X(L,J)
  50      CONTINUE
-         CALL S_MLYDBI(SA,SD,NP,NCOV,NP,1)
-         CALL S_NRM2BI(SD,NP,1,NP,DISTL)
+         CALL RLMLYDBI(SA,SD,NP,NCOV,NP,1)
+         CALL RLNRM2BI(SD,NP,1,NP,DISTL)
          IF (ICNT.EQ.2) ZMAX=DMAX1(ZMAX,DABS(DISTL-DIST(L)))
          DIST(L)=DISTL
          GL=VTHETA(L)+OI(L)
@@ -1572,7 +1572,7 @@ C
          UARR(2)=DBLE(NL)
          UARR(3)=GL
          UARR(4)=CL
-         U=S_UGL(UARR,DISTL,IUGL,ICASE,B)
+         U=RLUGL(UARR,DISTL,IUGL,ICASE,B)
          SU(L)=U
  80      IJ=0
          DO 90 I=1,NP
@@ -1590,7 +1590,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_GICSTP(ICASE,IALG,NN,VTHETA,WA,OI,N,TOL,MAXIT,C)
+      SUBROUTINE RLGICSTP(ICASE,IALG,NN,VTHETA,WA,OI,N,TOL,MAXIT,C)
 C.......................................................................
 C
 C  H-,W-,S-ALGORITHM FOR ROBUST LOGISTIC REGRESSION : C-STEP solution
@@ -1605,9 +1605,9 @@ C
          A=WA(I)
          NI=1
          IF (ICASE.EQ.2) NI=NN(I) 
-         PP=S_GFUN(ICASE,NI,GI)
+         PP=RLGFUN(ICASE,NI,GI)
          T=C(I)+PP
-         CALL S_GYCSTP(ICASE,IALG,NI,A,PP,TOL,MAXIT,T)
+         CALL RLGYCSTP(ICASE,IALG,NI,A,PP,TOL,MAXIT,T)
          C(I)=T-PP
  500  CONTINUE
       RETURN
@@ -1615,7 +1615,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_GYCSTP(ICASE,IALG,NI,A,E,TOL,MAXIT,T)
+      SUBROUTINE RLGYCSTP(ICASE,IALG,NI,A,E,TOL,MAXIT,T)
 C.......................................................................
 C
 C  NEWTON-TYPE ALGORITHM FOR THE C-STEP
@@ -1627,7 +1627,7 @@ C
       IF (INICA.EQ.ICASE.AND.INIAL.EQ.IALG) GOTO 10
       INICA=ICASE
       INIAL=IALG
-      CALL S_MACHD(2,PREC)
+      CALL RLMACHD(2,PREC)
 
 C
 C  STEP 0.   SET NIT=1
@@ -1683,7 +1683,7 @@ C  _______
  210  IF (ICASE.EQ.2) THEN
 C==>    LOGISTIC BINOMIAL
          DO 220 J=J1,J2
-            CALL S_PROBIN(J,NI,PI,PJ)
+            CALL RLPROBIN(J,NI,PI,PJ)
             DEN=(DBLE(J)-T)
             TEMP=DMIN1(A,DABS(DEN))
             IF (DEN.LT.0.D0) TEMP=-TEMP
@@ -1697,7 +1697,7 @@ C==>    LOGISTIC BINOMIAL
       ELSEIF (ICASE.EQ.3) THEN
 C==>    LOGISTIC POISSON
          DO 230 J=J1,J2
-            CALL S_PRPOIS(E,J,PJ)
+            CALL RLPRPOIS(E,J,PJ)
             DEN=(DBLE(J)-T)
             TEMP=DMIN1(A,DABS(DEN))
             IF (DEN.LT.0.D0) TEMP=-TEMP
@@ -1776,7 +1776,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_GLMDEV(Y,NI,CI,WA,VTHETA,OI,N,ICASE,DEV,THETAS,LI,SC)
+      SUBROUTINE RLGLMDEV(Y,NI,CI,WA,VTHETA,OI,N,ICASE,DEV,THETAS,LI,SC)
 C.......................................................................
 C
 C     NEW VERSION (10/99)
@@ -1789,10 +1789,10 @@ C
       DOUBLE PRECISION LI(N)
       INTEGER NI(N)
 
-      CALL S_LRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,0,0,LI,WA,WA,Q)
+      CALL RLLRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,0,0,LI,WA,WA,Q)
       DO 700 I=1,N
          TMP=(Y(I)-CI(I))/DBLE(NI(I))
-         THETAS(I)=S_FLINK(ICASE,TMP)-OI(I)
+         THETAS(I)=RLFLINK(ICASE,TMP)-OI(I)
  700  CONTINUE 
       QS=0.D0
       DO 800 I=1,N
@@ -1816,7 +1816,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      double precision FUNCTION S_FLINK(ICASE,EM)
+      double precision FUNCTION RLFLINK(ICASE,EM)
 C.......................................................................
 C
 C     NEW VERSION (10/99)
@@ -1828,10 +1828,10 @@ C
       DATA NCALL,XMIN,YMIN/0,0.D0,0.D0/
 
       IF (NCALL.EQ.1) GOTO 10
-      CALL S_MACHD(4,XMIN)
-      CALL S_MACHD(5,YMIN)
+      CALL RLMACHD(4,XMIN)
+      CALL RLMACHD(5,YMIN)
       NCALL=1
- 10   S_FLINK=-999.D0
+ 10   RLFLINK=-999.D0
       IF (EM.LE.0.D0) RETURN 
       TT=YMIN
       IF (EM.GT.XMIN) TT=DLOG(EM)
@@ -1840,7 +1840,7 @@ C
       IF (1.D0-EM.LE.0.D0) RETURN 
       TMP=YMIN
       IF (1.D0-EM.GT.XMIN) TMP=DLOG(1.D0-EM)
- 20   S_FLINK=TT-TMP 
+ 20   RLFLINK=TT-TMP 
       RETURN
       END
 
@@ -1848,7 +1848,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_GYTSTP(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,
+      SUBROUTINE RLGYTSTP(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,
      1           TOL,TAU,IOPT,ICASE,ICNV,MAXIT,NITMON,NIT,Q0,DELTA,
      2           F0,F1,F2,VTHETA,GRAD,HESSNV,RW1,RW2,IW1)
 C.......................................................................
@@ -1883,7 +1883,7 @@ C      IF (.NOT.NPRCHK) CALL MESSGE(500,'GYTSTP',1)
 
 
 
-      CALL S_GYTST2(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,TOL,
+      CALL RLGYTST2(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,TOL,
      +TAU,ZETA,IQ,IOPT,ICASE,ICNV,MAXIT,NIT,Q0,DELTA,F0,
      +F1,F2,VTHETA,GRAD,HESSNV,RW1,RW1(ISF),RW1(ISG),RW1(ISH),
      +RW1(IST),RW2,IW1)

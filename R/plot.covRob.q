@@ -17,8 +17,9 @@ plot.covRob <- function(x, which.plots = "ask", ...)
 	x <- list(x = x)
 	names(x) <- x.name
 	attr(x, "model.list") <- model.list
+  oldClass(x) <- "covfm"
 
-  plot.covfm(x, which.plots = which.plots, ...)
+  plot(x, which.plots = which.plots, ...)
 
 	invisible(x[[1]])
 }

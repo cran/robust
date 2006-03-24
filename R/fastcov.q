@@ -22,7 +22,7 @@ fastcov <- function(x, control)
 
 	storage.mode(covmat) <- "double"
 
-	fclist <- .C("s_fastcov",
+	fclist <- .C("rl_fastcov",
 								x = as.double(x),
 								n = as.integer(n),
 								p = as.integer(p),

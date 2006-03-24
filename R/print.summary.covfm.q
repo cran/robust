@@ -1,8 +1,8 @@
 print.summary.covfm <- function(x, print.distance = FALSE, ...)
 {
 	n.models <- length(x)
+	mod.names <- format(names(x))
 	model.list <- attr(x, "model.list")
-	mod.names <- format(names(model.list))
 
 	cat("\nCalls: \n")
 	for(i in 1:n.models) {

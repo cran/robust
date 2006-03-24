@@ -16,7 +16,7 @@ extern void F77_NAME(rs)();
 //extern F77_NAME(dmatmult)();
 
 
-void s_fastcov (Sfloat *X, Sint *nn, Sint *pp, Sint *it,
+void rl_fastcov (Sfloat *X, Sint *nn, Sint *pp, Sint *it,
 		Sfloat *mu_constant, Sfloat *sigma_constant, 
 		Sfloat *V, Sfloat *t, Sfloat *d, Sfloat *median_d,
 		Sint *pmethod)

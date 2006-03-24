@@ -96,7 +96,7 @@ rockem <- function(x, control)
 	# alpha <= alf.b
 
 		c1 <- uniroot(eq.rho.b,lower=1,upper=20,p=p,r=r)$root
-		alf.b <- 1-pchisq(c1,p)
+		alf.b <- 1-pchisq(c1*c1, p)
 		if(alpha <= alf.b) 
 			return(list(rho="b",r=r,alf.b=alf.b,alf.LWS=NA,c=c1,b0=r*c1*c1/6,M=0))
 
@@ -136,7 +136,7 @@ rockem <- function(x, control)
 	ilc <- 1
 	icv <- 1
 
-  # Allocate memory for s_mcvroc call #
+  # Allocate memory for rlmcvroc call #
 
 	ATi <- chol(raw.mcd)
 	ai <- as.vector(ATi[row(ATi) <= col(ATi)])
@@ -152,7 +152,7 @@ rockem <- function(x, control)
 	sr <- double(nvar)
 	sd <- double(nvar)
 
-	f.res <- .Fortran("smcvroc",
+	f.res <- .Fortran("rlmcvroc",
 										x = as.double(x),
 										a = as.double(ai),
 										t = as.double(covmat.mcd$raw.center),

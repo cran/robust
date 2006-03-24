@@ -19,21 +19,10 @@
 /* #define max(a,b) ((a)>(b)?(a):(b)) */
 #define TOL_INVERSE 1e-8
 
-void s_rb_rand(Sfloat *X,
-							 Sfloat *y,
-							 Sint *N,
-							 Sint *P, 
-							 Sint *M,
-							 Sfloat *ours, 
-							 Sfloat *Beta_m,
-							 Sfloat *Beta_s,
-							 Sfloat *Scale,
-							 Sint *Seed, 
-							 Sfloat *C,
-							 Sfloat *Psi_c,
-							 Sint *chi_fn,
-							 Sint *psi_fn,
-							 Sfloat *Beta)
+void rl_rb_rand(Sfloat *X, Sfloat *y, Sint *N, Sint *P, Sint *M, Sfloat *ours, 
+                Sfloat *Beta_m, Sfloat *Beta_s, Sfloat *Scale, Sint *Seed, 
+                Sfloat *C, Sfloat *Psi_c, Sint *chi_fn, Sint *psi_fn,
+                Sfloat *Beta)
 {
 	/* chi_fn = 1 -> Bisquare
 	 * chi_fn = 2 -> Optimal
@@ -41,22 +30,22 @@ void s_rb_rand(Sfloat *X,
 	 * psi_fn = 2 -> Optimal
 	 */
 
-	Sfloat S_Psi_reg(Sfloat,Sfloat,Sint);
-	Sfloat S_Psi_reg_prime(Sfloat,Sfloat,Sint);
-	Sfloat S_Chi_prime(Sfloat,Sfloat,Sint);
-	Sfloat S_Chi(Sfloat,Sfloat,Sint);
-	void S_sampler_i(Sint, Sint *);
-	Sint S_inverse(Sfloat **,Sfloat **, Sint);
-	void S_reset_mat(Sfloat **, Sint , Sint );
-	void S_reset_vec(Sfloat *, Sint);
-	void S_vec_vec_symmetric(Sfloat **, Sfloat *, Sint);
-	void S_scalar_mat(Sfloat **, Sfloat, Sfloat **, Sint, Sint);
-	void S_scalar_vec(Sfloat *, Sfloat, Sfloat *, Sint);
-	void S_sum_mat(Sfloat **,Sfloat **, Sfloat **, Sint, Sint);
-	void S_sum_vec(Sfloat *, Sfloat *, Sfloat *, Sint);
-	void S_dif_vec(Sfloat *, Sfloat *, Sfloat *, Sint);
-	void S_mat_vec(Sfloat **, Sfloat *, Sfloat *, Sint, Sint);
-	void S_mat_mat(Sfloat **, Sfloat **, Sfloat **, Sint, Sint, Sint);
+	Sfloat rl_Psi_reg(Sfloat,Sfloat,Sint);
+	Sfloat rl_Psi_reg_prime(Sfloat,Sfloat,Sint);
+	Sfloat rl_Chi_prime(Sfloat,Sfloat,Sint);
+	Sfloat rl_Chi(Sfloat,Sfloat,Sint);
+	void rl_sampler_i(Sint, Sint *);
+	Sint rl_inverse(Sfloat **,Sfloat **, Sint);
+	void rl_reset_mat(Sfloat **, Sint , Sint );
+	void rl_reset_vec(Sfloat *, Sint);
+	void rl_vec_vec_symmetric(Sfloat **, Sfloat *, Sint);
+	void rl_scalar_mat(Sfloat **, Sfloat, Sfloat **, Sint, Sint);
+	void rl_scalar_vec(Sfloat *, Sfloat, Sfloat *, Sint);
+	void rl_sum_mat(Sfloat **,Sfloat **, Sfloat **, Sint, Sint);
+	void rl_sum_vec(Sfloat *, Sfloat *, Sfloat *, Sint);
+	void rl_dif_vec(Sfloat *, Sfloat *, Sfloat *, Sint);
+	void rl_mat_vec(Sfloat **, Sfloat *, Sfloat *, Sint, Sint);
+	void rl_mat_mat(Sfloat **, Sfloat **, Sfloat **, Sint, Sint, Sint);
 
 	Sfloat **xb; 
 	Sfloat **x, **x2, **x3, **x4; 
@@ -108,44 +97,44 @@ void s_rb_rand(Sfloat *X,
 	scale = *Scale;
 
 	/* get M-fitted values in Fi */
-	S_mat_vec(x,Beta_m,Fi,n,p);
+	rl_mat_vec(x,Beta_m,Fi,n,p);
 
 	/* get residuals of M-est in res */
-	S_dif_vec(y,Fi,res,n);
+	rl_dif_vec(y,Fi,res,n);
 
 	/* get S-fitted values in res_s */
-	S_mat_vec(x,Beta_s,res_s,n,p);
+	rl_mat_vec(x,Beta_s,res_s,n,p);
 
 	/* get residuals of S-est in res_s */
-	S_dif_vec(y,res_s,res_s,n);
+	rl_dif_vec(y,res_s,res_s,n);
 
 	/* set auxiliary matrices to zero */
-	S_reset_mat(x3,p,p);
-	S_reset_mat(x4,p,p);
-	S_reset_vec(v,p);
+	rl_reset_mat(x3,p,p);
+	rl_reset_mat(x4,p,p);
+	rl_reset_vec(v,p);
 
 	u2 = 0.0;
 
 	/* calculate correction matrix */
 	for(i=0;i<n;i++) {
 		u = res[i] / scale;
-		w[i] = S_Psi_reg(u,Psi_constant,*psi_fn)/res[i];
-		S_vec_vec_symmetric(x2,x[i],p);
-		S_scalar_mat(x2, S_Psi_reg_prime(u, Psi_constant, *psi_fn), x2, p, p);
-		S_sum_mat(x3,x2,x3,p,p);
-		S_vec_vec_symmetric(x2,x[i],p);
-		S_scalar_mat(x2,w[i],x2,p,p);
-		S_sum_mat(x4,x2,x4,p,p);
-		S_scalar_vec(x[i],S_Psi_reg_prime(u,Psi_constant,*psi_fn)*u,v_aux,p);
-		S_sum_vec(v,v_aux,v,p);
-		u2 += S_Chi_prime(u, c, *chi_fn) * u;
+		w[i] = rl_Psi_reg(u,Psi_constant,*psi_fn)/res[i];
+		rl_vec_vec_symmetric(x2,x[i],p);
+		rl_scalar_mat(x2, rl_Psi_reg_prime(u, Psi_constant, *psi_fn), x2, p, p);
+		rl_sum_mat(x3,x2,x3,p,p);
+		rl_vec_vec_symmetric(x2,x[i],p);
+		rl_scalar_mat(x2,w[i],x2,p,p);
+		rl_sum_mat(x4,x2,x4,p,p);
+		rl_scalar_vec(x[i],rl_Psi_reg_prime(u,Psi_constant,*psi_fn)*u,v_aux,p);
+		rl_sum_vec(v,v_aux,v,p);
+		u2 += rl_Chi_prime(u, c, *chi_fn) * u;
 	};
 
-	S_scalar_vec(v, beta * (Sfloat) (n-p) * scale / u2 , v, p);
-	S_inverse(x3, x2, p);
-	S_mat_mat(x2, x4, x3, p, p, p);
-	S_mat_vec(x2, v, v2, p, p);
-	S_scalar_mat(x3, scale, x3, p, p);
+	rl_scalar_vec(v, beta * (Sfloat) (n-p) * scale / u2 , v, p);
+	rl_inverse(x3, x2, p);
+	rl_mat_mat(x2, x4, x3, p, p, p);
+	rl_mat_vec(x2, v, v2, p, p);
+	rl_scalar_mat(x3, scale, x3, p, p);
 
 	/* the correction matrix is now in x3 */
 	/* the correction vector is now in v2 */
@@ -155,7 +144,7 @@ void s_rb_rand(Sfloat *X,
 	/* start the bootstrap replications */
 	for(i = 0; i < m; i++) {
 
-		S_sampler_i(n, indices);
+		rl_sampler_i(n, indices);
 
 		/* get pseudo observed y's */
 		for(j = 0; j < n; j++) /* xb[j][p] = */ 
@@ -167,29 +156,29 @@ void s_rb_rand(Sfloat *X,
 			};
 	
 	/* calculate robust bootsrap */
-		S_reset_vec(v, p); /* v <- 0 */ 
-		S_reset_mat(x2, p, p); /* x2 <- 0 */ 
+		rl_reset_vec(v, p); /* v <- 0 */ 
+		rl_reset_mat(x2, p, p); /* x2 <- 0 */ 
 		s = 0.0;
 		for(j=0;j<n;j++) {
-			S_scalar_vec(xb[j], yb[j]* w[indices[j]], v_aux, p);
-			S_sum_vec(v, v_aux, v, p);
-			S_vec_vec_symmetric(x4, xb[j], p);
-			S_scalar_mat(x4, w[indices[j]], x4, p, p);
-			S_sum_mat(x2, x4, x2, p, p); 
-			s += S_Chi(res_s[indices[j]] / scale , c, *chi_fn);
+			rl_scalar_vec(xb[j], yb[j]* w[indices[j]], v_aux, p);
+			rl_sum_vec(v, v_aux, v, p);
+			rl_vec_vec_symmetric(x4, xb[j], p);
+			rl_scalar_mat(x4, w[indices[j]], x4, p, p);
+			rl_sum_mat(x2, x4, x2, p, p); 
+			s += rl_Chi(res_s[indices[j]] / scale , c, *chi_fn);
 		};
 
 	s = s * scale / beta / (Sfloat) (n - p); 
-	S_inverse(x2, x4, p);		/* x4 <- x2^-1 */
-	S_mat_vec(x4, v, v_aux, p, p);	/* v_aux <- x4 * v */ 
-	S_dif_vec(v_aux, Beta_m, v_aux, p); 	/* v_aux <- v_aux - beta_m */
+	rl_inverse(x2, x4, p);		/* x4 <- x2^-1 */
+	rl_mat_vec(x4, v, v_aux, p, p);	/* v_aux <- x4 * v */ 
+	rl_dif_vec(v_aux, Beta_m, v_aux, p); 	/* v_aux <- v_aux - beta_m */
 
 	/* v has the robust bootstrapped vector, correct it */ 
-	S_mat_vec(x3, v_aux, v, p, p);	/* v <- x3 * v_aux */ 
-	S_scalar_vec(v2, s-scale, v_aux, p);
-	S_sum_vec(v_aux, v, v, p);
+	rl_mat_vec(x3, v_aux, v, p, p);	/* v <- x3 * v_aux */ 
+	rl_scalar_vec(v2, s-scale, v_aux, p);
+	rl_sum_vec(v_aux, v, v, p);
 
-	/* store the betas (splus-wise!) */
+	/* store the betas (roblib-wise!) */
 	for(j = 0; j < p; j++) 
 		ours[j * m + i] = v[j];
 	};
@@ -198,21 +187,10 @@ void s_rb_rand(Sfloat *X,
 }
  
 
-void s_rb_fixed(Sfloat *X,
-								Sfloat *y,
-								Sint *N,
-								Sint *P, 
-								Sint *M,
-								Sfloat *ours, 
-								Sfloat *Beta_m,
-								Sfloat *Beta_s,
-								Sfloat *Scale,
-								Sint *Seed,
-								Sfloat *C,
-								Sfloat *Psi_c,
-								Sint *chi_fn,
-								Sint *psi_fn,
-								Sfloat *Beta)
+void rl_rb_fixed(Sfloat *X, Sfloat *y, Sint *N, Sint *P, Sint *M, Sfloat *ours, 
+                 Sfloat *Beta_m, Sfloat *Beta_s, Sfloat *Scale, Sint *Seed,
+                 Sfloat *C, Sfloat *Psi_c, Sint *chi_fn, Sint *psi_fn,
+                 Sfloat *Beta)
 {
 	/* chi_fn = 1 -> Bisquare
 	 * chi_fn = 2 -> Optimal
@@ -220,22 +198,22 @@ void s_rb_fixed(Sfloat *X,
 	 * psi_fn = 2 -> Optimal
 	 */
 
-	void S_reset_mat(Sfloat **, Sint , Sint );
-	void S_reset_vec(Sfloat *, Sint);
-	Sfloat S_Psi_reg(Sfloat,Sfloat,Sint);
-	Sfloat S_Psi_reg_prime(Sfloat,Sfloat,Sint);
-	Sfloat S_Chi_prime(Sfloat,Sfloat,Sint);
-	Sfloat S_Chi(Sfloat,Sfloat,Sint);
-	void S_sampler_i(Sint, Sint *);
-	Sint S_inverse(Sfloat **,Sfloat **, Sint);
-	void S_vec_vec_symmetric(Sfloat **, Sfloat *, Sint);
-	void S_scalar_mat(Sfloat **, Sfloat, Sfloat **, Sint, Sint);
-	void S_scalar_vec(Sfloat *, Sfloat, Sfloat *, Sint);
-	void S_sum_mat(Sfloat **,Sfloat **, Sfloat **, Sint, Sint);
-	void S_sum_vec(Sfloat *, Sfloat *, Sfloat *, Sint);
-	void S_dif_vec(Sfloat *, Sfloat *, Sfloat *, Sint);
-	void S_mat_vec(Sfloat **, Sfloat *, Sfloat *, Sint, Sint);
-	void S_mat_mat(Sfloat **, Sfloat **, Sfloat **, Sint, Sint, Sint);
+	void rl_reset_mat(Sfloat **, Sint , Sint );
+	void rl_reset_vec(Sfloat *, Sint);
+	Sfloat rl_Psi_reg(Sfloat,Sfloat,Sint);
+	Sfloat rl_Psi_reg_prime(Sfloat,Sfloat,Sint);
+	Sfloat rl_Chi_prime(Sfloat,Sfloat,Sint);
+	Sfloat rl_Chi(Sfloat,Sfloat,Sint);
+	void rl_sampler_i(Sint, Sint *);
+	Sint rl_inverse(Sfloat **,Sfloat **, Sint);
+	void rl_vec_vec_symmetric(Sfloat **, Sfloat *, Sint);
+	void rl_scalar_mat(Sfloat **, Sfloat, Sfloat **, Sint, Sint);
+	void rl_scalar_vec(Sfloat *, Sfloat, Sfloat *, Sint);
+	void rl_sum_mat(Sfloat **,Sfloat **, Sfloat **, Sint, Sint);
+	void rl_sum_vec(Sfloat *, Sfloat *, Sfloat *, Sint);
+	void rl_dif_vec(Sfloat *, Sfloat *, Sfloat *, Sint);
+	void rl_mat_vec(Sfloat **, Sfloat *, Sfloat *, Sint, Sint);
+	void rl_mat_mat(Sfloat **, Sfloat **, Sfloat **, Sint, Sint, Sint);
 
 	Sfloat **x, **x2, **x3, **x4;
 	Sfloat *Fi, *res, *res_s, *w, scale;
@@ -282,44 +260,44 @@ void s_rb_fixed(Sfloat *X,
 			x[i][j]=X[j*n+i];
 
 	/* get M-fitted values in Fi */
-	S_mat_vec(x,Beta_m,Fi,n,p);
+	rl_mat_vec(x,Beta_m,Fi,n,p);
 
 	/* get residuals of M-est in res */
-	S_dif_vec(y,Fi,res,n);
+	rl_dif_vec(y,Fi,res,n);
 
 	/* get S-fitted values in res_s */
-	S_mat_vec(x,Beta_s,res_s,n,p);
+	rl_mat_vec(x,Beta_s,res_s,n,p);
 
 	/* get residuals of S-est in res_s */
-	S_dif_vec(y,res_s,res_s,n);
+	rl_dif_vec(y,res_s,res_s,n);
 
 	/* set auxiliary matrices to zero */
-	S_reset_mat(x3,p,p);
-	S_reset_mat(x4,p,p);
-	S_reset_vec(v,p);
+	rl_reset_mat(x3,p,p);
+	rl_reset_mat(x4,p,p);
+	rl_reset_vec(v,p);
 	u2 = 0.0;
 
 	/* calculate correction matrix */
 	for(i=0;i<n;i++) {
 		u = res[i]/scale ;
-		w[i] = S_Psi_reg(u,Psi_constant,*psi_fn)/res[i];
-		S_vec_vec_symmetric(x2,x[i],p);
-		S_scalar_mat(x2,S_Psi_reg_prime(u,Psi_constant,*psi_fn),
+		w[i] = rl_Psi_reg(u,Psi_constant,*psi_fn)/res[i];
+		rl_vec_vec_symmetric(x2,x[i],p);
+		rl_scalar_mat(x2,rl_Psi_reg_prime(u,Psi_constant,*psi_fn),
 								 x2,p,p);
-		S_sum_mat(x3,x2,x3,p,p);
-		S_vec_vec_symmetric(x2,x[i],p);
-		S_scalar_mat(x2,w[i],x2,p,p);
-		S_sum_mat(x4,x2,x4,p,p);
-		S_scalar_vec(x[i],S_Psi_reg_prime(u,Psi_constant,*psi_fn)*u,v_aux,p);
-		S_sum_vec(v,v_aux,v,p);
-		u2 += S_Chi_prime(u,c, *chi_fn) * u;
+		rl_sum_mat(x3,x2,x3,p,p);
+		rl_vec_vec_symmetric(x2,x[i],p);
+		rl_scalar_mat(x2,w[i],x2,p,p);
+		rl_sum_mat(x4,x2,x4,p,p);
+		rl_scalar_vec(x[i],rl_Psi_reg_prime(u,Psi_constant,*psi_fn)*u,v_aux,p);
+		rl_sum_vec(v,v_aux,v,p);
+		u2 += rl_Chi_prime(u,c, *chi_fn) * u;
 	};
 
-	S_scalar_vec(v, beta * (Sfloat) (n-p) * scale / u2 , v, p);
-	S_inverse(x3, x2, p);
-	S_mat_mat(x2, x4, x3, p, p, p);
-	S_mat_vec(x2, v, v2, p, p);
-	S_scalar_mat(x3, scale, x3, p, p);
+	rl_scalar_vec(v, beta * (Sfloat) (n-p) * scale / u2 , v, p);
+	rl_inverse(x3, x2, p);
+	rl_mat_mat(x2, x4, x3, p, p, p);
+	rl_mat_vec(x2, v, v2, p, p);
+	rl_scalar_mat(x3, scale, x3, p, p);
 
 
 	/* the correction matrix is now in x3 */
@@ -329,34 +307,34 @@ void s_rb_fixed(Sfloat *X,
 
 	/* start the bootstrap replications */
 	for(i=0;i<m;i++) {
-		S_sampler_i(n,indices);
+		rl_sampler_i(n,indices);
 
 		/* get pseudo observed y's */
 		for(j=0;j<n;j++) yb[j] = x[j][p] = Fi[j] + res[indices[j]];
 
 		/* calculate the robust bootstrap estimate */
-		S_reset_vec(v,p); /* v <- 0 */
-		S_reset_mat(x2,p,p);	/* x2 <- 0 */
+		rl_reset_vec(v,p); /* v <- 0 */
+		rl_reset_mat(x2,p,p);	/* x2 <- 0 */
 		s = 0.0;
 
 		for(j=0;j<n;j++) {
-			S_scalar_vec(x[j],yb[j]*w[indices[j]],v_aux,p);
-			S_sum_vec(v,v_aux,v,p);
-			S_vec_vec_symmetric(x4,x[j],p);
-			S_scalar_mat(x4,w[indices[j]],x4,p,p);
-			S_sum_mat(x2,x4,x2,p,p);
-			s += S_Chi(res_s[indices[j]] / scale , c, *chi_fn);
+			rl_scalar_vec(x[j],yb[j]*w[indices[j]],v_aux,p);
+			rl_sum_vec(v,v_aux,v,p);
+			rl_vec_vec_symmetric(x4,x[j],p);
+			rl_scalar_mat(x4,w[indices[j]],x4,p,p);
+			rl_sum_mat(x2,x4,x2,p,p);
+			s += rl_Chi(res_s[indices[j]] / scale , c, *chi_fn);
 		};
 
 		s = s * scale / beta / (Sfloat) (n-p);
-		S_inverse(x2,x4,p);		/* x4 <- x2^-1 */
-		S_mat_vec(x4,v,v_aux,p,p);	/* v_aux <- x4 * v */
-		S_dif_vec(v_aux,Beta_m,v_aux,p); 	/* v_aux <- v_aux - beta_m */
+		rl_inverse(x2,x4,p);		/* x4 <- x2^-1 */
+		rl_mat_vec(x4,v,v_aux,p,p);	/* v_aux <- x4 * v */
+		rl_dif_vec(v_aux,Beta_m,v_aux,p); 	/* v_aux <- v_aux - beta_m */
 
 		/* v has the robust bootstrapped vector, correct it */
-		S_mat_vec(x3,v_aux,v,p,p);	/* v <- x3 * v_aux */
-		S_scalar_vec(v2,s-scale,v_aux,p);
-		S_sum_vec(v_aux,v,v,p);
+		rl_mat_vec(x3,v_aux,v,p,p);	/* v <- x3 * v_aux */
+		rl_scalar_vec(v2,s-scale,v_aux,p);
+		rl_sum_vec(v_aux,v,v,p);
 
 		/* store the betas */
 		for(j=0;j<p;j++) 
@@ -367,7 +345,7 @@ void s_rb_fixed(Sfloat *X,
 }
 
 
-Sfloat S_Chi(Sfloat x, Sfloat c, Sint chi_fn)
+Sfloat rl_Chi(Sfloat x, Sfloat c, Sint chi_fn)
 { 
 	/* chi_fn = 1 -> Bisquare
 	 * chi_fn = 2 -> Optimal
@@ -413,7 +391,7 @@ Sfloat S_Chi(Sfloat x, Sfloat c, Sint chi_fn)
 }
 
 
-Sfloat S_Psi_reg(Sfloat x, Sfloat c, Sint psi_fn)
+Sfloat rl_Psi_reg(Sfloat x, Sfloat c, Sint psi_fn)
 {
 	/* psi_fn = 1 -> Bisquare
 	 * psi_fn = 2 -> Optimal
@@ -452,7 +430,7 @@ Sfloat S_Psi_reg(Sfloat x, Sfloat c, Sint psi_fn)
 }
 
 
-Sfloat S_Chi_prime(Sfloat x, Sfloat c, Sint chi_fn)
+Sfloat rl_Chi_prime(Sfloat x, Sfloat c, Sint chi_fn)
 {
 	/* chi_fn = 1 -> Bisquare
 	 * chi_fn = 2 -> Optimal
@@ -492,7 +470,7 @@ Sfloat S_Chi_prime(Sfloat x, Sfloat c, Sint chi_fn)
 }
 
 
-Sfloat S_Psi_reg_prime(Sfloat x, Sfloat c, Sint psi_fn)
+Sfloat rl_Psi_reg_prime(Sfloat x, Sfloat c, Sint psi_fn)
 {
 	/* psi_fn = 1 -> Bisquare
 	 * psi_fn = 2 -> Optimal
@@ -531,7 +509,7 @@ Sfloat S_Psi_reg_prime(Sfloat x, Sfloat c, Sint psi_fn)
 }
 
 
-void S_sampler_i(Sint n, Sint *x)
+void rl_sampler_i(Sint n, Sint *x)
 {
 	/* function to get a random sample of
 	 * indices (0 to n-1)
@@ -545,7 +523,7 @@ void S_sampler_i(Sint n, Sint *x)
 }
 
 
-void S_sum_mat(Sfloat **a, Sfloat **b, Sfloat **c, Sint n, Sint m)
+void rl_sum_mat(Sfloat **a, Sfloat **b, Sfloat **c, Sint n, Sint m)
 {
 	register Sint i,j;
 	for(i = 0; i < n; i++)
@@ -554,7 +532,7 @@ void S_sum_mat(Sfloat **a, Sfloat **b, Sfloat **c, Sint n, Sint m)
 }
 
 
-void S_vec_vec_symmetric(Sfloat **a, Sfloat *v1, Sint n)
+void rl_vec_vec_symmetric(Sfloat **a, Sfloat *v1, Sint n)
 {
 	register Sint i,j;
 
@@ -565,7 +543,7 @@ void S_vec_vec_symmetric(Sfloat **a, Sfloat *v1, Sint n)
 }
 
 
-void S_scalar_mat(Sfloat **a, Sfloat b, Sfloat **c, Sint n, Sint m)
+void rl_scalar_mat(Sfloat **a, Sfloat b, Sfloat **c, Sint n, Sint m)
 {
 	register Sint i,j;
 	for(i = 0; i < n; i++)
@@ -574,7 +552,7 @@ void S_scalar_mat(Sfloat **a, Sfloat b, Sfloat **c, Sint n, Sint m)
 }
 
 
-void S_scalar_vec(Sfloat *a, Sfloat b, Sfloat *c, Sint n)
+void rl_scalar_vec(Sfloat *a, Sfloat b, Sfloat *c, Sint n)
 {
 	register Sint i;
 	for(i = 0; i < n; i++)
@@ -582,7 +560,7 @@ void S_scalar_vec(Sfloat *a, Sfloat b, Sfloat *c, Sint n)
 }
 
 
-void S_sum_vec(Sfloat *a, Sfloat *b, Sfloat *c, Sint n)
+void rl_sum_vec(Sfloat *a, Sfloat *b, Sfloat *c, Sint n)
 {
 	register Sint i;
 	for(i = 0; i < n; i++)
@@ -590,7 +568,7 @@ void S_sum_vec(Sfloat *a, Sfloat *b, Sfloat *c, Sint n)
 }
 
 
-void S_dif_vec(Sfloat *a, Sfloat *b, Sfloat *c, Sint n)
+void rl_dif_vec(Sfloat *a, Sfloat *b, Sfloat *c, Sint n)
 {
 	register Sint i;
 	for(i = 0; i < n; i++)
@@ -598,7 +576,7 @@ void S_dif_vec(Sfloat *a, Sfloat *b, Sfloat *c, Sint n)
 }
 
 
-void S_mat_vec(Sfloat **a, Sfloat *b, Sfloat *c, Sint n, Sint m)
+void rl_mat_vec(Sfloat **a, Sfloat *b, Sfloat *c, Sint n, Sint m)
 {
 	register Sint i,j; 
 	for(i = 0; i < n; i++) 
@@ -607,7 +585,7 @@ void S_mat_vec(Sfloat **a, Sfloat *b, Sfloat *c, Sint n, Sint m)
 }
 
 
-void S_mat_mat(Sfloat **a, Sfloat **b, Sfloat **c, Sint n, 
+void rl_mat_mat(Sfloat **a, Sfloat **b, Sfloat **c, Sint n, 
 		Sint m, Sint l)
 {
 	register Sint i, j, k;
@@ -620,9 +598,9 @@ void S_mat_mat(Sfloat **a, Sfloat **b, Sfloat **c, Sint n,
 }
 
 
-Sint S_inverse(Sfloat **a, Sfloat **b, Sint n)
+Sint rl_inverse(Sfloat **a, Sfloat **b, Sint n)
 {
-	Sint S_lu(Sfloat **, Sint *, Sfloat *);
+	Sint rl_lu(Sfloat **, Sint *, Sfloat *);
 	register Sint i, j, k;
 	Sfloat **c, *e;
 
@@ -646,7 +624,7 @@ Sint S_inverse(Sfloat **a, Sfloat **b, Sint n)
 		for(j = i + 1; j < n; j++)
 			c[j][n] = 0.0;
 
-		if( S_lu(c,&n,e) == 1)
+		if( rl_lu(c,&n,e) == 1)
 			return(1);
 
 		for(j=0;j<n;j++)
@@ -657,7 +635,7 @@ Sint S_inverse(Sfloat **a, Sfloat **b, Sint n)
 }
 
 
-void S_reset_mat(Sfloat **a, Sint n, Sint m)
+void rl_reset_mat(Sfloat **a, Sint n, Sint m)
 {
 	register Sint i, j;
 	for(i = 0; i < n; i++)
@@ -666,7 +644,7 @@ void S_reset_mat(Sfloat **a, Sint n, Sint m)
 }
 
 
-void S_reset_vec(Sfloat *a, Sint n)
+void rl_reset_vec(Sfloat *a, Sint n)
 {
 	register Sint i;
 	for(i = 0; i < n; i++)
@@ -674,7 +652,7 @@ void S_reset_vec(Sfloat *a, Sint n)
 }
 
 
-Sint S_lu(Sfloat **a,Sint *P, Sfloat *x)
+Sint rl_lu(Sfloat **a,Sint *P, Sfloat *x)
 {
 	Sint *pp, p;
 	register Sint i,j,k;

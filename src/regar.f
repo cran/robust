@@ -1,5 +1,5 @@
 C=======================================================================
-      subroutine s_bdesfe(xk,n,m,n0,bcov,xy,uhat,st,tauef,xtx,c,uu, 
+      subroutine rlbdesfe(xk,n,m,n0,bcov,xy,uhat,st,tauef,xtx,c,uu, 
      +     ww,aux,ipiv) 
 *----------------------------------------------------------------------- 
 *     This subroutine computes the covariance matrix of the regression 
@@ -30,7 +30,7 @@ C=======================================================================
       do i=n0+1,n 
          uu(i)=uhat(i)/st(i) 
       enddo 
-      call s_calsfe(uu,n,n0,sigmm,aux(1),aux(n+1)) 
+      call rlcalsfe(uu,n,n0,sigmm,aux(1),aux(n+1)) 
       sum1=zero 
       sum2=zero 
       sum3=zero 
@@ -43,9 +43,9 @@ C=======================================================================
 * 
       do i=n0+1,n 
          auxx=uu(i)/sigmm 
-         sum1=sum1+s_rhoffe(auxx) 
-         sum2=sum2+s_psiffe(auxx)*auxx 
-         sum3=sum3+s_psiffe(auxx/xk)*(auxx/xk) 
+         sum1=sum1+rlrhoffe(auxx) 
+         sum2=sum2+rlpsiffe(auxx)*auxx 
+         sum3=sum3+rlpsiffe(auxx/xk)*(auxx/xk) 
       enddo 
 * 
 *     w0 is the weight of rho1 in the tau-estimate. 
@@ -64,11 +64,11 @@ C=======================================================================
 * 
       do i=n0+1,n 
          auxx=uu(i)/sigmm 
-         wwv=w0*s_psiffe(auxx/xk)/xk+s_psiffe(auxx) 
+         wwv=w0*rlpsiffe(auxx/xk)/xk+rlpsiffe(auxx) 
          sum1=sum1+wwv**2 
          ww(i-n0)=wwv/auxx   
          wwac=wwac+ww(i-n0) 
-         sum2= sum2+(w0*s_dpsife(auxx/xk)/(xk**2)+s_dpsife(auxx)) 
+         sum2= sum2+(w0*rldpsife(auxx/xk)/(xk**2)+rldpsife(auxx)) 
       enddo 
       wwac=wwac/dble(n-n0) 
       tauef=dble(n-n0)*sum1/(sum2*sum2) 
@@ -89,7 +89,7 @@ C=======================================================================
 * 
 *     We obtain the inverse of xtx. 
 *        
-         call s_rinvfe(xtx,bcov,m,m,c,ipiv) 
+         call rlrinvfe(xtx,bcov,m,m,c,ipiv) 
          do i=1,m 
             do ii=1,m 
                bcov(i,ii)=(sigmm**2)*tauef*bcov(i,ii) 
@@ -99,7 +99,7 @@ C=======================================================================
       return 
       end
 C=======================================================================
-      subroutine s_calsfe(u,n,nfirst,sout,v,aux) 
+      subroutine rlcalsfe(u,n,nfirst,sout,v,aux) 
 *-----------------------------------------------------------------------
 *     This subroutine computes a robust M-estimate of the scale of the  
 *     filtered residuals using the bisquared rho function. 
@@ -125,7 +125,7 @@ C=======================================================================
 *  
 *     A standardized MAD of |u| is computed.  
 * 
-      call s_mednfe(v(nfirst+1),n1,xmed,aux)  
+      call rlmednfe(v(nfirst+1),n1,xmed,aux)  
       xmed=xmed/.6745d0 
       if(xmed.lt.1.d-20) xmed=1.d-20         
       sant=1.d0
@@ -138,7 +138,7 @@ C=======================================================================
       do iter=1,maxit 
          sum=0.0d0 
          do i=1+nfirst,n 
-            sum=sum+s_rhoffe(v(i)/(sant*xmed*xk)) 
+            sum=sum+rlrhoffe(v(i)/(sant*xmed*xk)) 
          enddo 
          sant2=sant*sant 
          snu2=sant2*sum/(dble(n-nfirst)*b)
@@ -160,7 +160,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_corsfe(x,bopt,n,m,idif,isp,nsd,zcor,yhat,depshat,aux, 
+      subroutine rlcorsfe(x,bopt,n,m,idif,isp,nsd,zcor,yhat,depshat,aux, 
      +     epshat,work3)
 *----------------------------------------------------------------------- 
 *     This subroutine computes a series zcor whose correlogram is a  
@@ -232,11 +232,11 @@ C=======================================================================
 *     We compute the series zcor whose correlogram is a robust correlogram 
 *     of depshat. 
 * 
-      call s_rcorfe(depshat,aux,n1,0,zcor,work3) 
+      call rlrcorfe(depshat,aux,n1,0,zcor,work3) 
       return 
       end 
 C=======================================================================
-      subroutine s_dlpafe(n,r,ldr,ipvt,diag,qtb,delta,par,x,sdiag,wa1, 
+      subroutine rldlpafe(n,r,ldr,ipvt,diag,qtb,delta,par,x,sdiag,wa1, 
      +     wa2,dwarf)
 *----------------------------------------------------------------------- 
 *     Given an m by n matrix a, an n by n nonsingular diagonal 
@@ -260,15 +260,15 @@ C=======================================================================
 *     qr factorization, with column pivoting, of a. That is, if 
 *     a*p = q*r, where p is a permutation matrix, q has orthogonal 
 *     columns, and r is an upper triangular matrix with diagonal 
-*     elements of nonincreasing magnitude, then s_dlpafe expects 
+*     elements of nonincreasing magnitude, then rldlpafe expects 
 *     the full upper triangle of r, the permutation matrix p, 
 *     and the first n components of (q transpose)*b. On output 
-*     s_dlpafe also provides an upper triangular matrix s such that 
+*     rldlpafe also provides an upper triangular matrix s such that 
 * 
 *            t   t                   t 
 *           p *(a *a + par*d*d)*p = s *s . 
 * 
-*     s is employed within s_dlpafe and may be of separate interest. 
+*     s is employed within rldlpafe and may be of separate interest. 
 * 
 *     Only a few iterations are generally needed for convergence 
 *     of the algorithm. If, however, the limit of 10 iterations 
@@ -354,7 +354,7 @@ C=======================================================================
       do 70 j = 1, n 
          wa2(j) = diag(j)*x(j) 
  70   continue 
-      dxnorm = s_dnrmfe(n,wa2) 
+      dxnorm = rldnrmfe(n,wa2) 
       fp = dxnorm - delta 
       if (fp .le. p1*delta) go to 220 
 * 
@@ -378,7 +378,7 @@ C=======================================================================
  100     continue 
          wa1(j) = (wa1(j) - sum)/r(j,j) 
  110  continue 
-      temp = s_dnrmfe(n,wa1) 
+      temp = rldnrmfe(n,wa1) 
       parl = ((fp/delta)/temp)/temp 
  120  continue 
 * 
@@ -392,7 +392,7 @@ C=======================================================================
          l = ipvt(j) 
          wa1(j) = sum/diag(l) 
  140  continue 
-      gnorm = s_dnrmfe(n,wa1) 
+      gnorm = rldnrmfe(n,wa1) 
       paru = gnorm/delta 
       if (paru .eq. zero) paru = dwarf/dmin1(delta,p1) 
 * 
@@ -415,11 +415,11 @@ C=======================================================================
       do 160 j = 1, n 
          wa1(j) = temp*diag(j) 
  160  continue 
-      call s_dqrsfe(n,r,ldr,ipvt,wa1,qtb,x,sdiag,wa2) 
+      call rldqrsfe(n,r,ldr,ipvt,wa1,qtb,x,sdiag,wa2) 
       do 170 j = 1, n 
          wa2(j) = diag(j)*x(j) 
  170  continue 
-      dxnorm = s_dnrmfe(n,wa2) 
+      dxnorm = rldnrmfe(n,wa2) 
       temp = fp 
       fp = dxnorm - delta 
 * 
@@ -447,7 +447,7 @@ C=======================================================================
  190     continue 
  200     continue 
  210  continue 
-      temp = s_dnrmfe(n,wa1) 
+      temp = rldnrmfe(n,wa1) 
       parc = ((fp/delta)/temp)/temp 
 * 
 *     Depending on the sign of the function, update parl or paru. 
@@ -470,7 +470,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      function s_dnrmfe(n,x)
+      function rldnrmfe(n,x)
 *----------------------------------------------------------------------- 
 *     Given an n-vector x, this function calculates the  
 *     euclidean norm of x.  
@@ -525,23 +525,23 @@ C=======================================================================
 *     Calculation of norm.  
 *  
       if (s1 .eq. zero) go to 100  
-      s_dnrmfe = x1max*dsqrt(s1+(s2/x1max)/x1max)  
+      rldnrmfe = x1max*dsqrt(s1+(s2/x1max)/x1max)  
       go to 130  
  100  continue  
       if (s2 .eq. zero) go to 110  
       if (s2 .ge. x3max)  
-     +     s_dnrmfe = dsqrt(s2*(one+(x3max/s2)*(x3max*s3)))  
+     +     rldnrmfe = dsqrt(s2*(one+(x3max/s2)*(x3max*s3)))  
       if (s2 .lt. x3max)  
-     +     s_dnrmfe = dsqrt(x3max*((s2/x3max)+(x3max*s3)))  
+     +     rldnrmfe = dsqrt(x3max*((s2/x3max)+(x3max*s3)))  
       go to 120  
  110  continue  
-      s_dnrmfe = x3max*dsqrt(s3)  
+      rldnrmfe = x3max*dsqrt(s3)  
  120  continue  
  130  continue  
       return    
       end  
 C=======================================================================
-      function s_dpsife(x) 
+      function rldpsife(x) 
 *-----------------------------------------------------------------------
       implicit double precision (a-h,o-z)  
 *-----------------------------------------------------------------------
@@ -551,16 +551,16 @@ C=======================================================================
       g4=   .016d0 
       ax=dabs(x) 
       if (ax.gt.3.0d0) then 
-         s_dpsife=0.0d0 
+         rldpsife=0.0d0 
       else if(ax.le.2.d0) then 
-         s_dpsife=1.d0 
+         rldpsife=1.d0 
       else if(ax.gt.2.d0.and.ax.le.3.d0) then 
-         s_dpsife=7.d0*g4*(x**6)+5.d0*g3*(x**4)+3.d0*g2*(x**2)+g1 
+         rldpsife=7.d0*g4*(x**6)+5.d0*g3*(x**4)+3.d0*g2*(x**2)+g1 
       endif 
       return  
       end     
 C=======================================================================
-      subroutine s_dqrffe(m,n,a,lda,pivot,ipvt,lipvt,rdiag,acnorm,wa,
+      subroutine rldqrffe(m,n,a,lda,pivot,ipvt,lipvt,rdiag,acnorm,wa,
      +     epsmch)
 *-----------------------------------------------------------------------
 *     This subroutine uses Householder transformations with column 
@@ -622,7 +622,7 @@ C=======================================================================
 *     Compute the initial column norms and initialize several arrays. 
 * 
       do 10 j = 1, n 
-         acnorm(j) = s_dnrmfe(m,a(1,j)) 
+         acnorm(j) = rldnrmfe(m,a(1,j)) 
          rdiag(j) = acnorm(j) 
          wa(j) = rdiag(j) 
          if (pivot) ipvt(j) = j 
@@ -656,7 +656,7 @@ C=======================================================================
 *     Compute the Householder transformation to reduce the 
 *     j-th column of a to a multiple of the j-th unit vector. 
 *     
-         ajnorm = s_dnrmfe(m-j+1,a(j,j)) 
+         ajnorm = rldnrmfe(m-j+1,a(j,j)) 
          if (ajnorm .eq. zero) go to 100 
          if (a(j,j) .lt. zero) ajnorm = -ajnorm 
          do 50 i = j, m 
@@ -682,7 +682,7 @@ C=======================================================================
             temp = a(j,k)/rdiag(k) 
             rdiag(k) = rdiag(k)*dsqrt(dmax1(zero,one-temp**2)) 
             if (p05*(rdiag(k)/wa(k))**2 .gt. epsmch) go to 80 
-            rdiag(k) = s_dnrmfe(m-j,a(jp1,k)) 
+            rdiag(k) = rldnrmfe(m-j,a(jp1,k)) 
             wa(k) = rdiag(k) 
  80         continue 
  90      continue 
@@ -692,7 +692,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_dqrsfe(n,r,ldr,ipvt,diag,qtb,x,sdiag,wa) 
+      subroutine rldqrsfe(n,r,ldr,ipvt,diag,qtb,x,sdiag,wa) 
 *-----------------------------------------------------------------------   
 *     Given an m by n matrix a, an n by n diagonal matrix d, 
 *     and an m-vector b, the problem is to determine an x which 
@@ -865,7 +865,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_durbfe(rho,lp,partial,ier,phi,ndim2) 
+      subroutine rldurbfe(rho,lp,partial,ier,phi,ndim2) 
 *-----------------------------------------------------------------------
 *     This subroutine computes lp partial autocorrelations given  
 *     lp autocorrelations using the Durbin algorithm.  
@@ -913,13 +913,13 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_fc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,np,nq,n0, 
+      subroutine rlfc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,np,nq,n0, 
      +     indth,npo,sigman,sigmau,npred,x,y,xy,yhat,cck,uhat,epshat,
      +     st,epspred,w,auxm,poldif,ndim1,ndim2,work,nw,work4,nw4,
      +     iwork4,niw4,work5,nw5,iwork5,niw5) 
 *-----------------------------------------------------------------------     
 *     This subroutine distributes the work vector work of lengths nw 
-*     between different arrays and vectors to be used by s_fnc1fe, and  
+*     between different arrays and vectors to be used by rlfnc1fe, and  
 *     then calls it. 
 *-----------------------------------------------------------------------    
       implicit double precision (a-h,o-z) 
@@ -942,7 +942,7 @@ C=======================================================================
       n11=n10+ndim2 
       n12=n11+ndim2 
       n13=n12+n 
-      call s_fnc1fe(n,npar,par,f,iflag,idif,isp,nsd,m,np,nq,n0,indth, 
+      call rlfnc1fe(n,npar,par,f,iflag,idif,isp,nsd,m,np,nq,n0,indth, 
      +     npo,sigman,sigmau,npred,x,y,xy,yhat,uhat,epshat,st, 
      +     epspred,w,auxm,poldif,ndim1,ndim2,work(n1),work(n2+1), 
      +     work(n3+1),work(n4+1),work(n5+1),work(n6+1), 
@@ -952,13 +952,13 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_fc12fe(phi,theta,thetas,n,beta,cck,idif,isp,nsd,m,
+      subroutine rlfc12fe(phi,theta,thetas,n,beta,cck,idif,isp,nsd,m,
      +     np,nq,n0,indth,x,y,sigman,sigmau,vtau,sigini,tau,xy,yhat,
      +     uhat,epshat,st,epspred,w,auxm,npred,poldif,ndim2,work,nw,
      +     work4,nw4,iwork4,niw4,work5,nw5,iwork5,niw5) 
 *-----------------------------------------------------------------------    
 *     This subroutine distributes the work vector work of lengths nw 
-*     between different arrays and vectors to be used by s_fnc2fe, and  
+*     between different arrays and vectors to be used by rlfnc2fe, and  
 *     then calls it. 
 *-----------------------------------------------------------------------     
       implicit double precision (a-h,o-z)    
@@ -976,7 +976,7 @@ C=======================================================================
       n5=n4+n 
       n6=n5+ndim2+1 
       n7=n6+4*n 
-      call s_fnc2fe(phi,theta,thetas,n,beta,cck,idif,isp,nsd,m,np,nq,
+      call rlfnc2fe(phi,theta,thetas,n,beta,cck,idif,isp,nsd,m,np,nq,
      +     n0,indth,x,y,sigman,sigmau,vtau,sigini,tau,xy,yhat,uhat, 
      +     epshat,st,epspred,w,auxm,npred,poldif,ndim2,work(n1), 
      +     work(n2+1),work(n3+1),work(n4+1),work(n5+1), 
@@ -985,7 +985,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_flt1fe(x,y,n,m,idif,isp,nsd,phi,beta,theta, 
+      subroutine rlflt1fe(x,y,n,m,idif,isp,nsd,phi,beta,theta, 
      +     thetas,k,iq,sigmau,indth,n0,tau,sigmadif, 
      +     indfil,rho,cck,npred,ypure,xy,yhat,uhat, 
      +     epshat,st,epspred,w,auxm,ndim2,work,nw, 
@@ -1020,7 +1020,7 @@ C=======================================================================
       n11=n10+ndim2 
       n12=n11+ndim2*ndim2 
       n13=n12+iq+1 
-      call s_fltrfe(x,y,n,m,idif,isp,nsd,phi,beta,theta,thetas,k,iq, 
+      call rlfltrfe(x,y,n,m,idif,isp,nsd,phi,beta,theta,thetas,k,iq, 
      +     sigmau,indth,n0,tau,sigmadif,indfil,rho,cck,npred, 
      +     ypure,xy,yhat,uhat,epshat,st,epspred,w,auxm,ndim2, 
      +     work(n1),work(n2+1),work(n3+1),work(n4+1),work(n5+1), 
@@ -1030,7 +1030,7 @@ C=======================================================================
       return 
       end 
 C======================================================================= 
-      subroutine s_flt2fe(x,y,n,m,idif,isp,nsd,phi,beta,theta,thetas,
+      subroutine rlflt2fe(x,y,n,m,idif,isp,nsd,phi,beta,theta,thetas,
      +     k,iq,sigmau,indth,n0,tau,sigmadif,indfil,rho,cck,iout,
      +     yhat,uhat,epshat,st,lscan,w,auxm,xy,m1,thetanew,xm,xp,
      +     alfapred,r,v,av,alfafi,rv,alfaux,xaux,v1,v2,ypure,
@@ -1117,9 +1117,9 @@ C=======================================================================
       v2(1)=1.d0
       if (indth.eq.1) v2(isp+1)=-thetas
       nv2=indth*isp 
-      call s_polyfe(v1,iq,v2,nv2,r,nrdim)  
+      call rlpolyfe(v1,iq,v2,nv2,r,nrdim)  
 *     
-*     we construct vector thetanew to be used by s_rinife.
+*     we construct vector thetanew to be used by rlrinife.
 *
       do i=1,nrdim
          thetanew(i)=-r(i+1)
@@ -1170,7 +1170,7 @@ C=======================================================================
          iw3b=iw3rhom+idim*idim
          iw3alfa=iw3b+idim*idim
          iw3rhoi=iw3alfa+idim
-         call s_rinife(ypure,n,lfin,phi,thetanew,isp,rho,tau,alfafi,
+         call rlrinife(ypure,n,lfin,phi,thetanew,isp,rho,tau,alfafi,
      +        idif,nsd,xp,nrdim,n0,sigmau,sigmadif,idim,
      +        work3(iw3alfa),work3(iw3rhoi),work3(iw3covu),
      +        work3(iw3uhat),work3(iw3uuha),work3(iw3w),
@@ -1291,7 +1291,7 @@ C=======================================================================
                hf=zero
                res=uhat(it)/st(it) 
                if ((it.lt.iout).or.(it.gt.iout+h)) then
-                  hf=cck*s_psiffe(res/cck)
+                  hf=cck*rlpsiffe(res/cck)
                   w(it)=1.0d0
                   if(res.ne.zero) w(it)=hf/res
                else
@@ -1396,7 +1396,7 @@ C=======================================================================
       return                                    
       end     
 C=======================================================================
-      subroutine s_fltrfe(x,y,n,m,idif,isp,nsd,phi,beta,theta,thetas,k, 
+      subroutine rlfltrfe(x,y,n,m,idif,isp,nsd,phi,beta,theta,thetas,k, 
      +     iq,sigmau,indth,n0,tau,sigmadif,indfil,rho,cck, 
      +     npred,ypure,xy,yhat,uhat,epshat,st,epspred,w, 
      +     auxm,ndim2,xm,xp,thetanew,alfapred,r,v,av, 
@@ -1488,10 +1488,10 @@ C=======================================================================
       v2(1)=one 
       if (indth.eq.1) v2(isp+1)=-thetas 
       nv2=indth*isp  
-      call s_polyfe(v1,iq,v2,nv2,r,nrdim)   
+      call rlpolyfe(v1,iq,v2,nv2,r,nrdim)   
 * 
 *     We construct vector thetanew of moving average coefficients 
-*     corresponding to r, to be used by s_rinife. 
+*     corresponding to r, to be used by rlrinife. 
 * 
       do i=1,nrdim 
          thetanew(i)=-r(i+1) 
@@ -1516,7 +1516,7 @@ C=======================================================================
          enddo 
       enddo    
 *     
-*     We call subroutine s_rinife which returns initial values of vector  
+*     We call subroutine rlrinife which returns initial values of vector  
 *     alfafi and matrix xp. Previously, we must construct the series  
 *     ypure= y-x'*beta and the vector of autocorrelations rho.  
 *  
@@ -1541,7 +1541,7 @@ C=======================================================================
             endif 
          enddo 
 *     
-*     s_rinife computes initial values for the state space vector alfafi 
+*     rlrinife computes initial values for the state space vector alfafi 
 *     and the prediction covariace matrix xp, and n0: the number of first 
 *     observations which can not be filtered. 
 * 
@@ -1552,7 +1552,7 @@ C=======================================================================
          n6=n5+ndim2 
          n7=n6+ndim2 
          n8=n7+ndim2*ndim2 
-         call s_rinife(ypure,n,lfin,phi,thetanew,isp,rho,tau,alfafi,
+         call rlrinife(ypure,n,lfin,phi,thetanew,isp,rho,tau,alfafi,
      +        idif,nsd,xp,nrdim,n0,sigmau,sigmadif,ndim2,work(1), 
      +        work(n2+1),work(n3+1),work(n4+1),work(n5+1), 
      +        work(n6+1),work(n7+1),work(n8+1),iwork) 
@@ -1691,7 +1691,7 @@ C=======================================================================
 * 
                hf=zero 
                res=uhat(it)/st(it)  
-               hf=cck*s_psiffe(res/cck) 
+               hf=cck*rlpsiffe(res/cck) 
                w(it)=one 
                if (dabs(res).ge.0.0000000001d0) w(it)=hf/res 
 * 
@@ -1807,7 +1807,7 @@ C=======================================================================
       return                                     
       end 
 C=======================================================================
-      subroutine s_fnc1fe(n,npar,par,f,iflag,idif,isp,nsd,m,np,nq,n0, 
+      subroutine rlfnc1fe(n,npar,par,f,iflag,idif,isp,nsd,m,np,nq,n0, 
      +     indth,npo,sigman,sigmau,npred,x,y,xy,yhat,uhat,epshat,st,
      +     epspred,w,auxm,poldif,ndim1,ndim2,phi,theta,phiaux,phiaux2,
      +     beta,uaux,rho,tau,para,para1,theprod,ypure,aux,cck,work4, 
@@ -1877,7 +1877,7 @@ C=======================================================================
 *-----------------------------------------------------------------------
 *     
 *     We antitransform the npar parameters from par, using subroutine 
-*     s_tranfe. 
+*     rltranfe. 
 * 
       iflag = iflag
       npar = npar
@@ -1891,14 +1891,14 @@ C=======================================================================
       do i=1,ndim2 
          phi(i)=zero
       enddo  
-      call s_tranfe(par,ndim1,ndim2,np,nq,indth,m,para,para1,work4, 
+      call rltranfe(par,ndim1,ndim2,np,nq,indth,m,para,para1,work4, 
      +     phi,theta,thetas,beta)       
 * 
 *     We compute the  scale  (sigini) of the stationary ARMA component 
 *     of the regression model, that is, of the regression errors after  
 *     differencing.  
 * 
-      sigini=s_xmadfe(x,y,beta,m,n,aux(1),aux(n+1),aux(2*n+1), 
+      sigini=rlxmadfe(x,y,beta,m,n,aux(1),aux(n+1),aux(2*n+1), 
      +     poldif,ndif) 
 * 
 *     npaux and nqaux are the maximum of the powers with non zero 
@@ -1922,14 +1922,14 @@ C=======================================================================
       lfin=max0(npaux+idif+isp*nsd,nqaux+isp*indth+1) 
       lfin=lfin-idif-isp*nsd 
 * 
-*     We call subroutine s_sys2fe which returns the autocorrelations, rho,  
+*     We call subroutine rlsys2fe which returns the autocorrelations, rho,  
 *     and the correlation between the lagged innovations and the ARMA 
 *     series, tau.       
 * 
       n2=ndim2 
       n3=n2+(ndim2+1)*(ndim2+1) 
       n4=n3+(ndim2+1) 
-      call s_sys2fe(phi,theta,thetas,lfin,nqaux,isp,indth,rho,tau, 
+      call rlsys2fe(phi,theta,thetas,lfin,nqaux,isp,indth,rho,tau, 
      +     work4(1),work4(n2+1),work4(n3+1),work4(n4+1), 
      +     iwork4,ndim2) 
 * 
@@ -1981,7 +1981,7 @@ C=======================================================================
 * 
 *     We compute the non stationary autoregressive polynomial. 
 * 
-      call s_polyfe(phiaux,npaux,poldif,ndif,phiaux2,k)       
+      call rlpolyfe(phiaux,npaux,poldif,ndif,phiaux2,k)       
       do i=1,k 
          phiaux2(i)=-phiaux2(i+1) 
       enddo 
@@ -1992,7 +1992,7 @@ C=======================================================================
 *     We filter the original series y using the given parameters and obtain 
 *     the filtered innovations uhat and their scales st. 
 *     
-      call s_flt1fe(x,y,n,m,idif,isp,nsd,phiaux2,beta,theta,thetas,k, 
+      call rlflt1fe(x,y,n,m,idif,isp,nsd,phiaux2,beta,theta,thetas,k, 
      +     nqaux,sigmau,indth,n0,tau,sigini,0,rho,cck,0,ypure, 
      +     xy,yhat,uhat,epshat,st,epspred,w,auxm,ndim2,work4, 
      +     nw4,work5,nw5,iwork5,niw5) 
@@ -2014,7 +2014,7 @@ C=======================================================================
 *     We compute the initial M-scale of the filtered innovations 
 *     used by the tau scale. 
 * 
-      call s_calsfe(uaux,n,n0,sout,aux(1),aux(n+1)) 
+      call rlcalsfe(uaux,n,n0,sout,aux(1),aux(n+1)) 
 * 
 *     Sigman is the corrected innovation scale. 
 * 
@@ -2028,20 +2028,20 @@ C=======================================================================
       prod=prod*sout*sout 
       do i=n0+1,n 
          f(i)=uaux(i)/sout 
-         f(i)=s_rhoffe(f(i)) 
+         f(i)=rlrhoffe(f(i)) 
          f(i)=dsqrt(prod*f(i)) 
       enddo 
       return 
       end 
 C=======================================================================
-      subroutine s_fnc2fe(phi,theta,thetas,n,beta,cck,idif,isp,nsd,m,np, 
+      subroutine rlfnc2fe(phi,theta,thetas,n,beta,cck,idif,isp,nsd,m,np, 
      +     nq,n0,indth,x,y,sigman,sigmau,vtau,sigini,tau,xy,yhat,uhat,
      +     epshat,st,epspred,w,auxm,npred,poldif,ndim2,f,phiaux,
      +     phiaux2,uaux,rho,aux,ypure,work4,nw4,iwork4,niw4,work5,nw5,
      +     iwork5,niw5) 
 *-----------------------------------------------------------------------
 *     This subroutine computes the tau pseudo likelihood for a given  
-*     set of parameters. The difference with s_fc11fe is that in the  
+*     set of parameters. The difference with rlfc11fe is that in the  
 *     latter the AR and MA parameters are transformed, so that 
 *     they are restricted to lie in the interval (-1,1). 
 * 
@@ -2102,7 +2102,7 @@ C=======================================================================
 *     of the regression model, that is, of the regression errors after  
 *     differencing.  
 * 
-      sigini=s_xmadfe(x,y,beta,m,n,aux(1),aux(n+1),aux(2*n+1),
+      sigini=rlxmadfe(x,y,beta,m,n,aux(1),aux(n+1),aux(2*n+1),
      +     poldif,ndif) 
 * 
 *     npaux and nqaux are the maximum of the powers with non zero AR and MA  
@@ -2117,14 +2117,14 @@ C=======================================================================
       lfin=max0(npaux+idif+isp*nsd,nqaux+isp*indth+1) 
       lfin=lfin-idif-isp*nsd 
 * 
-*     We call subroutine s_sys2fe which returns the autocorrelations, rho,  
+*     We call subroutine rlsys2fe which returns the autocorrelations, rho,  
 *     and the correlation between the lagged innovations and the ARMA 
 *     series, tau.       
 * 
       n1=ndim2 
       n2=n1+(ndim2+1)*(ndim2+1) 
       n3=n2+(ndim2+1) 
-      call s_sys2fe(phi,theta,thetas,lfin,nqaux,isp,indth,rho,tau, 
+      call rlsys2fe(phi,theta,thetas,lfin,nqaux,isp,indth,rho,tau, 
      +     work4(1),work4(n1+1),work4(n2+1),work4(n3+1),iwork4,ndim2) 
       do i=1,ndim2 
          phiaux(i)=zero 
@@ -2136,7 +2136,7 @@ C=======================================================================
 * 
 *     We compute the non-stationary AR polynomial to be used by filter. 
 * 
-      call s_polyfe(phiaux,npaux,poldif,ndif,phiaux2,k)
+      call rlpolyfe(phiaux,npaux,poldif,ndif,phiaux2,k)
       do i=1,k 
          phiaux2(i)=-phiaux2(i+1) 
       enddo 
@@ -2147,7 +2147,7 @@ C=======================================================================
 *     We filter the original series y using the given parameters and obtain 
 *     the filtered innovations uhat and their scales st. 
 * 
-      call s_flt1fe(x,y,n,m,idif,isp,nsd,phiaux2,beta,theta,thetas,
+      call rlflt1fe(x,y,n,m,idif,isp,nsd,phiaux2,beta,theta,thetas,
      +     k,nqaux,sigmau,indth,n0,tau,sigini,0,rho,cck,0,ypure, 
      +     xy,yhat,uhat,epshat,st,epspred,w,auxm,ndim2,work4, 
      +     nw4,work5,nw5,iwork5,niw5) 
@@ -2160,7 +2160,7 @@ C=======================================================================
       do i=n0+1,n 
          uaux(i)=uhat(i)/st(i) 
       enddo
-      call s_calsfe(uaux,n,n0,sout,aux(1),aux(n+1)) 
+      call rlcalsfe(uaux,n,n0,sout,aux(1),aux(n+1)) 
 * 
 *     Sigman is the corrected innovation scale. 
 * 
@@ -2174,7 +2174,7 @@ C=======================================================================
       enddo 
       do i=n0+1,n 
          f(i)=uaux(i)/sout 
-         f(i)=s_rhoffe(f(i)) 
+         f(i)=rlrhoffe(f(i)) 
       enddo 
       vtau=zero 
       do i=n0+1,n 
@@ -2186,7 +2186,7 @@ C=======================================================================
       return 
       end
 C=======================================================================
-      subroutine s_gd11fe(x,y,interc,n,m,idif,isp,nsd,iqfin,phi,beta, 
+      subroutine rlgd11fe(x,y,interc,n,m,idif,isp,nsd,iqfin,phi,beta, 
      +     phidif,sigini,sigmau,akai,cck,parold,ssqold, 
      +     xy,yhat,uhat,epshat,st,epspred,npred,poldif, 
      +     w,auxm,ndim1,ndim2,work2,nw2,iwork2,niw2, 
@@ -2195,7 +2195,7 @@ C=======================================================================
 *-----------------------------------------------------------------------   
 *     This subroutine distributes the work vectors work2 and iwork2, 
 *     of lengths nw2 and niw2 respectively, between different arrays  
-*     and vectors to be used by s_grd1fe, and then calls it. 
+*     and vectors to be used by rlgrd1fe, and then calls it. 
 *-----------------------------------------------------------------------    
       implicit double precision (a-h,o-z) 
       dimension x(n,m),y(n),phi(ndim2,ndim2),beta(m),parold(ndim1)
@@ -2226,7 +2226,7 @@ C=======================================================================
       n19=n18+ndim1 
       n20=n19+ndim1 
       n21=n20+4*n 
-      call s_grd1fe(x,y,interc,n,m,idif,isp,nsd,iqfin,phi,beta,phidif, 
+      call rlgrd1fe(x,y,interc,n,m,idif,isp,nsd,iqfin,phi,beta,phidif, 
      +     sigini,sigmau,akai,cck,parold,ssqold,xy,yhat,uhat, 
      +     epshat,st,epspred,w,auxm,npred,poldif,ndim1,ndim2, 
      +     work2(n1),work2(n2+1),work2(n3+1),work2(n4+1), 
@@ -2240,7 +2240,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_gdk1fe(x,y,n,m,ip,idif,isp,nsd,iqfin,phi,beta, 
+      subroutine rlgdk1fe(x,y,n,m,ip,idif,isp,nsd,iqfin,phi,beta, 
      +     thetas,phidif,k,sigini,sigmau,akai,cck,parold,ssqold, 
      +     xy,yhat,uhat,epshat,st,epspred,w,auxm,npred,poldif,ndim1,
      +     ndim2,work2,nw2,iwork2,niw2,work3,nw3,iwork3,niw3,work4,nw4,
@@ -2248,7 +2248,7 @@ C=======================================================================
 *-----------------------------------------------------------------------   
 *     This subroutine distributes the work vectors work2 and iwork2, 
 *     of lengths nw2 and niw2 respectively, between different arrays  
-*     and vectors to be used by s_grdkfe, and then calls it. 
+*     and vectors to be used by rlgrdkfe, and then calls it. 
 *-----------------------------------------------------------------------   
       implicit double precision (a-h,o-z) 
       dimension x(n,m),y(n),phi(ndim2,ndim2),beta(m),phidif(ip+1,ip+1), 
@@ -2280,7 +2280,7 @@ C=======================================================================
       n20=n19+ndim1 
       n21=n20+ip+1 
       n22=n21+ndim2+1
-      call s_grdkfe(x,y,n,m,ip,idif,isp,nsd,iqfin,phi,beta,thetas,
+      call rlgrdkfe(x,y,n,m,ip,idif,isp,nsd,iqfin,phi,beta,thetas,
      +     phidif,k,sigini,sigmau,akai,cck,parold,ssqold,xy,yhat,uhat, 
      +     epshat,st,epspred,w,auxm,npred,poldif,ndim1,ndim2, 
      +     work2(n1),work2(n2+1),work2(n3+1),work2(n4+1), 
@@ -2294,14 +2294,14 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_gdt1fe(x,y,n,m,ip,idif,isp,nsd,ipfin,iqfin,beta, 
+      subroutine rlgdt1fe(x,y,n,m,ip,idif,isp,nsd,ipfin,iqfin,beta, 
      +     thetas,phidif1,kopt,sigini,sopt,tau,n0,cckopt,xy,yhat,uhat,
      +     epshat,st,epspred,w,auxm,npred,poldif,thetaopt,ndim2,work2,
      +     nw2,work3,nw3,iwork3,niw3,work4,nw4,iwork4,niw4, 
      +     work5,nw5,iwork5,niw5) 
 *-----------------------------------------------------------------------    
 *     This subroutine distributes the work vector work2 of lengths nw2  
-*     between different arrays and vectors to be used by s_gdthfe, and then  
+*     between different arrays and vectors to be used by rlgdthfe, and then  
 *     calls it. 
 *-----------------------------------------------------------------------     
       implicit double precision (a-h,o-z) 
@@ -2319,7 +2319,7 @@ C=======================================================================
       n5=n4+ndim2 
       n6=n5+ndim2 
       n7=n6+ndim2+1 
-      call s_gdthfe(x,y,n,m,ip,idif,isp,nsd,ipfin,iqfin,beta,thetas, 
+      call rlgdthfe(x,y,n,m,ip,idif,isp,nsd,ipfin,iqfin,beta,thetas, 
      +     phidif1,kopt,sigini,sopt,tau,n0,cckopt,xy,yhat,uhat, 
      +     epshat,st,epspred,w,auxm,npred,poldif,thetaopt,ndim2, 
      +     work2(n1),work2(n2+1),work2(n3+1),work2(n4+1), 
@@ -2328,7 +2328,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_gdthfe(x,y,n,m,ip,idif,isp,nsd,ipfin,iqfin,beta,
+      subroutine rlgdthfe(x,y,n,m,ip,idif,isp,nsd,ipfin,iqfin,beta,
      +     thetas,phidif1,k,sigini,sigmau,tau,n0,cck,xy,yhat, 
      +     uhat,epshat,st,epspred,w,auxm,npred,poldif, 
      +     theta,ndim2,thetabes,phiau1,phidbes,phithe, 
@@ -2412,14 +2412,14 @@ C=======================================================================
          phiaux(nn)=phidif1(nn)  
       enddo 
 * 
-*     Using the selected AR model, s_sys2fe computes the autocorrelations rho  
+*     Using the selected AR model, rlsys2fe computes the autocorrelations rho  
 *     and the covariances tau between the stationary  process and the  
 *     innovations. 
 * 
       n1=ndim2 
       n2=n1+(ndim2+1)*(ndim2+1) 
       n3=n2+(ndim2+1) 
-      call s_sys2fe(phiaux,theta,thetas,k,0,0,0,rho1,tau,work3(1), 
+      call rlsys2fe(phiaux,theta,thetas,k,0,0,0,rho1,tau,work3(1), 
      +     work3(n1+1),work3(n2+1),work3(n3+1),iwork3,ndim2) 
 * 
 *     Beginning of block 1. 
@@ -2434,7 +2434,7 @@ C=======================================================================
 * 
          thesig=sigmau 
 *           
-*       Given the rho's computed with s_sys2fe, s_sys1fe computes a 
+*       Given the rho's computed with rlsys2fe, rlsys1fe computes a 
 *       model with the same rho's, which includes an AR operator  
 *       of the same order than the selected one, and a seasonal MA  
 *       parameter equal to the current value of thetas. The 
@@ -2442,27 +2442,27 @@ C=======================================================================
 * 
          n1=ndim2 
          n2=n1+ip*ip 
-         call s_sys1fe(phidif1,ip,thetas,rho1,k,isp,phithe,tau,ier, 
+         call rlsys1fe(phidif1,ip,thetas,rho1,k,isp,phithe,tau,ier, 
      +        work3(1),work3(n1+1),work3(n2+1),iwork3,ndim2) 
          if (iqfin.gt.0) then 
             n1=ndim2 
             n2=n1+(ndim2+1)*(ndim2+1) 
             n3=n2+(ndim2+1) 
 * 
-*     s_sys2fe computes the autocorrelations rho and the covariances  
+*     rlsys2fe computes the autocorrelations rho and the covariances  
 *     tau between the stationary  process and the innovations of the 
-*     model computed by s_sys1fe. 
+*     model computed by rlsys1fe. 
 * 
-            call s_sys2fe(phithe,theta,thetas,k,0,isp,indth,rho,tau, 
+            call rlsys2fe(phithe,theta,thetas,k,0,isp,indth,rho,tau, 
      +           work3(1),work3(n1+1),work3(n2+1),work3(n3+1), 
      +           iwork3,ndim2) 
 *           
-*     Given the rho's and tau's computed by s_sys2fe, s_sys3fe computes  
+*     Given the rho's and tau's computed by rlsys2fe, rlsys3fe computes  
 *     the coefficients of an ARMA model with the same rho's, and tau's 
 *     and with a seasonal MA parameter equal to the current value of  
 *     thetas.  
 * 
-            call s_sys3fe(phithe,k,phiaux,theta,thetas,ipfin,iqfin,isp, 
+            call rlsys3fe(phithe,k,phiaux,theta,thetas,ipfin,iqfin,isp, 
      +           indth,rho,tau,ndim2,work3(1), 
      +           work3(ndim2*ndim2+1),iwork3)   
          else 
@@ -2474,41 +2474,41 @@ C=======================================================================
             enddo 
          endif 
 * 
-*     We check if the AR operator computed by s_sys3fe is stationary. 
+*     We check if the AR operator computed by rlsys3fe is stationary. 
 *     Otherwise is modified. 
 *   
          if (ipfin.gt.0) then  
-            call s_yulefe(phiaux,rho,ipfin,work3(1),iiwork,ndim2) 
-            call s_durbfe(rho,ipfin,phiau1,ier,work3(1),ndim2) 
+            call rlyulefe(phiaux,rho,ipfin,work3(1),iiwork,ndim2) 
+            call rldurbfe(rho,ipfin,phiau1,ier,work3(1),ndim2) 
             if (ier.eq.1) then 
                do i=1,ipfin 
                   if (phiau1(i).gt. 1.d0) phiau1(i)= .98d0 
                   if (phiau1(i).lt.-1.d0) phiau1(i)=-.98d0 
                enddo 
-               call s_invdfe(phiau1,ipfin,phiaux,work3(1),ndim2)   
+               call rlinvdfe(phiau1,ipfin,phiaux,work3(1),ndim2)   
             endif 
          endif 
 * 
-*     We check if the MA operator computed by s_sys3fe is invertible. 
+*     We check if the MA operator computed by rlsys3fe is invertible. 
 *     Otherwise is modified. 
 *       
          if (iqfin.gt.0) then 
-            call s_yulefe(theta,rho,iqfin,work3(1),iiwork,ndim2) 
-            call s_durbfe(rho,iqfin,phiau1,ier,work3(1),ndim2) 
+            call rlyulefe(theta,rho,iqfin,work3(1),iiwork,ndim2) 
+            call rldurbfe(rho,iqfin,phiau1,ier,work3(1),ndim2) 
             if (ier.eq.1) then 
                do i=1,iqfin 
                   if (phiau1(i).gt. 1.d0) phiau1(i)= .98d0 
                   if (phiau1(i).lt.-1.d0) phiau1(i)=-.98d0 
                enddo 
-               call s_invdfe(phiau1,iqfin,theta, work3(1),ndim2)   
+               call rlinvdfe(phiau1,iqfin,theta, work3(1),ndim2)   
             endif 
          endif 
 * 
-*     We call s_fc12fe to compute the goal function vtau. 
+*     We call rlfc12fe to compute the goal function vtau. 
 * 
          kk=k 
          if (iqfin.gt.0) kk=ipfin
-         call s_fc12fe(phiaux,theta, thetas,n,beta,cck,idif,isp,nsd, 
+         call rlfc12fe(phiaux,theta, thetas,n,beta,cck,idif,isp,nsd, 
      +        m,kk,iqfin,n0,indth,x,y,sigman,thesig,vtau, 
      +        sigini,tau,xy,yhat,uhat,epshat,st,epspred,w, 
      +        auxm,npred,poldif,ndim2,work3,nw3,work4,nw4, 
@@ -2545,17 +2545,17 @@ C=======================================================================
             if (thetas.le.0.99d0.and.thetas.ge.-0.99d0) then 
                n1=ndim2 
                n2=n1+ip*ip
-               call s_sys1fe(phidif1,ip,thetas,rho1,k,isp,phithe,tau,
+               call rlsys1fe(phidif1,ip,thetas,rho1,k,isp,phithe,tau,
      +              ier,work3(1),work3(n1+1),work3(n2+1),iwork3,ndim2) 
                if (ier.eq.1) go to 1800       
                if (iqfin.gt.0) then 
                   n1=ndim2 
                   n2=n1+(ndim2+1)*(ndim2+1) 
                   n3=n2+(ndim2+1)
-                  call s_sys2fe(phithe,theta,thetas,k,0,isp,indth,rho, 
+                  call rlsys2fe(phithe,theta,thetas,k,0,isp,indth,rho, 
      +                 tau,work3(1),work3(n1+1),work3(n2+1), 
      +                 work3(n3+1),iwork3,ndim2) 
-                  call s_sys3fe(phithe,k,phiaux,theta,thetas,ipfin, 
+                  call rlsys3fe(phithe,k,phiaux,theta,thetas,ipfin, 
      +                 iqfin,isp,indth,rho,tau,ndim2,work3(1), 
      +                 work3(ndim2*ndim2+1),iwork3)          
                else 
@@ -2567,30 +2567,30 @@ C=======================================================================
                   enddo 
                endif 
                if (ipfin.gt.0) then 
-                  call s_yulefe(phiaux,rho,ipfin,work3(1),iiwork,ndim2) 
-                  call s_durbfe(rho,ipfin,phiau1,ier,work3(1),ndim2) 
+                  call rlyulefe(phiaux,rho,ipfin,work3(1),iiwork,ndim2) 
+                  call rldurbfe(rho,ipfin,phiau1,ier,work3(1),ndim2) 
                   if (ier.eq.1) then 
                      do i=1,ipfin 
                         if (phiau1(i).gt. 1.d0) phiau1(i)= .98d0 
                         if (phiau1(i).lt.-1.d0) phiau1(i)=-.98d0 
                      enddo
-                     call s_invdfe(phiau1,ipfin,phiaux,work3(1),ndim2)   
+                     call rlinvdfe(phiau1,ipfin,phiaux,work3(1),ndim2)   
                   endif 
                endif 
                if (iqfin.gt.0) then 
-                  call s_yulefe(theta,rho,iqfin,work3(1),iiwork,ndim2) 
-                  call s_durbfe(rho,iqfin,phiau1,ier,work3(1),ndim2) 
+                  call rlyulefe(theta,rho,iqfin,work3(1),iiwork,ndim2) 
+                  call rldurbfe(rho,iqfin,phiau1,ier,work3(1),ndim2) 
                   if (ier.eq.1) then 
                      do i=1,iqfin 
                         if (phiau1(i).gt. 1.d0) phiau1(i)= .98d0 
                         if (phiau1(i).lt.-1.d0) phiau1(i)=-.98d0 
                      enddo 
-                     call s_invdfe(phiau1,iqfin,theta, work3(1),ndim2)   
+                     call rlinvdfe(phiau1,iqfin,theta, work3(1),ndim2)   
                   endif 
                endif 
                kk=k 
                if (iqfin.gt.0) kk=ipfin 
-               call s_fc12fe(phiaux,theta, thetas,n,beta,cck,idif,isp, 
+               call rlfc12fe(phiaux,theta, thetas,n,beta,cck,idif,isp, 
      +              nsd,m,kk,iqfin,n0,indth,x,y,sigman,thesig, 
      +              vtau,sigini,tau,xy,yhat,uhat,epshat,st, 
      +              epspred,w,auxm,npred,poldif,ndim2,work3, 
@@ -2620,7 +2620,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_gesvfe(n, nrhs, a, lda, ipiv, b, ldb, info) 
+      subroutine rlgesvfe(n, nrhs, a, lda, ipiv, b, ldb, info) 
 *----------------------------------------------------------------------- 
 *     This subroutine computes the solution to a real system of linear 
 *     equations 
@@ -2689,7 +2689,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_grd1fe(x,y,interc,n,m,idif,isp,nsd,iqfin,phi,beta, 
+      subroutine rlgrd1fe(x,y,interc,n,m,idif,isp,nsd,iqfin,phi,beta, 
      +     phidif1,sigini,sigmau,akai,cck,parold,ssqold, 
      +     xy,yhat,uhat,epshat,st,epspred,w,auxm,npred, 
      +     poldif,ndim1,ndim2,beta0,beta1,prod,phibes, 
@@ -2718,9 +2718,9 @@ C=======================================================================
 *               ndim2: max0(ip+idif+isp*nsd,iqfin+indth*isp+1), required 
 *                      to dimension several arrays 
 *               utol : We make ftol=xtol=gtol=utol in the optimizer
-*                      soubroutine s_lmdffe. 
+*                      soubroutine rllmdffe. 
 *               maxfev: Maximum number of calls to the function
-*                       which calculates the pseudo likelihood in s_lmdffe
+*                       which calculates the pseudo likelihood in rllmdffe
 * 
 *     Output: 
 *               phi    : Row 1 contains the phi estimator for the 
@@ -2746,7 +2746,7 @@ C=======================================================================
       dimension ipvt(ndim1),npo(1+iqfin) 
       dimension work3(nw3),work4(nw4),work5(nw5) 
       dimension iwork3(niw3),iwork4(niw4),iwork5(niw5) 
-      external s_fc11fe
+      external rlfc11fe
       data zero,one/0.d0,1.d0/
       data fi0 /0.5d0, -0.1d0,  0.9d0,  0.6d0,  0.8d0,  0.4d0,  0.99d0,
      +          0.3d0,  0.2d0,  0.1d0,  0.0d0,  0.7d0, -0.2d0, -0.30d0,
@@ -2755,7 +2755,7 @@ C=======================================================================
       data delt1/.05d0,.025d0,.0125d0/    
 *-----------------------------------------------------------------------  
 * 
-*     s_lmdffe parameters. 
+*     rllmdffe parameters. 
 * 
       ftol=zero
       xtol=utol
@@ -2765,11 +2765,11 @@ C=======================================================================
       factor=100.d0 
       ldfjac=n 
 *  
-*     s_grd1fe is divided in four blocks. The first block minimizes the goal 
+*     rlgrd1fe is divided in four blocks. The first block minimizes the goal 
 *     function over a gross grid. In the second block we do a similar 
 *     minimization using a finer grid. In the third block we minimize the 
 *     goal function by three steps of minimization. In the fourth block 
-*     we minimize the goal function using the Marquard subroutine s_lmdffe. 
+*     we minimize the goal function using the Marquard subroutine rllmdffe. 
 * 
 *     Here it begins the first block. 
 * 
@@ -2794,7 +2794,7 @@ C=======================================================================
          else 
             polphi(1)=one 
             polphi(2)=-fi0(i) 
-            call s_polyfe(poldif,ndiff,polphi,1,prod,ktrue) 
+            call rlpolyfe(poldif,ndiff,polphi,1,prod,ktrue) 
             do ii=1,ktrue 
                phi(ktrue,ii)=-prod(ii+1)  
             enddo 
@@ -2825,13 +2825,13 @@ C=======================================================================
 * 
 *     We call the robust regression procedure. 
 * 
-	    call s_rqr1fe(n-ktrue,m,xy,yy,eps,itmax,beta,sumre,
+	    call rlrqr1fe(n-ktrue,m,xy,yy,eps,itmax,beta,sumre,
      +           interc,n,work3,nw3,iwork3,niw3) 
          endif 
 * 
 *     We calculate an initial estimate of the residuals scale. 
 * 
-         sigini=s_xmadfe(x,y,beta,m,n,aux2(1),aux2(n+1),aux2(2*n+1), 
+         sigini=rlxmadfe(x,y,beta,m,n,aux2(1),aux2(n+1),aux2(2*n+1), 
      +        poldif,ndiff) 
 * 
 *     We compute the innovations scale. 
@@ -2845,7 +2845,7 @@ C=======================================================================
 * 
 *     We compute the goal function for the current solution. 
 * 
-         call s_fc12fe(phiaux,theta,thetas,n,beta,one,idif,isp,nsd,m,
+         call rlfc12fe(phiaux,theta,thetas,n,beta,one,idif,isp,nsd,m,
      +        1,0,n0,0,x,y,sigman,sigmau,vtau,sigini,tau,xy,yhat, 
      +        uhat,epshat,st,epspred,w,auxm,npred,poldif,ndim2, 
      +        work3,nw3,work4,nw4,iwork4,niw4,work5,nw5,iwork5,niw5) 
@@ -2886,7 +2886,7 @@ C=======================================================================
             else 
                polphi(1)=one
                polphi(2)=-phidif1 
-               call s_polyfe(poldif,ndiff,polphi,1,prod,ktrue) 
+               call rlpolyfe(poldif,ndiff,polphi,1,prod,ktrue) 
                do ii=1,ktrue 
                   phi(ktrue,ii)=-prod(ii+1)  
                enddo 
@@ -2908,12 +2908,12 @@ C=======================================================================
 *     The second time we use a linearized version of the filter using  
 *     these weights w to filter the x's and y, obtaining a matrix xy. 
 * 
-            call s_flt1fe(x,y,n,m,idif,isp,nsd,phiaux,beta0,theta, 
+            call rlflt1fe(x,y,n,m,idif,isp,nsd,phiaux,beta0,theta, 
      +           thetas,ktrue,iq,sigma0,0,n0,tau,sigini0,0,rho, 
      +           one,0,ypure,xy,yhat,uhat,epshat,st,epspred, 
      +           w,auxm,ndim2,work3,nw3,work5,nw5,iwork5,niw5) 
             if (m.gt.0) then 
-               call s_flt1fe(x,y,n,m,idif,isp,nsd,phiaux,beta0,theta, 
+               call rlflt1fe(x,y,n,m,idif,isp,nsd,phiaux,beta0,theta, 
      +              thetas,ktrue,iq,sigma0,0,n0,tau,sigini0, 
      +              1,rho,one,0,ypure,xy,yhat,uhat,epshat,st, 
      +              epspred,w,auxm,ndim2,work3,nw3,work5,nw5,
@@ -2931,12 +2931,12 @@ C=======================================================================
 *     matrix xy computed by filter. 
 *     We apply the robust regression to the filtered observations. 
 * 
-               call s_rqr1fe(n-n0,m,xy,yy,eps,itmax,beta,sumre, 
+               call rlrqr1fe(n-n0,m,xy,yy,eps,itmax,beta,sumre, 
      +              interc,n,work3,nw3,iwork3,niw3) 
 * 
 *     We compute a robust scale of the differenced residuals. 
 * 
-               sigini=s_xmadfe(x,y,beta,m,n,aux2(1),aux2(n+1),
+               sigini=rlxmadfe(x,y,beta,m,n,aux2(1),aux2(n+1),
      +              aux2(2*n+1),poldif,ndiff) 
             endif 
 * 
@@ -2958,7 +2958,7 @@ C=======================================================================
 * 
 *     We compute the goal function for the current solution. 
 * 
-            call s_fc12fe(phiaux,theta, thetas,n,beta,one,idif,isp,
+            call rlfc12fe(phiaux,theta, thetas,n,beta,one,idif,isp,
      +           nsd,m,1,0,n0,0,x,y,sigman,sigmau,vtau,sigini,tau, 
      +           xy,yhat,uhat,epshat,st,epspred,w,auxm,npred, 
      +           poldif,ndim2,work3,nw3,work4,nw4,iwork4,niw4, 
@@ -3009,7 +3009,7 @@ C=======================================================================
                else 
                   polphi(1)=one 
                   polphi(2)=-fi00(i) 
-                  call s_polyfe(poldif,ndiff,polphi,1,prod,ktrue) 
+                  call rlpolyfe(poldif,ndiff,polphi,1,prod,ktrue) 
                   do ii=1,ktrue 
                      phi(ktrue,ii)=-prod(ii+1)  
                   enddo 
@@ -3028,14 +3028,14 @@ C=======================================================================
 *     The second time we use a linearized version of the filter using  
 *     these weights w to filter the x's and the y obtaining a matrix xy. 
 * 
-               call s_flt1fe(x,y,n,m,idif,isp,nsd,phiaux,beta1,theta, 
+               call rlflt1fe(x,y,n,m,idif,isp,nsd,phiaux,beta1,theta, 
      +              thetas,ktrue,iq,sigma1,0,n0,tau,sigini1, 
      +              0,rho,one,0,ypure,xy,yhat,uhat,epshat,st, 
      +              epspred,w,auxm,ndim2,work3,nw3,work5,nw5, 
      +              iwork5,niw5)  
                rho(1)=phidif1 
                if (m.gt.0) then 
-                  call s_flt1fe(x,y,n,m,idif,isp,nsd,phiaux,beta1,
+                  call rlflt1fe(x,y,n,m,idif,isp,nsd,phiaux,beta1,
      +                 theta,thetas,ktrue,iq,sigma1,0,n0,tau,sigini1, 
      +                 1,rho,one,0,ypure,xy,yhat,uhat,epshat, 
      +                 st,epspred,w,auxm,ndim2,work3,nw3,work5, 
@@ -3053,12 +3053,12 @@ C=======================================================================
 *     matrix xy computed by filter. 
 *     We apply the robust regression to the filtered observations. 
 * 
-                  call s_rqr1fe(n-n0,m,xy,yy,eps,itmax,beta,sumre, 
+                  call rlrqr1fe(n-n0,m,xy,yy,eps,itmax,beta,sumre, 
      +                 interc,n,work3,nw3,iwork3,niw3) 
 * 
 *     We compute a robust scale of the differenced residuals. 
 * 
-                  sigini=s_xmadfe(x,y,beta,m,n,aux2(1),aux2(n+1), 
+                  sigini=rlxmadfe(x,y,beta,m,n,aux2(1),aux2(n+1), 
      +                 aux2(2*n+1),poldif,ndiff) 
                endif 
 * 
@@ -3077,7 +3077,7 @@ C=======================================================================
 * 
 *     We compute the goal function for the current solution. 
 * 
-               call s_fc12fe(phiaux,theta,thetas,n,beta,one,idif,
+               call rlfc12fe(phiaux,theta,thetas,n,beta,one,idif,
      +              isp,nsd, m,1,0,n0,0,x,y,sigman,sigmau,vtau,
      +              sigini,tau,xy,yhat,uhat,epshat,st,epspred,w,auxm,
      +              npred,poldif,ndim2,work3,nw3,work4,nw4,iwork4,
@@ -3121,15 +3121,15 @@ C=======================================================================
       phiaux(1)=phidif1 
 *  
 *     We set npar: the number of parameters of the optimization subroutine 
-*     s_lmdffe and the filter bandwidth, par(npar), to 1.0. 
+*     rllmdffe and the filter bandwidth, par(npar), to 1.0. 
 * 
       npar=1+m
       ccknew=one
 * 
-*     We call subroutine s_tranfe which computes partial autocorrelations 
+*     We call subroutine rltranfe which computes partial autocorrelations 
 *     and transforms them in variables that may take any real value. 
 * 
-      call s_trasfe(phiaux,theta,thetas,beta,ndim2,1,0,0,m,para,par,
+      call rltrasfe(phiaux,theta,thetas,beta,ndim2,1,0,0,m,para,par,
      +     ndim1,rh,work3,nw3,iwork3,niw3,0) 
 * 
 *     The vector npo contains the powers of B with non zero coefficients  
@@ -3147,9 +3147,9 @@ C=======================================================================
       do while (itte.le.2) 
          itte=itte+1 
 * 
-*     s_lmdffe is the Marquard routine which minimizes the goal function. 
+*     rllmdffe is the Marquard routine which minimizes the goal function. 
 * 
-         call s_lmdffe(s_fc11fe,n,npar,par,f,ftol,xtol,gtol,maxfev, 
+         call rllmdffe(rlfc11fe,n,npar,par,f,ftol,xtol,gtol,maxfev, 
      +        diag,mode,factor,nprint,info,nfev,fjac,ldfjac, 
      +        ipvt,qtf,wa1,wa2,wa3,wa4,idif,isp,nsd,m,1,0,n0,0, 
      +        npo,0,x,y,sigman,sigmanew,xy,yhat,uhat,epshat,st, 
@@ -3164,13 +3164,13 @@ C=======================================================================
 *     We compute in ssq the value of the goal function for the 
 *     optimal solution. 
 * 
-*     We call s_fc11fe to compute two estimates of the innovation scale  
+*     We call rlfc11fe to compute two estimates of the innovation scale  
 *     sigman y sigmanew. The difference between these two estimates is  
 *     that sigmanew is computed only using the variance of the differenced  
 *     stationary process and sigman corrects this value using the  
 *     filtered residuals uhat. 
 * 
-         call s_fc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,1,0,n0,0,npo, 
+         call rlfc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,1,0,n0,0,npo, 
      +        sigman,sigmanew,0,x,y,xy,yhat, ccknew,uhat, 
      +        epshat,st, epspred,w,auxm,poldif,ndim1,ndim2, 
      +        work3,nw3,work4,nw4,iwork4,niw4,work5,nw5,
@@ -3201,7 +3201,7 @@ C=======================================================================
       do i=1,ndim2 
          phiaux(i)=zero
       enddo  
-      call s_fc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,1,0,n0,0,npo, 
+      call rlfc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,1,0,n0,0,npo, 
      +     sigmau,sigmanew,0,x,y,xy,yhat,cck,uhat,epshat,st, 
      +     epspred,w,auxm,poldif,ndim1,ndim2,work3,nw3,
      +     work4,nw4,iwork4,niw4,work5,nw5,iwork5,niw5) 
@@ -3216,9 +3216,9 @@ C=======================================================================
       vtau=znnn*(dlog(vtau)-dlog(0.41d0)-dlog(znnn)) 
 *     
 *     We antitransform the autoregressive parameter from par, using  
-*     subroutine s_tranfe. 
+*     subroutine rltranfe. 
 * 
-      call s_tranfe(par,ndim1,ndim2,1,0,0,0,para,para1,work3,para, 
+      call rltranfe(par,ndim1,ndim2,1,0,0,0,para,para1,work3,para, 
      +     theta,thetas,beta)
       phidif1=para 
       phiaux(1)=para 
@@ -3235,7 +3235,7 @@ C=======================================================================
       else 
          phiau1(1)=one 
          phiau1(2)=-phidif1 
-         call s_polyfe(poldif,ndiff,phiau1,1,phiau2,ktrue) 
+         call rlpolyfe(poldif,ndiff,phiau1,1,phiau2,ktrue) 
          do i=1,ktrue 
             phi(ktrue,i)=-phiau2(i+1) 
          enddo 
@@ -3250,7 +3250,7 @@ C=======================================================================
 *     We compute the scale of the stationary AR component of the 
 *     regression model, that is, of the regression errors after differencing. 
 * 
-      sigini=s_xmadfe(x,y,beta,m,n,aux2(1),aux2(n+1),aux2(2*n+1),
+      sigini=rlxmadfe(x,y,beta,m,n,aux2(1),aux2(n+1),aux2(2*n+1),
      +     poldif,ndiff) 
 * 
 *     We compute the robust AIC criterium. 
@@ -3259,7 +3259,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_grdkfe(x,y,n,m,ip,idif,isp,nsd,iqfin,phi,beta,
+      subroutine rlgrdkfe(x,y,n,m,ip,idif,isp,nsd,iqfin,phi,beta,
      +     thetas,phidif,k,sigini,sigmau,akai,cck,parold,ssqold, 
      +     xy,yhat,uhat,epshat,st,epspred,w,auxm,npred, 
      +     poldif,ndim1,ndim2,theta,phiaux,ydifh,ydift, 
@@ -3299,9 +3299,9 @@ C=======================================================================
 *           ndim2 : max0(ip+idif+isp*nsd,iqfin+indth*isp+1), required to 
 *                   dimension several arrays
 *           utol  : We make ftol=xtol=gtol=utol in the optimizer
-*                   soubroutine s_lmdffe. 
+*                   soubroutine rllmdffe. 
 *           maxfev: Maximum number of calls to the function
-*                   which calculates the pseudo likelihood in s_lmdffe
+*                   which calculates the pseudo likelihood in rllmdffe
 * 
 *     Output: 
 *           phi:    on output contains the estimated AR coefficients of the  
@@ -3315,7 +3315,7 @@ C=======================================================================
 *                   model 
 *           akai  : robust AIC criterium 
 *           cck   : bandwidth of the robust filter 
-*           parold: optimal transformed parameter used in s_lmdffe 
+*           parold: optimal transformed parameter used in rllmdffe 
 *-----------------------------------------------------------------------  
       implicit double precision (a-h,o-z) 
       dimension x(n,m),y(n),phi(ndim2,ndim2),beta(m),phidif(ip+1,ip+1), 
@@ -3329,7 +3329,7 @@ C=======================================================================
       dimension work3(nw3),work4(nw4),work5(nw5) 
       integer npo(ip+iqfin),ipvt(ndim1)
       integer iwork3(niw3),iwork4(niw4),iwork5(niw5) 
-      external s_fc11fe 
+      external rlfc11fe 
       data zero/0.d0/
 *-----------------------------------------------------------------------   
 *     We will minimize a robust M-estimate of the scale of the residuals 
@@ -3361,7 +3361,7 @@ C=======================================================================
 * 
 *     We filter using the precedent model. 
 * 
-      call s_flt1fe(x,y,n,m,idif,isp,nsd,phiaux,beta,theta,thetas, 
+      call rlflt1fe(x,y,n,m,idif,isp,nsd,phiaux,beta,theta,thetas, 
      +     ktrue1, iq,sigmau,0,n0,tau,sigini,0,rho,1.d0,0, 
      +     aux2,xy,yhat,uhat,epshat,st,epspred,w,auxm, 
      +     ndim2,work3,nw3,work5,nw5,iwork5,niw5) 
@@ -3406,7 +3406,7 @@ C=======================================================================
 * 
 *     We compute an estimate of the partial autocorrelation of order k. 
 * 
-      call s_mednfe(wa4,nf,xmed,aux2) 
+      call rlmednfe(wa4,nf,xmed,aux2) 
       if(xmed.gt.0.99d0)   xmed= 0.99d0 
       if(xmed.lt.-0.99d0)  xmed=-0.99d0 
 * 
@@ -3423,15 +3423,15 @@ C=======================================================================
       enddo 
 * 
 *     We set npar: the number of parameters of the optimization subroutine 
-*     s_lmdffe and the filter bandwidth, par(npar), to 1.0. 
+*     rllmdffe and the filter bandwidth, par(npar), to 1.0. 
 *
       npar=k+m
       ccknew=1.d0
 * 
-*     We call subroutine s_tranfe which computes partial autocorrelations 
+*     We call subroutine rltranfe which computes partial autocorrelations 
 *     and transforms them in variables that may take any real value. 
 * 
-      call s_trasfe(phiaux,theta,thetas,beta,ndim2,k,0,0,m,para,par,
+      call rltrasfe(phiaux,theta,thetas,beta,ndim2,k,0,0,m,para,par,
      +     ndim1,rh,work3,nw3,iwork3,niw3,0) 
 * 
 *     The vector npo contains the powers of B with non zero coefficients  
@@ -3451,11 +3451,11 @@ C=======================================================================
       do while (itte.le.2) 
          itte=itte+1
 * 
-*     We compute the initial value of s_fc11fe. Since s_fc11fe gives only 
+*     We compute the initial value of rlfc11fe. Since rlfc11fe gives only 
 *     pseudoresiduals in vector f, ssq computes the value of the goal  
 *     function. 
 * 
-         call s_fc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,k,0,n0,0,npo, 
+         call rlfc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,k,0,n0,0,npo, 
      +        sigman,sigmanew,0,x,y,xy,yhat,ccknew,uhat,epshat,
      +        st,epspred,w,auxm,poldif,ndim1,ndim2,work3,nw3,
      +        work4, nw4,iwork4,niw4,work5,nw5,iwork5,niw5)  
@@ -3473,7 +3473,7 @@ C=======================================================================
                parold(npar-ij+1)=parold(npar-ij) 
             enddo 
             parold(k)=zero
-            call s_fc11fe(n,npar,parold,f,iflag,idif,isp,nsd,m,k,0,n0, 
+            call rlfc11fe(n,npar,parold,f,iflag,idif,isp,nsd,m,k,0,n0, 
      +           0,npo,sigman,sigmanew,0,x,y,xy,yhat,cck,uhat,epshat,
      +           st,epspred,w,auxm,poldif,ndim1,ndim2,work3,nw3,work4,
      +           nw4,iwork4,niw4,work5,nw5,iwork5,niw5) 
@@ -3489,9 +3489,9 @@ C=======================================================================
             endif 
          endif 
 * 
-*     s_lmdffe is the Marquard routine which minimizes the goal function. 
+*     rllmdffe is the Marquard routine which minimizes the goal function. 
 * 
-         call s_lmdffe(s_fc11fe,n,npar,par,f,ftol,xtol,gtol,maxfev, 
+         call rllmdffe(rlfc11fe,n,npar,par,f,ftol,xtol,gtol,maxfev, 
      +        diag,mode,factor,nprint,info,nfev,fjac,ldfjac, 
      +        ipvt,qtf,wa1,wa2,wa3,wa4,idif,isp,nsd,m,k,0,n0,0, 
      +        npo,0,x,y,sigman,sigmanew,xy,yhat,uhat,epshat,st, 
@@ -3507,13 +3507,13 @@ C=======================================================================
             ssq=ssq+f(jjj)*f(jjj) 
          enddo 
 * 
-*     We call s_fc11fe to compute two estimates of the innovation scale: 
+*     We call rlfc11fe to compute two estimates of the innovation scale: 
 *     sigman y simanew. The difference between these two estimates is  
 *     that sigmanew is computed only using the variance of the differenced  
 *     stationary process and sigman corrects this value using the  
 *     filtered residuals uhat. 
 *
-         call s_fc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,k,0,n0,0,npo, 
+         call rlfc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,k,0,n0,0,npo, 
      +        sigman,sigmanew,0,x,y,xy,yhat,ccknew,uhat,epshat,
      +        st,epspred,w,auxm,poldif,ndim1,ndim2,work3,nw3,
      +        work4,nw4,iwork4,niw4,work5,nw5,iwork5,niw5) 
@@ -3543,7 +3543,7 @@ C=======================================================================
       do i=1,ndim2 
          phiaux(i)=zero
       enddo
-      call s_fc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,k,0,n0,0,npo, 
+      call rlfc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,k,0,n0,0,npo, 
      +     sigmau,sigmanew,0,x,y,xy,yhat,cck,uhat,epshat,st, 
      +     epspred,w,auxm,poldif,ndim1,ndim2,work3,nw3,work4, 
      +     nw4,iwork4,niw4,work5,nw5,iwork5,niw5) 
@@ -3558,9 +3558,9 @@ C=======================================================================
       vtau=znnn*(dlog(vtau)-dlog(0.41d0)-dlog(znnn)) 
 * 
 *     We antitransform the autoregressive parameters from par, using  
-*     subroutine s_tranfe. 
+*     subroutine rltranfe. 
 * 
-      call s_tranfe(par,ndim1,ndim2,k,0,0,0,para,para1,work3,phiaux, 
+      call rltranfe(par,ndim1,ndim2,k,0,0,0,para,para1,work3,phiaux, 
      +     theta,thetas,beta) 
       do i=1,k 
          phidif(k,i)=phiaux(i) 
@@ -3578,7 +3578,7 @@ C=======================================================================
          do i=2,k+1 
             phiau1(i) = -phidif(k,i-1) 
          enddo 
-         call s_polyfe(poldif,ndiff,phiau1,k,phiau2,ktrue) 
+         call rlpolyfe(poldif,ndiff,phiau1,k,phiau2,ktrue) 
          do i=1,ktrue 
             phi(ktrue,i)=-phiau2(i+1) 
          enddo 
@@ -3593,7 +3593,7 @@ C=======================================================================
 *     We compute the scale of the stationary AR component of the 
 *     regression model, that is, of the regression errors after differencing.  
 * 
-      sigini=s_xmadfe(x,y,beta,m,n,aux2(1),aux2(n+1),aux2(2*n+1),
+      sigini=rlxmadfe(x,y,beta,m,n,aux2(1),aux2(n+1),aux2(2*n+1),
      +     poldif,ndiff) 
 * 
 *     We compute the robust AIC criterion. 
@@ -3602,7 +3602,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_impcfe(x,y,m,idif,isp,nsd,phi,beta,theta,thetas,
+      subroutine rlimpcfe(x,y,m,idif,isp,nsd,phi,beta,theta,thetas,
      +     ktrue,q,sigmau,indth,n0,tau,sigmadif,rho,d,n,resid,psils,
      +     psia,waux,lambaux,cck,sigfil,yhat,uhat,epshat,st,lscan,w,
      +     auxm,xy,m1,idim,work2,idimw2,work3,idimw3,iwork,idimiw,
@@ -3621,12 +3621,12 @@ C=======================================================================
       double precision lambaux(3,n)
       data zero,one/0.d0,1.d0/
 *----------------------------------------------------------------------- 
-*     We call s_flt2fe with iout=d (we use the robust filter for the 
+*     We call rlflt2fe with iout=d (we use the robust filter for the 
 *     observations
 *     t=1,...,d-1, and t=d+h+1,...n, and the classical filter from  
 *     t=d,...,d+h)
 *
-      call s_flt2fe(x,y,n,m,idif,isp,nsd,phi,beta,theta,thetas,ktrue,
+      call rlflt2fe(x,y,n,m,idif,isp,nsd,phi,beta,theta,thetas,ktrue,
      +     q,sigfil,indth,n0,tau,sigmadif,0,rho,cck,d,yhat,uhat,epshat,
      +     st,lscan,w,auxm,xy,m1,work2(iw2then),work2(iw2xm),
      +     work2(iw2xp),work2(iw2alfp),work2(iw2r),work2(iw2v),
@@ -3639,7 +3639,7 @@ C=======================================================================
       do i=n0+1,n
          uhat(i)=uhat(i)/st(i)
       enddo
-      call s_calsfe(uhat,n,n0,sigmanew,work2(1),work3)
+      call rlcalsfe(uhat,n,n0,sigmanew,work2(1),work3)
 *     
 *     We define the indicators vector for the additive outliers and the 
 *     level shifts.
@@ -3655,12 +3655,12 @@ C=======================================================================
          psils(t)=one
       enddo
 *
-*     We call s_flt2fe (with the indicator indfil=1) to apply to the vectors 
+*     We call rlflt2fe (with the indicator indfil=1) to apply to the vectors 
 *     psia and psils the same transformation that was applied to the vector 
 *     eps(t) 
 *   
       indfil=1
-      call s_flt2fe(psia,psils,n,1,idif,isp,nsd,phi,beta,theta,thetas,
+      call rlflt2fe(psia,psils,n,1,idif,isp,nsd,phi,beta,theta,thetas,
      +     ktrue,q,sigmau,indth,n0,tau,sigmadif,indfil,rho,cck,d,yhat,
      +     uhat,epshat,st,lscan,w,auxm,xy,m1,work2(iw2then),
      +     work2(iw2xm),work2(iw2xp),work2(iw2alfp),work2(iw2r),
@@ -3668,7 +3668,7 @@ C=======================================================================
      +     work2(iw2alfx),work2(iw2xaux),work2(iw2v1),work2(iw2v2),
      +     work2(iw2ypur),idim,work3,idimw3,iwork,idimiw)
 *     
-*     The transformed psia and psils are placed by subroutine s_flt2fe in
+*     The transformed psia and psils are placed by subroutine rlflt2fe in
 *     matrix xy. Using this we compute waux(i,d) (i=1, the impact of the
 *     innovation outlier, i=2 of the additive outlier, i=3 of the level
 *     shift) and lambaux(i,d) (waux(i,d)/standard error)
@@ -3701,7 +3701,7 @@ C=======================================================================
       return
       end
 C======================================================================= 
-      subroutine s_invdfe(partial,lp,phif,phi,ndim2) 
+      subroutine rlinvdfe(partial,lp,phif,phi,ndim2) 
 *-----------------------------------------------------------------------
 *     This subroutine computes the coefficients of an AR model of order 
 *     lp given lp partial autocorrelations, using the Durbin algorithm. 
@@ -3731,7 +3731,7 @@ C=======================================================================
       return 
       end
 C=======================================================================
-      subroutine s_jac2fe(fcn,m,n,x,fvec,fjac,ldfjac,iflag,wa,  
+      subroutine rljac2fe(fcn,m,n,x,fvec,fjac,ldfjac,iflag,wa,  
      +     idif,isp,nsd,mm,np,nq,n0,indth,npo,npred,xx,yy,  
      +     sigman,sigmau,xy,yhat,uhat,epshat,st,epspred,  
      +     w,cck,auxm,poldif,ndim1,ndim2,work3,nw3,work4,  
@@ -3760,7 +3760,7 @@ C=======================================================================
 *        end  
 *  
 *        The value of iflag should not be changed by fcn unless  
-*        the user wants to terminate execution of s_jac2fe.  
+*        the user wants to terminate execution of rljac2fe.  
 *        In this case set iflag to a negative integer.  
 *  
 *      m is a positive integer input variable set to the number  
@@ -3781,7 +3781,7 @@ C=======================================================================
 *             which specifies the leading dimension of the array fjac.  
 *  
 *      iflag is an integer variable which can be used to terminate  
-*            the execution of s_jac2fe. See description of fcn.  
+*            the execution of rljac2fe. See description of fcn.  
 *    
 *      wa is a work array of length m.  
 *----------------------------------------------------------------------- 
@@ -3836,7 +3836,7 @@ C=======================================================================
       return    
       end  
 C=======================================================================
-      subroutine s_lmdffe(fcn,m,n,x,fvec,ftol,xtol,gtol,maxfev,  
+      subroutine rllmdffe(fcn,m,n,x,fvec,ftol,xtol,gtol,maxfev,  
      +     diag,mode,factor,nprint,info,nfev,fjac,ldfjac,  
      +     ipvt,qtf,wa1,wa2,wa3,wa4,idif,isp,nsd,mm,np,nq,  
      +     n0,indth,npo,npred,xx,yy,sigman,sigmau,xy,yhat,  
@@ -3852,7 +3852,7 @@ C=======================================================================
 *  
 *     The subroutine statement is  
 *  
-*     subroutine s_lmdffe(fcn,m,n,x,fvec,ftol,xtol,gtol,maxfev,  
+*     subroutine rllmdffe(fcn,m,n,x,fvec,ftol,xtol,gtol,maxfev,  
 *                      diag,mode,factor,nprint,info,nfev,fjac,  
 *                      ldfjac,ipvt,qtf,wa1,wa2,wa3,wa4)  
 *  
@@ -3863,8 +3863,8 @@ C=======================================================================
 *             in an external statement in the user calling  
 *             program, and should be written as follows.  
 *  
-*     NOTE: in our program fcn is s_fc11fe and has more arguments.  
-*           See the description of s_fnc1fe.  
+*     NOTE: in our program fcn is rlfc11fe and has more arguments.  
+*           See the description of rlfnc1fe.  
 *        
 *         subroutine fcn(m,n,x,fvec,iflag)  
 *         integer m,n,iflag  
@@ -3877,7 +3877,7 @@ C=======================================================================
 *         end  
 *  
 *         The value of iflag should not be changed by fcn unless  
-*         the user wants to terminate execution of s_lmdffe.  
+*         the user wants to terminate execution of rllmdffe.  
 *         in this case set iflag to a negative integer.  
 *  
 *       m is a positive integer input variable set to the number  
@@ -4044,7 +4044,7 @@ c     +     .or. maxfev .le. 0 .or. factor .le. zero) go to 300
      +     nw4,iwork4,niw4,work5,nw5,iwork5,niw5)  
       nfev = 1  
       if (iflag .lt. 0) go to 300  
-      fnorm = s_dnrmfe(m,fvec)  
+      fnorm = rldnrmfe(m,fvec)  
 *  
 *     Initialize Levenberg-Marquardt parameter and iteration counter.  
 *  
@@ -4058,7 +4058,7 @@ c     +     .or. maxfev .le. 0 .or. factor .le. zero) go to 300
 *     Calculate the jacobian matrix.  
 *     
       iflag = 2  
-      call s_jac2fe(fcn,m,n,x,fvec,fjac,ldfjac,iflag,wa4,  
+      call rljac2fe(fcn,m,n,x,fvec,fjac,ldfjac,iflag,wa4,  
      +     idif,isp,nsd,mm,np,nq,n0,indth,npo,npred,xx,yy,  
      +     sigman,sigmau,xy,yhat,uhat,epshat,st,epspred,  
      +     w,cck,auxm,poldif,ndim1,ndim2,work3,nw3,work4,nw4,  
@@ -4080,7 +4080,7 @@ c     +     .or. maxfev .le. 0 .or. factor .le. zero) go to 300
 *  
 *     Compute the qr factorization of the jacobian.  
 *     
-      call s_dqrffe(m,n,fjac,ldfjac,.true.,ipvt,n,wa1,wa2,wa3,epsmch)  
+      call rldqrffe(m,n,fjac,ldfjac,.true.,ipvt,n,wa1,wa2,wa3,epsmch)  
 *     
 *     On the first iteration and if mode is 1, scale according  
 *     to the norms of the columns of the initial jacobian.  
@@ -4099,7 +4099,7 @@ c     +     .or. maxfev .le. 0 .or. factor .le. zero) go to 300
       do 70 j = 1, n  
          wa3(j) = diag(j)*x(j)  
  70   continue  
-      xnorm = s_dnrmfe(n,wa3)  
+      xnorm = rldnrmfe(n,wa3)  
       delta = factor*xnorm  
       if (delta .eq. zero) delta = factor  
  80   continue  
@@ -4160,7 +4160,7 @@ c     +     .or. maxfev .le. 0 .or. factor .le. zero) go to 300
 *  
 *     Determine the Levenberg-Marquardt parameter.  
 *     
-      call s_dlpafe(n,fjac,ldfjac,ipvt,diag,qtf,delta,par,wa1,wa2,  
+      call rldlpafe(n,fjac,ldfjac,ipvt,diag,qtf,delta,par,wa1,wa2,  
      +     wa3,wa4,dwarf)  
 *  
 *     Store the direction p and x + p. calculate the norm of p.  
@@ -4170,7 +4170,7 @@ c     +     .or. maxfev .le. 0 .or. factor .le. zero) go to 300
          wa2(j) = x(j) + wa1(j)  
          wa3(j) = diag(j)*wa1(j)  
  210  continue  
-      pnorm = s_dnrmfe(n,wa3)  
+      pnorm = rldnrmfe(n,wa3)  
 *  
 *     On the first iteration, adjust the initial step bound.  
 *     
@@ -4186,7 +4186,7 @@ c     +     .or. maxfev .le. 0 .or. factor .le. zero) go to 300
      +     niw5)
       nfev = nfev + 1  
       if (iflag .lt. 0) go to 300  
-      fnorm1 = s_dnrmfe(m,wa4)  
+      fnorm1 = rldnrmfe(m,wa4)  
 *     
 *     Compute the scaled actual reduction.  
 *     
@@ -4204,7 +4204,7 @@ c     +     .or. maxfev .le. 0 .or. factor .le. zero) go to 300
             wa3(i) = wa3(i) + fjac(i,j)*temp  
  220     continue  
  230  continue  
-      temp1 = s_dnrmfe(n,wa3)/fnorm  
+      temp1 = rldnrmfe(n,wa3)/fnorm  
       temp2 = (dsqrt(par)*pnorm)/fnorm  
       prered = temp1**2 + temp2**2/p5  
       dirder = -(temp1**2 + temp2**2)  
@@ -4245,7 +4245,7 @@ c     +     .or. maxfev .le. 0 .or. factor .le. zero) go to 300
       do 280 i = 1, m  
          fvec(i) = wa4(i)  
  280  continue  
-      xnorm = s_dnrmfe(n,wa2)  
+      xnorm = rldnrmfe(n,wa2)  
       fnorm = fnorm1  
       iter = iter + 1  
  290  continue  
@@ -4289,7 +4289,7 @@ c     +     .or. maxfev .le. 0 .or. factor .le. zero) go to 300
       return 
       end  
 C=======================================================================
-      subroutine s_mednfe(z,n,xmed,aux)                                    
+      subroutine rlmednfe(z,n,xmed,aux)                                    
 *-----------------------------------------------------------------------
 *     This routine computes xmed=median(z(i))                          
 * 
@@ -4306,7 +4306,7 @@ C=======================================================================
       do i=1,n                                             
          aux(i)=z(i)                                                    
       enddo 
-      call s_sortfe(aux,n,1)
+      call rlsortfe(aux,n,1)
       i=n/2                                                          
       k=i*2                                                  
       xmed=aux(i+1)                            
@@ -4314,7 +4314,7 @@ C=======================================================================
       return 
       end
 C=======================================================================
-      subroutine s_out2fe(x,y,n,m,idif,isp,nsd,k,q,indth,beta,phidif,
+      subroutine rlout2fe(x,y,n,m,idif,isp,nsd,k,q,indth,beta,phidif,
      +     theta,thetas,sigmadif,indio,cck,sigfil,critv,nout,indtipo,
      +     t0,wout,lambda,sigmau0,sigmau,yhat,uhat,epshat,st,lscan,w,
      +     auxm,phi,thetapro,pols,poldif,phiau1,phiau2,resid,indcan,
@@ -4347,9 +4347,9 @@ C=======================================================================
 *                         outliers, additive outliers and level shifts. 
 *                         if indio=0, only looks for ao and ls 
 *          cck          : the constant for the psi function used in  
-*                         subroutine s_flt2fe 
+*                         subroutine rlflt2fe 
 *          sigfil       : an estimator of the scale parameter used by 
-*                         subroutine s_flt2fe 
+*                         subroutine rlflt2fe 
 *          critv        : critical value for detecting outliers 
 * 
 *   output: 
@@ -4394,7 +4394,7 @@ C=======================================================================
       ierror=0
       ndif = idif+isp*nsd 
       ktrue = k+ndif 
-      call s_pindfe(idif,nsd,isp,poldif,ndif) 
+      call rlpindfe(idif,nsd,isp,poldif,ndif) 
       if((idif.eq.0).and.(nsd.eq.0)) then 
          do i=1,ktrue 
             phi(i)=phidif(i) 
@@ -4404,7 +4404,7 @@ C=======================================================================
          do i=2,k+1 
             phiau1(i) = -phidif(i-1) 
          enddo 
-         call s_polyfe(poldif,ndif,phiau1,k,phiau2,ktrue) 
+         call rlpolyfe(poldif,ndif,phiau1,k,phiau2,ktrue) 
          do i=1,ktrue 
             phi(i)=-phiau2(i+1) 
          enddo 
@@ -4430,14 +4430,14 @@ C=======================================================================
       do i=2,q+1 
          phiau1(i) = -theta(i-1) 
       enddo 
-      call s_polyfe(pols,isp*indth,phiau1,q,phiau2,qtrue) 
+      call rlpolyfe(pols,isp*indth,phiau1,q,phiau2,qtrue) 
       do i=1,qtrue 
          thetapro(i)=-phiau2(i+1) 
       enddo 
 *     
-*     We call subroutine s_sys2fe to compute the vector of the 
+*     We call subroutine rlsys2fe to compute the vector of the 
 *     autocorrelations rho and the vector tau, which are used in the  
-*     subroutine s_flt2fe 
+*     subroutine rlflt2fe 
 *     
       lfin=max0(k+idif+isp*nsd,qtrue+1) 
       lfin=lfin-idif-isp*nsd          
@@ -4446,21 +4446,21 @@ C=======================================================================
       enddo 
 * 
 *     We compute the position in the work vector work2 and iwork for the  
-*     vector used in subroutine s_sys2fe 
+*     vector used in subroutine rlsys2fe 
 * 
       maxqtru=q+isp*indth 
       iw2thea=1 
       iw2coef=iw2thea+idim 
       iw2a=iw2coef+idim 
       iw2b=iw2a+(idim+1)*(idim+1) 
-      call s_sys2fe(phidif,theta,thetas,lfin,q,isp,indth,rho,tau, 
+      call rlsys2fe(phidif,theta,thetas,lfin,q,isp,indth,rho,tau, 
      +     work2(iw2coef),work2(iw2a),work2(iw2b),  
      +     work2(iw2thea),iwork(1),idim) 
 *     
 *     We filter the residuals 
 * 
 *     We compute the position in the work vector work2 for the  
-*     vector used in subroutine s_flt2fe 
+*     vector used in subroutine rlflt2fe 
 * 
       maxqtru=q+isp*indth 
       idim1=maxqtru 
@@ -4480,7 +4480,7 @@ C=======================================================================
       iw2ypur=iw2v2+idim1+1  
       indfil=0 
       iout=0 
-      call s_flt2fe(x,y,n,m,idif,isp,nsd,phi,beta,theta,thetas,ktrue,q,
+      call rlflt2fe(x,y,n,m,idif,isp,nsd,phi,beta,theta,thetas,ktrue,q,
      +     sigfil,indth,n0,tau,sigmadif,indfil,rho,cck,iout,yhat,uhat,
      +     epshat,st,lscan,w,auxm,xy,m1,work2(iw2then),work2(iw2xm),
      +     work2(iw2xp),work2(iw2alfp),work2(iw2r),work2(iw2v),
@@ -4493,7 +4493,7 @@ C=======================================================================
       do i=n0+1,n 
          uhat(i)=uhat(i)/st(i) 
       enddo 
-      call s_calsfe(uhat,n,n0,sigmanew,work2(1),work3) 
+      call rlcalsfe(uhat,n,n0,sigmanew,work2(1),work3) 
       sigmau = sigmanew*sigfil 
       sigmau0 = sigmau 
 * 
@@ -4508,10 +4508,10 @@ C=======================================================================
          indfil=0 
          iout=0 
 *     
-*     First we call s_flt2fe with iout=0 (which means that we apply the 
+*     First we call rlflt2fe with iout=0 (which means that we apply the 
 *     robust filter to all the observations) to compute the residuals 
 *  
-         call s_flt2fe(x,y,n,m,idif,isp,nsd,phi,beta,theta,thetas,
+         call rlflt2fe(x,y,n,m,idif,isp,nsd,phi,beta,theta,thetas,
      +        ktrue,q,sigfil,indth,n0,tau,sigmadif,indfil,rho,cck,iout,
      +        yhat,uhat,epshat,st,lscan,w,auxm,xy,m1,work2(iw2then),
      +        work2(iw2xm),work2(iw2xp),work2(iw2alfp),work2(iw2r),
@@ -4521,7 +4521,7 @@ C=======================================================================
          do i=n0+1,n 
             uhat(i)=uhat(i)/st(i) 
          enddo 
-         call s_calsfe(uhat,n,n0,sigmanew,work2(1),work3) 
+         call rlcalsfe(uhat,n,n0,sigmanew,work2(1),work3) 
 *     
 *     We correct the standardized residuals multiplying them by a factor 
 *     so that they have scales estimate = 1 
@@ -4558,7 +4558,7 @@ C=======================================================================
 *     
          do ii=1,ncan 
             d=indcan(ii) 
-            call s_impcfe(x,y,m,idif,isp,nsd,phi,beta,theta,thetas,
+            call rlimpcfe(x,y,m,idif,isp,nsd,phi,beta,theta,thetas,
      +           ktrue,q,sigmau,indth,n0,tau,sigmadif,rho,d,n,resid,
      +           psils,psia,waux,lambaux,cck,sigfil,yhat,uhat,epshat,
      +           st,lscan,w,auxm,xy,m1,idim,work2,idimw2,work3,idimw3,
@@ -4605,14 +4605,14 @@ C=======================================================================
 * 
          if(xmaxl.ge.critv) then 
             if(indrep.eq.0) then 
-               call s_remvfe(itipo,ind,xmaxw,n,ktrue,phi,qtrue, 
+               call rlremvfe(itipo,ind,xmaxw,n,ktrue,phi,qtrue, 
      +              thetapro,y,yaux,0,auxil,maxqtru,idim) 
 *
 *     We compute a new sigmau 
 *     
                indfil=0 
                iout=0
-               call s_flt2fe(x,yaux,n,m,idif,isp,nsd,phi,beta,theta,
+               call rlflt2fe(x,yaux,n,m,idif,isp,nsd,phi,beta,theta,
      +              thetas,ktrue,q,sigfil,indth,n0,tau,sigmadif, 
      +              indfil,rho,cck,iout,yhat,uhat,epshat,st,lscan,
      +              w,auxm,xy,m1,work2(iw2then),work2(iw2xm),
@@ -4624,7 +4624,7 @@ C=======================================================================
                do i=n0+1,n 
                   uhat(i)=uhat(i)/st(i) 
                enddo 
-               call s_calsfe(uhat,n,n0,sigmanew,work2(1),work3) 
+               call rlcalsfe(uhat,n,n0,sigmanew,work2(1),work3) 
                sigmau = sigmanew*sigfil  
 * 
 *     As we have found a new outlier, we save the information  
@@ -4652,7 +4652,7 @@ C=======================================================================
                   ierror=2 
                   return 
                endif 
-               call s_remvfe(indtipo(indrep),t0(indrep),wout(indrep), 
+               call rlremvfe(indtipo(indrep),t0(indrep),wout(indrep), 
      +              n,ktrue,phi,qtrue,thetapro,y,yaux,1,auxil, 
      +              maxqtru,idim) 
 *
@@ -4660,7 +4660,7 @@ C=======================================================================
 *     
                indfil=0 
                iout=0 
-               call s_flt2fe(x,yaux,n,m,idif,isp,nsd,phi,beta, 
+               call rlflt2fe(x,yaux,n,m,idif,isp,nsd,phi,beta, 
      +              theta,thetas,ktrue,q,sigfil,indth,n0,tau,sigmadif, 
      +              indfil,rho,cck,iout,yhat,uhat,epshat,st,lscan, 
      +              w,auxm,xy,m1,work2(iw2then),work2(iw2xm),
@@ -4672,7 +4672,7 @@ C=======================================================================
                do i=n0+1,n 
                   uhat(i)=uhat(i)/st(i) 
                enddo 
-               call s_calsfe(uhat,n,n0,sigmanew,work2(1),work3) 
+               call rlcalsfe(uhat,n,n0,sigmanew,work2(1),work3) 
                sigmau = sigmanew*sigfil  
                indtipo(indrep)=0 
                t0(indrep)=0 
@@ -4692,14 +4692,14 @@ C=======================================================================
       return 
       end
 C=======================================================================
-      subroutine s_outlfe(x,y,n,m,idif,isp,nsd,k,q,indth,beta,phidif,
+      subroutine rloutlfe(x,y,n,m,idif,isp,nsd,k,q,indth,beta,phidif,
      +     theta,thetas,sigmadif,indio,cck,sigfil,critv,nout,indtipo,
      +     t0,wout,lambda,sigmau0,sigmau,idim,work,idimw,iwork,idimiw,
      +     ierror,n0) 
 *----------------------------------------------------------------------- 
 *     This subroutine assigns locations in the work vector work 
-*     to the arrays used in subroutine s_out2fe. Then it calls   
-*     subroutine s_out2fe, which detects outliers.  
+*     to the arrays used in subroutine rlout2fe. Then it calls   
+*     subroutine rlout2fe, which detects outliers.  
 * 
 *         idim: parameter used to compute the dimension of some 
 *               arrays. It must be = max0(q+isp+1,k+idif+isp*nsd) 
@@ -4748,7 +4748,7 @@ C=======================================================================
       idimw2=5*idim + 5*idim**2 + 3*(q+isp)+2 + n 
       idimw3=max0(4*idim + 4*idim**2, n)
 *-----------------------------------------------------------------------
-      call s_out2fe(x,y,n,m,idif,isp,nsd,k,q,indth,beta,phidif,theta,
+      call rlout2fe(x,y,n,m,idif,isp,nsd,k,q,indth,beta,phidif,theta,
      +     thetas,sigmadif,indio,cck,sigfil,critv,nout,indtipo,t0, 
      +     wout,lambda,sigmau0,sigmau,work(iw1yhat),work(iw1uhat),
      +     work(iw1epsh),work(iw1st),iwork(1),work(iw1w),work(iw1auxm),
@@ -4776,7 +4776,7 @@ C=======================================================================
       return
       end 
 C=======================================================================
-      subroutine s_pindfe(idif,nsd,isp,poldif,ndiff) 
+      subroutine rlpindfe(idif,nsd,isp,poldif,ndiff) 
 *----------------------------------------------------------------------- 
 *     This subroutine computes the composed differences polynomial poldif 
 * 
@@ -4820,11 +4820,11 @@ C=======================================================================
          pols(isp+1)=-2.0d0 
          pols(2*isp+1)=1.0d0 
       endif 
-      call s_polyfe(poldr,idif,pols,isp*nsd,poldif,ndiff) 
+      call rlpolyfe(poldr,idif,pols,isp*nsd,poldif,ndiff) 
       return 
       end      
 C=======================================================================
-      subroutine s_polyfe(a,n,b,m,c,nm)                          
+      subroutine rlpolyfe(a,n,b,m,c,nm)                          
 *-----------------------------------------------------------------------
 *     This subroutine multiplies the polynomials a and b of grades n 
 *     and m respectively and it allocates the resulting polynomial  
@@ -4875,9 +4875,9 @@ C=======================================================================
       return                                           
       end                     
 C=======================================================================
-      function s_psiffe(x) 
+      function rlpsiffe(x) 
 *-----------------------------------------------------------------------
-*     Derivative of s_rhoffe. 
+*     Derivative of rlrhoffe. 
 *-----------------------------------------------------------------------
       implicit double precision (a-h,o-z)  
 *-----------------------------------------------------------------------
@@ -4887,16 +4887,16 @@ C=======================================================================
       g4=   .016d0 
       ax=dabs(x) 
       if (ax.gt.3.0d0) then 
-         s_psiffe=0.0d0 
+         rlpsiffe=0.0d0 
       else if(ax.le.2.d0) then 
-         s_psiffe=x 
+         rlpsiffe=x 
       else if(ax.gt.2.d0.and.ax.le.3.d0) then 
-         s_psiffe=x*(g4*(x**6)+g3*(x**4)+g2*(x**2)+g1) 
+         rlpsiffe=x*(g4*(x**6)+g3*(x**4)+g2*(x**2)+g1) 
       endif 
       return
       end
 C=======================================================================
-      subroutine s_rbqrfe(nob,nvar,x,y,eps,itmax,beta,ss,ncons,n,x1,e1, 
+      subroutine rlrbqrfe(nob,nvar,x,y,eps,itmax,beta,ss,ncons,n,x1,e1, 
      +     f1,e2,s3,res,vv,ww,cof,s2,beta1,y1,auxx,nvarn,nvars)
 *-----------------------------------------------------------------------   
 *     This subroutine computes a robust estimate for linear regression 
@@ -4979,7 +4979,7 @@ C=======================================================================
 *     We regress y on the intercept and get the residuals r, the 
 *     regression coefficient e1(1) and the residual scale s3(1). 
 * 
-            call s_vesrfe(x1(1),res,nob,e1(1),s3(1), 
+            call rlvesrfe(x1(1),res,nob,e1(1),s3(1), 
      +           auxx(1),auxx(nob+1),auxx(2*nob+1)) 
 * 
 *     nn is the chosen variable. 
@@ -4999,7 +4999,7 @@ C=======================================================================
 *     selected yet. 
 * 
             do j=1,nvar2  
-               call s_vesrfe(x1((nvarn(j)-1)*nob+1),res,nob,e1(j),
+               call rlvesrfe(x1((nvarn(j)-1)*nob+1),res,nob,e1(j),
      +              s3(j),auxx(1),auxx(nob+1),auxx(2*nob+1))  
             enddo 
 * 
@@ -5059,7 +5059,7 @@ C=======================================================================
 *     kept on vv(nvarn(k),i). 
 * 
             do k=1, nvar3 
-               call s_vesrfe(x1((nvars(i)-1)*nob+1),
+               call rlvesrfe(x1((nvars(i)-1)*nob+1),
      +              x1((nvarn(k)-1)*nob+1),nob,cof(k),ff,auxx(1),
      +              auxx(nob+1),auxx(2*nob+1)) 
                do l=1,nob 
@@ -5199,7 +5199,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_rcorfe(uhat,st,n,n0,zcor,aux)
+      subroutine rlrcorfe(uhat,st,n,n0,zcor,aux)
 *-----------------------------------------------------------------------  
 *     This subroutine computes zcor. The acf and pacf of zcor are 
 *     robust acf and pcf of uhat. 
@@ -5224,7 +5224,7 @@ C=======================================================================
 *     
 *     We compute an M-scale of zcor. 
 * 
-      call s_calsfe(zcor,n,n0,sigmm,aux(1),aux(n+1)) 
+      call rlcalsfe(zcor,n,n0,sigmm,aux(1),aux(n+1)) 
 * 
 *     We found pseudo observations using a Huber type psi-function. 
 *     
@@ -5241,7 +5241,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_regafe(x,y,n,m,idif,isp,nsd,ip,indar,ipfin,iqfin, 
+      subroutine rlregafe(x,y,n,m,idif,isp,nsd,ip,indar,ipfin,iqfin, 
      +     indth,interc,kopt,phiopt,theta,thetas,betaopt,sigmau,bcov,
      +     zcor,zcor1,sigmadif,cck,sigfil,xy,yhat,uhat,epshat,st,
      +     epspred,npred,tauef,infnew,ndim1,ndim2,work1,nw1,iwork1,
@@ -5249,7 +5249,7 @@ C=======================================================================
 *-----------------------------------------------------------------------  
 *     This subroutine distributes the work vectors work1 and iwork1, 
 *     of lengths nw1 and niw1 respectively, between different arrays  
-*     and vectors to be used by s_rramfe, and then calls it. 
+*     and vectors to be used by rlrramfe, and then calls it. 
 *-----------------------------------------------------------------------
       implicit double precision (a-h,o-z) 
       dimension x(n,m),y(n),phiopt(ndim2),theta(ndim1), 
@@ -5288,7 +5288,7 @@ C=======================================================================
       n27=n26+4*n 
       n28=n27+n 
       n29=n28+n+npred
-      call s_rramfe(x,y,n,m,ip,idif,isp,nsd,indth,interc,kopt,phiopt, 
+      call rlrramfe(x,y,n,m,ip,idif,isp,nsd,indth,interc,kopt,phiopt, 
      +     theta,thetas,betaopt,indar,ipfin,iqfin, sigmau, 
      +     bcov,zcor,zcor1,sigmadif,cck,sigfil,xy,yhat,uhat, 
      +     epshat,st,epspred,npred,tauef,infnew,ndim1,ndim2, 
@@ -5304,10 +5304,10 @@ C=======================================================================
       return 
       end
 C=======================================================================
-      subroutine s_remvfe(itipo,t0,w,n,ktrue,phi,qtrue,
+      subroutine rlremvfe(itipo,t0,w,n,ktrue,phi,qtrue,
      +     thetapro,y,yaux,ind,auxil,maxqtru,idim)
 *----------------------------------------------------------------------- 
-*     If ind=1, this subroutine s_remvfe the effect of an outlier in
+*     If ind=1, this subroutine rlremvfe the effect of an outlier in
 *     the observation t0.
 *     If ind=0, the subroutine rest the correction made before. 
 *----------------------------------------------------------------------- 
@@ -5376,7 +5376,7 @@ C=======================================================================
       return
       end
 C=======================================================================
-      function s_rhoffe(x) 
+      function rlrhoffe(x) 
 *-----------------------------------------------------------------------
       implicit double precision (a-h,o-z)
 *-----------------------------------------------------------------------  
@@ -5386,16 +5386,16 @@ C=======================================================================
       g4=  .016d0/8.d0 
       ax=dabs(x) 
       if (ax.lt.2.d0) then 
-         s_rhoffe=x**2/2.d0 
+         rlrhoffe=x**2/2.d0 
       elseif (ax.gt.3.d0) then 
-         s_rhoffe=3.25d0 
+         rlrhoffe=3.25d0 
       else 
-         s_rhoffe=g1*x**2+g2*x**4+g3*x**6+g4*x**8+1.792d0 
+         rlrhoffe=g1*x**2+g2*x**4+g3*x**6+g4*x**8+1.792d0 
       endif 
       return 
       end 
 C=======================================================================
-      subroutine s_rinife(z,n,np,phi,theta,isp,rho,tau,alfafi,idif,nsd,
+      subroutine rlrinife(z,n,np,phi,theta,isp,rho,tau,alfafi,idif,nsd,
      +     p,nq,n0,sigmau,sigma,ndim2,alfa,rhoin,covu,uhat,uuhat, 
      +     w,rhom,b,ipiv)
 *----------------------------------------------------------------------- 
@@ -5530,7 +5530,7 @@ C=======================================================================
                   rhom(i,j)=rho(ii) 
                enddo 
             enddo 
-            call s_rinvfe(rhom,rhoin,np1,ndim2,b,ipiv) 
+            call rlrinvfe(rhom,rhoin,np1,ndim2,b,ipiv) 
 * 
 *     We calculate the linear predictor of u=(u(p),...,u(1)) based on  
 *     w. It is denoted by uuhat.  
@@ -5609,7 +5609,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_rinvfe(a,c,n,ndim,b,ipiv) 
+      subroutine rlrinvfe(a,c,n,ndim,b,ipiv) 
 *-----------------------------------------------------------------------
 *     This subroutine computes the inverse of a symmetric matrix a. 
 * 
@@ -5639,9 +5639,9 @@ C=======================================================================
          enddo 
       enddo 
 * 
-*     We call s_gesvfe in order to solve the system c . x = b 
+*     We call rlgesvfe in order to solve the system c . x = b 
 * 
-      call s_gesvfe(n,n,c,ndim,ipiv,b,ndim,ierror) 
+      call rlgesvfe(n,n,c,ndim,ipiv,b,ndim,ierror) 
 * 
 *     We transfer the inverse to c. 
 * 
@@ -5653,12 +5653,12 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_rqr1fe(nob,nvar,x,y,eps,itmax,beta,ss,ncons,n,work3, 
+      subroutine rlrqr1fe(nob,nvar,x,y,eps,itmax,beta,ss,ncons,n,work3, 
      +     nw3,iwork3,niw3) 
 *-----------------------------------------------------------------------    
 *     This subroutine distributes the work vectors work3 and iwork3, 
 *     of lengths nw3 and niw3 respectively, between different arrays  
-*     and vectors to be used by s_rbqrfe, and then calls it. 
+*     and vectors to be used by rlrbqrfe, and then calls it. 
 *-----------------------------------------------------------------------    
       implicit double precision (a-h,o-z)    
       dimension x(n,nvar),y(nob),beta(nvar),work3(nw3) 
@@ -5676,7 +5676,7 @@ C=======================================================================
       n11=n10+nvar 
       n12=n11+nvar 
       n13=n12+nob 
-      call s_rbqrfe(nob,nvar,x,y,eps,itmax,beta,ss,ncons,n,work3(1), 
+      call rlrbqrfe(nob,nvar,x,y,eps,itmax,beta,ss,ncons,n,work3(1), 
      +     work3(n2+1),work3(n3+1),work3(n4+1),work3(n5+1), 
      +     work3(n6+1),work3(n7+1),work3(n8+1),work3(n9+1), 
      +     work3(n10+1),work3(n11+1),work3(n12+1),work3(n13+1), 
@@ -5684,7 +5684,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_rramfe(x,y,n,m,ip,idif,isp,nsd,indth,interc,kopt, 
+      subroutine rlrramfe(x,y,n,m,ip,idif,isp,nsd,indth,interc,kopt, 
      +     phiopt,thetaopt,thetas,bopt,indar,ipfin,iqfin,sigmau,bcov,
      +     zcor,zcor1,sigmadif,cck,sigfil,xy,yhat,uhat,epshat,st,
      +     epspred,npred,tauef,infnew,ndim1,ndim2,phi,beta,phidif,tau,
@@ -5744,9 +5744,9 @@ C=======================================================================
 *               st      : scales of the prediction error 
 *               tauef   : inverse of the efficiency of the tau estimates 
 *               utol    : We make ftol=xtol=gtol=utol in the optimizer
-*                         soubroutine s_lmdffe. 
+*                         soubroutine rllmdffe. 
 *               maxfev  : Maximum number of calls to the function which 
-*                         calculates the pseudo likelihood in s_lmdffe 
+*                         calculates the pseudo likelihood in rllmdffe 
 *-----------------------------------------------------------------------
       implicit double precision (a-h,o-z) 
       dimension x(n,m),y(n),xy(n,m+1),epspred(n+npred) 
@@ -5763,7 +5763,7 @@ C=======================================================================
       dimension aux1(4*n),ypure(n),auxm(n+npred,ndim2),work2(nw2) 
       integer ipvt(ndim1),npo(ip+iqfin),iwork2(niw2),iiwork(300)
       data zero/0.d0/
-      external s_fc11fe
+      external rlfc11fe
 *-----------------------------------------------------------------------
 *
 *   We define the size of the different work vectors. 
@@ -5779,7 +5779,7 @@ C=======================================================================
       nw6=4*ndim2*ndim2+4*ndim2 
       niw6=ndim2 
 * 
-*     Constants of s_lmdffe. 
+*     Constants of rllmdffe. 
 * 
       ftol=zero
       xtol=utol
@@ -5791,12 +5791,12 @@ C=======================================================================
 *      
 *     We compute the differences polynomial poldif whose order is ndiff. 
 * 
-      call s_pindfe(idif,nsd,isp,poldif,ndiff) 
+      call rlpindfe(idif,nsd,isp,poldif,ndiff) 
 * 
-*     We call s_grd1fe, through s_gd11fe, which estimates beta and phi  
+*     We call rlgrd1fe, through rlgd11fe, which estimates beta and phi  
 *     for a linear model with errors modelled as AR(1,ndiff). 
 *
-      call s_gd11fe(x,y,interc,n,m,idif,isp,nsd,iqfin,phi,beta, 
+      call rlgd11fe(x,y,interc,n,m,idif,isp,nsd,iqfin,phi,beta, 
      +     phidif(1,1),sigini,sigmau,akai,cck,parold,ssqold,xy, 
      +     yhat,uhat,epshat,st,epspred,npred,poldif,w,auxm, 
      +     ndim1,ndim2,work2(1),nw3,iwork2(1),niw3,work2(nw3+1), 
@@ -5810,33 +5810,33 @@ C=======================================================================
       kopt=1 
 * 
 *     The optimal Akaike criterion is initialized to the one corresponding  
-*     to the ARI(1,ndiff) found in s_grd1fe. 
+*     to the ARI(1,ndiff) found in rlgrd1fe. 
 * 
       akaiop=akai 
 * 
 *     The innovation scale is initialized to the one corresponding to the  
-*     ARI(1,ndiff) found in s_grd1fe. 
+*     ARI(1,ndiff) found in rlgrd1fe. 
 * 
       sopt=sigmau 
 * 
 *     The optimal filter bandwidth is initialized to the one  
-*     corresponding to the ARI(1,ndiff) found in s_grd1fe. 
+*     corresponding to the ARI(1,ndiff) found in rlgrd1fe. 
 * 
       cckopt=cck 
 * 
 *     The regression coefficients are initialized to the ones corresponding  
-*     to the ARI(1,ndiff) found in s_grd1fe. 
+*     to the ARI(1,ndiff) found in rlgrd1fe. 
 * 
       do i=1,m 
          beta0(i)=beta(i) 
       enddo 
 * 
-*     We call s_grdkfe,through s_gdk1fe, which estimates beta and phi for  
+*     We call rlgrdkfe,through rlgdk1fe, which estimates beta and phi for  
 *     a linear model with errors modelled as an ARI(k,udif). We do this for 
 *     k=2,...,ip, and use an Akaike's criterium to select the "optimal" k. 
 *
       do k=2,ip 
-         call s_gdk1fe(x,y,n,m,ip,idif,isp,nsd,iqfin,phi,beta,thetas, 
+         call rlgdk1fe(x,y,n,m,ip,idif,isp,nsd,iqfin,phi,beta,thetas, 
      +        phidif,k,sigini,sigmau,akai,cck,parold,ssqold, 
      +        xy,yhat,uhat,epshat,st,epspred,w,auxm,npred, 
      +        poldif,ndim1,ndim2,work2(1),nw3,iwork2(1),niw3, 
@@ -5877,8 +5877,8 @@ C=======================================================================
          phidif1(i)=phidif(kopt,i) 
       enddo  
 * 
-*     s_gdthfe gives the parameters of a model with the same AR order as 
-*     the one found in s_grdkfe and with a MA seasonal parameter. 
+*     rlgdthfe gives the parameters of a model with the same AR order as 
+*     the one found in rlgrdkfe and with a MA seasonal parameter. 
 * 
       if (indar.eq.1) then 
          ipfin=kopt 
@@ -5903,48 +5903,48 @@ C=======================================================================
          n3=n2+(ndim2+1)
 * 
 *     We are going to compute the initial ARMA model when there is no 
-*     seasonal MA parameter using s_sys3fe. To use s_sys3fe it is 
-*     required that s_sys2fe computes the autocorrelations rho's and the  
+*     seasonal MA parameter using rlsys3fe. To use rlsys3fe it is 
+*     required that rlsys2fe computes the autocorrelations rho's and the  
 *     coefficients tau 
 * 
-         call s_sys2fe(phidif1,theta,thetas,kopt,0,isp,indth,rho,tau, 
+         call rlsys2fe(phidif1,theta,thetas,kopt,0,isp,indth,rho,tau, 
      +        work2(1),work2(n1+1),work2(n2+1), 
      +        work2(n3+1),iwork2,ndim2) 
 * 
-*     Given the rho's and the tau's, s_sys3fe computes the parameters of  
+*     Given the rho's and the tau's, rlsys3fe computes the parameters of  
 *     the ARMA(p,q) model. 
 * 
-         call s_sys3fe(phidif1,kopt,phiaux,theta,thetas,ipfin, 
+         call rlsys3fe(phidif1,kopt,phiaux,theta,thetas,ipfin, 
      +        iqfin,isp,indth,rho,tau,ndim2,work2(1), 
      +        work2(ndim2*ndim2+1),iwork2)
 *     
-*     We check if the AR operator computed by s_sys3fe is stationary. 
+*     We check if the AR operator computed by rlsys3fe is stationary. 
 *     Otherwise is modified. 
 * 
          if (ipfin.gt.0) then 
-            call s_yulefe(phiaux,rho,ipfin,work2(1),iiwork,ndim2) 
-            call s_durbfe(rho,ipfin,phiau2,ier,work2(1),ndim2) 
+            call rlyulefe(phiaux,rho,ipfin,work2(1),iiwork,ndim2) 
+            call rldurbfe(rho,ipfin,phiau2,ier,work2(1),ndim2) 
             if (ier.eq.1) then 
                do i=1,ipfin 
                   if (phiau2(i).gt. 1.d0) phiau2(i)= .98d0 
                   if (phiau2(i).lt.-1.d0) phiau2(i)=-.98d0 
                enddo 
-               call s_invdfe(phiau2,ipfin,phiaux,work2(1),ndim2)   
+               call rlinvdfe(phiau2,ipfin,phiaux,work2(1),ndim2)   
             endif 
          endif 
 * 
-*     We check if the MA operator computed by s_sys3fe is invertible. 
+*     We check if the MA operator computed by rlsys3fe is invertible. 
 *     Otherwise is modified. 
 * 
          if (iqfin.gt.0) then 
-            call s_yulefe(theta,rho,iqfin,work2(1),iiwork,ndim2) 
-            call s_durbfe(rho,iqfin,phiau2,ier,work2(1),ndim2) 
+            call rlyulefe(theta,rho,iqfin,work2(1),iiwork,ndim2) 
+            call rldurbfe(rho,iqfin,phiau2,ier,work2(1),ndim2) 
             if (ier.eq.1) then 
                do i=1,iqfin 
                   if (phiau2(i).gt. 1.d0) phiau2(i)= .98d0 
                   if (phiau2(i).lt.-1.d0) phiau2(i)=-.98d0 
                enddo 
-               call s_invdfe(phiau2,iqfin,theta,work2(1),ndim2)   
+               call rlinvdfe(phiau2,iqfin,theta,work2(1),ndim2)   
             endif 
          endif 
          do i=1,ipfin 
@@ -5958,9 +5958,9 @@ C=======================================================================
          enddo 
       else 
 * 
-*     s_gdt1fe compute the initial model when there is a seasonal MA parameter 
+*     rlgdt1fe compute the initial model when there is a seasonal MA parameter 
 * 
-         call s_gdt1fe(x,y,n,m,ip,idif,isp,nsd,ipfin,iqfin,beta,thetas, 
+         call rlgdt1fe(x,y,n,m,ip,idif,isp,nsd,ipfin,iqfin,beta,thetas, 
      +        phidif1,kopt,sigini,sopt,tau,n0,cckopt,xy,yhat, 
      +        uhat,epshat,st,epspred,w,auxm,npred,poldif, 
      +        theta,ndim2,work2(1),nw3,work2(nw3+1),nw4, 
@@ -5982,16 +5982,16 @@ C=======================================================================
 *     We will compute a global tau-estimator for the final model. 
 *  
 *     We set npar to the number of parameters of the optimization  
-*     subroutine s_lmdffe and the filter bandwith, par(npar), to 1.0. 
+*     subroutine rllmdffe and the filter bandwith, par(npar), to 1.0. 
 * 
 **      npar=ipfin+iqfin+m+indth+1 
       npar=ipfin+iqfin+m+indth
       ccknew=1.d0
 * 
-*     We call subroutine s_tranfe which computes partial autocorrelations 
+*     We call subroutine rltranfe which computes partial autocorrelations 
 *     and transforms them in variables that may take any real value. 
 * 
-      call s_trasfe(phiopt,thetaopt,thetasop,bopt,ndim2,ipfin,iqfin,
+      call rltrasfe(phiopt,thetaopt,thetasop,bopt,ndim2,ipfin,iqfin,
      +     indth,m,para,par,ndim1,rh,work2,nw2,iwork2,niw2,0) 
 * 
 *     The vector npo contains the powers p of B with non zero coefficients  
@@ -6006,7 +6006,7 @@ C=======================================================================
       do i=1,iqfin 
          npo(ipfin+i)=i 
       enddo 
-      sigmadif=s_xmadfe(x,y,bopt,m,n,aux1(1),aux1(n+1),aux1(2*n+1), 
+      sigmadif=rlxmadfe(x,y,bopt,m,n,aux1(1),aux1(n+1),aux1(2*n+1), 
      +     poldif,ndiff) 
       itte=0 
 * 
@@ -6020,7 +6020,7 @@ C=======================================================================
             if(par(i).lt.zero) u=-1.d0 
             par(i)=dmin1(dabs(par(i)), 6.d0)*u 
          enddo 
-         call s_lmdffe(s_fc11fe,n,npar,par,f,ftol,xtol,gtol,maxfev, 
+         call rllmdffe(rlfc11fe,n,npar,par,f,ftol,xtol,gtol,maxfev, 
      +        diag,mode,factor,nprint,info,nfev,fjac,ldfjac, 
      +        ipvt,qtf,wa1,wa2,wa3,wa4,idif,isp,nsd,m, 
      +        ipfin,iqfin,n0,indth,npo,0,x,y,sigman,sigmanew, 
@@ -6037,13 +6037,13 @@ C=======================================================================
             ssq=ssq+f(jjj)*f(jjj) 
          enddo 
 *  
-*     We call s_fc11fe to compute two estimates of the innovation scale sigman 
+*     We call rlfc11fe to compute two estimates of the innovation scale sigman 
 *     and sigmanew. The difference between these two estimates is that  
 *     sigmanew is computed only using the variance of the differenced  
 *     stationary process and sigman corrects this value using the filtered  
 *     residuals uhat. 
 * 
-         call s_fc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,ipfin,iqfin, 
+         call rlfc11fe(n,npar,par,f,iflag,idif,isp,nsd,m,ipfin,iqfin, 
      +        n0,indth,npo,sigman,sigmanew,0,x,y,xy,yhat, 
      +        ccknew,uhat,epshat,st,epspred,w,auxm,poldif,
      +        ndim1,ndim2,work2(1),nw3,work2(nw3+nw4+1),nw5, 
@@ -6073,7 +6073,7 @@ C=======================================================================
       enddo 
 *     
 *     We antitransform the npar parameters from par, using subroutine 
-*     s_tranfe. 
+*     rltranfe. 
 * 
       do i=1,npar 
          par(i)=parold(i) 
@@ -6081,7 +6081,7 @@ C=======================================================================
       do i=1,ndim2 
          phiopt(i)=zero
       enddo
-      call s_tranfe(par,ndim1,ndim2,ipfin,iqfin,indth,0,para,para1, 
+      call rltranfe(par,ndim1,ndim2,ipfin,iqfin,indth,0,para,para1, 
      +     work2,phiopt,thetaopt,thetas,bopt) 
 *	 
 *     We allocate the new estimates in row (kopt+idif) of matrix phi. 
@@ -6097,12 +6097,12 @@ C=======================================================================
          bopt(i)=par(ipfin+iqfin+indth+i) 
       enddo
 * 
-*     In case of automatic selection, the subroutine s_corsfe computes 
+*     In case of automatic selection, the subroutine rlcorsfe computes 
 *     the series zcor1. The acf of this series is a robust acf of the 
 *     differenced residuals. 
 * 
       if (indar.eq.1) then 
-         call s_corsfe(x,bopt,n,m,idif,isp,nsd,zcor1,yhat,work2(1), 
+         call rlcorsfe(x,bopt,n,m,idif,isp,nsd,zcor1,yhat,work2(1), 
      +        work2(n+1),work2(2*n+1),work2(nw3+1))
       endif 
 * 
@@ -6121,7 +6121,7 @@ C=======================================================================
 * 
 *     We compute the non-stationary autoregressive polynomial operator. 
 *  
-      call s_polyfe(phiaux,ipfin,poldif,ndiff,phiaux2,k)
+      call rlpolyfe(phiaux,ipfin,poldif,ndiff,phiaux2,k)
       do i=1,k 
          phiaux2(i)=-phiaux2(i+1) 
       enddo 
@@ -6132,7 +6132,7 @@ C=======================================================================
 *     We compute the scale of the stationary AR component of the 
 *     regression model, that is, of the regression errors after differencing.  
 * 
-      sigmadif=s_xmadfe(x,y,bopt,m,n,aux1(1),aux1(n+1),aux1(2*n+1), 
+      sigmadif=rlxmadfe(x,y,bopt,m,n,aux1(1),aux1(n+1),aux1(2*n+1), 
      +     poldif,ndiff) 
 * 
 *     lfin is the smallest order of the stationary AR operator compatible 
@@ -6142,14 +6142,14 @@ C=======================================================================
       lfin=max0(ipfin+idif+isp*nsd,iqfin+isp*indth+1) 
       lfin=lfin-idif-isp*nsd          
 * 
-*     s_sys2fe computes the correlation coefficients rho of the 
+*     rlsys2fe computes the correlation coefficients rho of the 
 *     stationary process and the covariances tau between the stationary  
 *     ARMA process and the innovations. 
 * 
       n1=ndim2 
       n2=n1+(ndim2+1)*(ndim2+1) 
       n3=n2+(ndim2+1) 
-      call s_sys2fe(phiopt,thetaopt,thetas,lfin,iqfin,isp,indth, 
+      call rlsys2fe(phiopt,thetaopt,thetas,lfin,iqfin,isp,indth, 
      +     rho,tau,work2(1),work2(n1+1),work2(n2+1), 
      +     work2(n3+1),iwork2,ndim2)
 * 
@@ -6163,41 +6163,41 @@ C=======================================================================
 *     coefficients. The third time we filter again to get uhat.  
 *     
       if (m.gt.0) then 
-         call s_flt1fe(x,y,n,m,idif,isp,nsd,phiaux2,bopt,thetaopt, 
+         call rlflt1fe(x,y,n,m,idif,isp,nsd,phiaux2,bopt,thetaopt, 
      +        thetas,k,iqfin,sigfil,indth,n0,tau,sigmadif,0, 
      +        rho,cck,0,ypure,xy,yhat,uhat,epshat,st,epspred, 
      +        w,auxm,ndim2,work2(1),nw3,work2(nw3+nw4+nw5+1), 
      +        nw6,iwork2(niw3+niw4+niw5+1),niw6) 
-         call s_flt1fe(x,y,n,m,idif,isp,nsd,phiaux2,bopt,thetaopt, 
+         call rlflt1fe(x,y,n,m,idif,isp,nsd,phiaux2,bopt,thetaopt, 
      +        thetas,k,iqfin,sigfil,indth,n0,tau,sigmadif,1, 
      +        rho,cck,0,ypure,xy,yhat,uhat,epshat,st,epspred, 
      +        w,auxm,ndim2,work2(1),nw3,work2(nw3+nw4+nw5+1), 
      +        nw6,iwork2(niw3+niw4+niw5+1),niw6) 
       endif 
-      call s_flt1fe(x,y,n,m,idif,isp,nsd,phiaux2,bopt,thetaopt,thetas, 
+      call rlflt1fe(x,y,n,m,idif,isp,nsd,phiaux2,bopt,thetaopt,thetas, 
      +     k,iqfin,sigfil,indth,n0,tau,sigmadif,0,rho,cck, 
      +     npred,ypure,xy,yhat,uhat,epshat,st,epspred,w,auxm, 
      +     ndim2,work2(1),nw3,work2(nw3+nw4+nw5+1),nw6, 
      +     iwork2(niw3+niw4+niw5+1),niw6) 
 * 
-*     Subroutine s_bdesfe computes the covariance matrix of the regression  
+*     Subroutine rlbdesfe computes the covariance matrix of the regression  
 *     coefficients. 
 *  
       n1=m*m 
       n2=n1+m*m 
       n3=n2+n 
       n4=n3+n 
-      call s_bdesfe(.405d0,n,m,n0,bcov,xy,uhat,st,tauef,work2(1), 
+      call rlbdesfe(.405d0,n,m,n0,bcov,xy,uhat,st,tauef,work2(1), 
      +     work2(n1+1),work2(n2+1),work2(n3+1),work2(n4+1),iwork2) 
 * 
-*     The subroutine s_rcorfe computes the series zcor. The acf of  
+*     The subroutine rlrcorfe computes the series zcor. The acf of  
 *     this series is a robust acf of the filtered innovations uhat. 
 * 
-      call s_rcorfe(uhat,st,n,n0,zcor,work2(1)) 
+      call rlrcorfe(uhat,st,n,n0,zcor,work2(1)) 
       return
       end 
 C=======================================================================
-      subroutine s_sortfe(a,n,iswitch)
+      subroutine rlsortfe(a,n,iswitch)
 *-----------------------------------------------------------------------
 *     This subroutine rearranges vector 'a'. 
 * 
@@ -6244,7 +6244,7 @@ C=======================================================================
  999  return                                                        
       end
 C=======================================================================
-      subroutine s_sys1fe(phidif1,ip,theta,rho,k,isp,phithe,tau,ierror, 
+      subroutine rlsys1fe(phidif1,ip,theta,rho,k,isp,phithe,tau,ierror, 
      +     phiaux,a,b,ipiv,ndim2) 
 *----------------------------------------------------------------------- 
 *     Consider a time series x(t) following a SARMA model (k,0)*(0,1). 
@@ -6270,7 +6270,7 @@ C=======================================================================
 *           phithe      : vector containing the AR coefficients  
 *                         phithe(i), i=1,...,k 
 *           ierror      : if ierror=1 there is a numeric problem in 
-*                                      subroutine s_gesvfe 
+*                                      subroutine rlgesvfe 
 *                         if ierror=2, the iterative algorithm did 
 *                                      not converge in maxiter steps. 
 *----------------------------------------------------------------------- 
@@ -6365,12 +6365,12 @@ C=======================================================================
             endif 
          enddo 
 * 
-*     We call subroutine s_gesvfe in order to solve the linear system ax=b. 
+*     We call subroutine rlgesvfe in order to solve the linear system ax=b. 
 * 
-         call s_gesvfe(k,1,a,ip,ipiv,b,ip,ierror) 
+         call rlgesvfe(k,1,a,ip,ipiv,b,ip,ierror) 
 * 
 * 
-*     We transfer the results of subroutine s_gesvfe to the vector phithe. 
+*     We transfer the results of subroutine rlgesvfe to the vector phithe. 
 * 
          do i=1,k 
             phithe(i)=b(i) 
@@ -6404,7 +6404,7 @@ C=======================================================================
       return 
       end                                               
 C=======================================================================
-      subroutine s_sys2fe(phidif,theta,thetas,ip,iq,isp,indth,rho,tau, 
+      subroutine rlsys2fe(phidif,theta,thetas,ip,iq,isp,indth,rho,tau, 
      +     coef,a,b,thetaux,ipiv,ndim2)
 *-----------------------------------------------------------------------
 *     This subroutine computes the autocorrelations rho(i), i=0,...,ip   
@@ -6535,9 +6535,9 @@ C=======================================================================
          b(i)=-phidif(i) 
       enddo 
       b(ip+1)=one 
-      call s_gesvfe(ip+1,1,a,ndim2+1,ipiv,b,ndim2+1,ierror) 
+      call rlgesvfe(ip+1,1,a,ndim2+1,ipiv,b,ndim2+1,ierror) 
 * 
-*     We transfer the results of s_gesvfe to rho and tau(0). 
+*     We transfer the results of rlgesvfe to rho and tau(0). 
 *
       if (ierror.ne.0) ierror=1
       do i=1,ip 
@@ -6553,7 +6553,7 @@ C=======================================================================
       return 
       end
 C=======================================================================
-      subroutine s_sys3fe(phiar,npdif,phidif,theta,thetas,ip,iq,isp, 
+      subroutine rlsys3fe(phiar,npdif,phidif,theta,thetas,ip,iq,isp, 
      +     indth,rho,tau,ndim2,a,b,ipiv) 
 *-----------------------------------------------------------------------
 *     This subroutine computes the parameters of a SARMA model (p,q) x (0,1), 
@@ -6684,7 +6684,7 @@ C=======================================================================
 * 
 *     We solve A*z=b. The solution z is stored in b. 
 *         
-      call s_gesvfe(ip+iq,1,a,ndim2,ipiv,b,ndim2,ierror) 
+      call rlgesvfe(ip+iq,1,a,ndim2,ipiv,b,ndim2,ierror) 
 * 
 *     We extract vector phidif from b. 
 * 
@@ -6700,11 +6700,11 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      subroutine s_tranfe(par,ndim1,ndim2,ip,iq,indth,m,para,para1, 
+      subroutine rltranfe(par,ndim1,ndim2,ip,iq,indth,m,para,para1, 
      +     work,phi,theta,thetas,beta) 
 *-----------------------------------------------------------------------    
 *     This subroutine antitransform the ndim1 variables from par, using 
-*     subroutine s_invdfe. s_invdfe performs the inverse tranformation of the  
+*     subroutine rlinvdfe. rlinvdfe performs the inverse tranformation of the  
 *     one which tranforms autoregressive parameters in partial  
 *     autocorrelations. 
 *  
@@ -6739,7 +6739,7 @@ c     data pi/3.1415926927d0/
          do i=1,ip 
             para1(i)=2.d0*datan(para(i))/pi
          enddo 
-         call s_invdfe(para1,ip,phi,work,ndim2) 
+         call rlinvdfe(para1,ip,phi,work,ndim2) 
       endif  
       if (iq.gt.0) then 
          do i=1,iq 
@@ -6748,7 +6748,7 @@ c     data pi/3.1415926927d0/
          do i=1,iq 
             para1(i)=2.d0*datan(para(i))/pi 
          enddo 
-         call s_invdfe(para1,iq,theta,work,ndim2) 
+         call rlinvdfe(para1,iq,theta,work,ndim2) 
       endif 
       if (indth.eq.1) thetas=2.d0*datan(par(ip+iq+1))/pi 
       do i=1,m 
@@ -6757,7 +6757,7 @@ c     data pi/3.1415926927d0/
       return  
       end 
 C=======================================================================
-      subroutine s_trasfe(phi,theta,thetas,beta,ndim2,ip,iq,indth,m,
+      subroutine rltrasfe(phi,theta,thetas,beta,ndim2,ip,iq,indth,m,
      +     para,par,ndim1,rh,work,nw,iwork,niw,irank) 
 *-----------------------------------------------------------------------    
 *     This subroutine computes partial autocorrelations and then 
@@ -6776,7 +6776,7 @@ C=======================================================================
 *                        1 - seasonal moving average term included 
 *             m        : number of independent variables 
 *             irank    : 0 - no control is made 
-*                        1 - at the output of routine s_durbfe, the values 
+*                        1 - at the output of routine rldurbfe, the values 
 *                            of vector para are controlled and corrected if 
 *                            they are out of the interval [-1,1] 
 *              
@@ -6791,8 +6791,8 @@ C=======================================================================
       integer iwork(niw) 
 *-----------------------------------------------------------------------    
       if (ip.gt.0) then 
-         call s_yulefe(phi,rh,ip,work(1),iwork(1),ndim2) 
-         call s_durbfe(rh,ip,para,ier,work(1),ndim2) 
+         call rlyulefe(phi,rh,ip,work(1),iwork(1),ndim2) 
+         call rldurbfe(rh,ip,para,ier,work(1),ndim2) 
          if (irank.eq.1) then 
             do i=1,ip 
                if (para(i).ge.1.d0) then 
@@ -6807,8 +6807,8 @@ C=======================================================================
          enddo 
       endif 
       if (iq.gt.0) then 
-         call s_yulefe(theta,rh,iq,work(1),iwork(1),ndim2) 
-         call s_durbfe(rh,iq,para,ier,work(1),ndim2) 
+         call rlyulefe(theta,rh,iq,work(1),iwork(1),ndim2) 
+         call rldurbfe(rh,iq,para,ier,work(1),ndim2) 
          if (irank.eq.1) then 
             do i=1,iq 
                if (para(i).ge.1.d0) then 
@@ -6829,7 +6829,7 @@ C=======================================================================
       return  
       end 
 C=======================================================================
-      subroutine s_vesrfe(x,y,nob,f1,e2,res,ares1,aux) 
+      subroutine rlvesrfe(x,y,nob,f1,e2,res,ares1,aux) 
 *-----------------------------------------------------------------------  
 *     This subroutine estimates the regression coefficient in a model 
 *     with only one independent variable through the origin: 
@@ -6861,7 +6861,7 @@ C=======================================================================
 *     We compute median(res). 
 *     
       nob1=j 
-      call s_mednfe(res,nob1,f1,aux) 
+      call rlmednfe(res,nob1,f1,aux) 
 * 
 *     We compute res=y-f1*x (residual corresponding to the estimated 
 *     coefficient). 
@@ -6873,7 +6873,7 @@ C=======================================================================
 * 
 *     We compute the mad scale of the residuals. 
 * 
-      call s_mednfe(ares1,nob,e2,aux) 
+      call rlmednfe(ares1,nob,e2,aux) 
       if (e2.ge.1.0D-10) then 
          z=0.d0 
          do i=1,nob 
@@ -6890,7 +6890,7 @@ C=======================================================================
       return 
       end 
 C=======================================================================
-      function s_xmadfe(x,y,beta,m,n,eps,u,aux,polds,nds) 
+      function rlxmadfe(x,y,beta,m,n,eps,u,aux,polds,nds) 
 *-----------------------------------------------------------------------  
 *     This function estimates the scale of the differenced errors of  
 *     the regression model. 
@@ -6932,11 +6932,11 @@ C=======================================================================
 * 
 *     We compute an M-scale of the differenced series. 
 * 
-      call s_calsfe(u,n-nds,0,s_xmadfe,aux(1),aux(n+1)) 
+      call rlcalsfe(u,n-nds,0,rlxmadfe,aux(1),aux(n+1)) 
       return 
       end
 C=======================================================================
-      subroutine s_yulefe(phif,rho,lp,a,ipiv,ndim2) 
+      subroutine rlyulefe(phif,rho,lp,a,ipiv,ndim2) 
 *-----------------------------------------------------------------------
 *     This subroutine computes lp autocorrelations given the coefficients  
 *     of the autoregressive model of order lp, using the Yule-Walker 
@@ -6966,7 +6966,7 @@ C=======================================================================
       do i=1,lp 
          rho(i)=-phif(i) 
       enddo 
-      call s_gesvfe(lp,1,a,ndim2,ipiv,rho,lp,ierror) 
+      call rlgesvfe(lp,1,a,ndim2,ipiv,rho,lp,ierror) 
       return 
       end
 *----------------------------------------------------------------------- 

@@ -154,7 +154,7 @@ cc
 	parameter (km10=10*kmini)
 	parameter (nmaxi=nmini*kmini)
 cc
-	integer rousseeuw_ncomb,rousseeuw_nbreak
+	integer rlncomb,rlnbreak
 	integer ierr,matz,seed,tottimes,step
 	integer pnsel
 	integer flag(km10)
@@ -197,10 +197,10 @@ cc
 	double precision chi2(50)
 	double precision chimed(50)
 	double precision faclts(11)
-	double precision pivot,rousseeuw_mahad,medi2 
+	double precision pivot,rlmahad,medi2 
 	double precision am(1),am2(1),slutn(1)
 	double precision w(nvmax),z(nvmax2),fv1(nvmax),fv2(nvmax)
-	logical all,part,fine,final,rousseeuw_odd,class
+	logical all,part,fine,final,rlodd,class
 cc  Median of the chi-squared distribution:
         data chimed/0.454937,1.38629,2.36597,3.35670,4.35146,
      *  5.34812,6.34581,7.34412,8.34283,9.34182,10.34,11.34,12.34,
@@ -246,7 +246,7 @@ cc  based on nhalff observations, whereas jdefaul is the optimal value of
 cc  nhalff, with maximal breakdown point. The variable percen is the  
 cc  corresponding percentage. 
 cc
-	jbreak=rousseeuw_nbreak(nhalff,n,nvar)
+	jbreak=rlnbreak(nhalff,n,nvar)
 	class=.false.
 	if(nhalff.ge.n) then
 	  class=.true.
@@ -257,10 +257,10 @@ cc
         if(nvar.eq.1) then
           do 23, jj=1,n
  23         ndist(jj)=dat(jj,1)
-          call rousseeuw_shsort(ndist,n)
+          call rlshsort(ndist,n)
           nquant=min(int(dble(((nhalff*1.D0/n)-0.5D0)*40))+1,11)
           factor=faclts(nquant)
-          call rousseeuw_mcduni(ndist,n,nhalff,slutn,bstd,am,am2,
+          call rlmcduni(ndist,n,nhalff,slutn,bstd,am,am2,
      *      factor,n-nhalff+1)
           initmean(1)=slutn(1)
           adcov(1)=bstd/factor
@@ -296,7 +296,7 @@ cc
  21     continue
 cc
 cc  Determine whether the dataset needs to be divided into subdatasets
-cc  or can be treated as a whole. The subroutine rousseeuw_rdraw constructs  
+cc  or can be treated as a whole. The subroutine rlrdraw constructs  
 cc  nonoverlapping subdatasets, with uniform distribution of the case numbers.  
 cc  For small n, the number of trial subsamples is determined. 
 cc
@@ -310,7 +310,7 @@ cc
 	  part=.true.
 	  ngroup=int(n/(nmini*1.D0))
 	  if(n.ge.(2*nmini) .and. n.le.(3*nmini-1)) then
-	    if(rousseeuw_odd(n)) then
+	    if(rlodd(n)) then
 	      mini(1)=int(n/2)
 	      mini(2)=int(n/2)+1
 	    else
@@ -368,13 +368,13 @@ cc
 	  if(ngroup.gt.kmini) ngroup=kmini
 	  nrep=int((krep*1.D0)/ngroup)
 	  minigr=mini(1)+mini(2)+mini(3)+mini(4)+mini(5)
-	  call rousseeuw_rdraw(subdat,n,seed,minigr,mini,ngroup,kmini)
+	  call rlrdraw(subdat,n,seed,minigr,mini,ngroup,kmini)
 	else 
 	  minigr=n
           nhalf=nhalff
 	  kstep=k1
 	  if(n.le.replow(nsel)) then 
-	    nrep=rousseeuw_ncomb(nsel,n)
+	    nrep=rlncomb(nsel,n)
 	  else 
             nrep=500
 	    all=.false.
@@ -440,48 +440,48 @@ cc
 cc ********* Compute the classical estimates **************
 cc
  9500   continue
-        call rousseeuw_covinit(sscp1,nvar+1,nvar+1)
+        call rlcovinit(sscp1,nvar+1,nvar+1)
 	do 51 i=1,n
 	  do 53 j=1,nvar
  53         rec(j)=dat(i,j)
-	  call rousseeuw_admit(rec,nvar,nvar+1,sscp1)
+	  call rladmit(rec,nvar,nvar+1,sscp1)
  51     continue
-	call rousseeuw_covar(n,nvar,nvar+1,sscp1,cova1,means,sd)
+	call rlcovar(n,nvar,nvar+1,sscp1,cova1,means,sd)
 	do 57 j=1,nvar 
 	  if(sd(j).eq.0.D0) then
             call rs(nvar,nvar,cova1,w,matz,z,fv1,fv2,ierr)
-            call rousseeuw_dis(dat,z,ndist,n,nvar,n,nvar,means)
-            call rousseeuw_exact(kount,n,ndist,z,nvmax,nvmax1,
+            call rldis(dat,z,ndist,n,nvar,n,nvar,means)
+            call rlexact(kount,n,ndist,z,nvmax,nvmax1,
      *      nvar,sscp1,rec,dat,nmax,cova1,means,sd,nvar+1,
      *      weight)
-            call rousseeuw_covcopy(cova1,initcov,nvar,nvar)
-            call rousseeuw_covcopy(means,initmean,nvar,1)
+            call rlcovcopy(cova1,initcov,nvar,nvar)
+            call rlcovcopy(means,initmean,nvar,1)
             do 56,jjj=1,nvar
  56           plane(1,jjj)=z(jjj)
             fit=1
             goto 9999
 	  endif
  57     continue
-	call rousseeuw_covcopy(cova1,cinv1,nvar,nvar)
+	call rlcovcopy(cova1,cinv1,nvar,nvar)
         det=1.D0
 	do 58 j=1,nvar
 	  pivot=cinv1((j-1)*nvar+j)
 	  det=det*pivot
 	  if(pivot.lt.eps) then
             call rs(nvar,nvar,cova1,w,matz,z,fv1,fv2,ierr)
-            call rousseeuw_dis(dat,z,ndist,n,nvar,n,nvar,means)
-            call rousseeuw_exact(kount,n,ndist,z,nvmax,nvmax1,nvar,
+            call rldis(dat,z,ndist,n,nvar,n,nvar,means)
+            call rlexact(kount,n,ndist,z,nvmax,nvmax1,nvar,
      *      sscp1,rec,dat,nmax,cova1,means,sd,nvar+1,weight)
-            call rousseeuw_covcopy(cova1,initcov,nvar,nvar)
-            call rousseeuw_covcopy(means,initmean,nvar,1)
+            call rlcovcopy(cova1,initcov,nvar,nvar)
+            call rlcovcopy(means,initmean,nvar,1)
             do 59,jjj=1,nvar
  59           plane(1,jjj)=z(jjj)
             fit=1
             goto 9999
           endif
-	  call rousseeuw_covsweep(cinv1,nvar,j)
+	  call rlcovsweep(cinv1,nvar,j)
  58     continue
-	call rousseeuw_correl(nvar,cova1,corr1,sd)
+	call rlcorrel(nvar,cova1,corr1,sd)
 	if(class) then
           goto 9999
         endif
@@ -491,7 +491,7 @@ cc
 	do 62 j=1,n
 	  do 64 i=1,nvar
  64         rec(i)=dat(j,i)
-	  nmahad(j)=rousseeuw_mahad(rec,nvar,means,cinv1)
+	  nmahad(j)=rlmahad(rec,nvar,means,cinv1)
  62     continue
 	  
 cc
@@ -615,27 +615,27 @@ cc
             am(i)=dat(i,j)
  84         am2(i)=dat(i,j)
           if(2*n/2.eq.n) then
-             med1=rousseeuw_findq(am,n,n/2,index2)
-             med2=rousseeuw_findq(am2,n,(n+2)/2,index2)
+             med1=rlfindq(am,n,n/2,index2)
+             med2=rlfindq(am2,n,(n+2)/2,index2)
              med(j)=(med1+med2)/2
           else
-            med(j)=rousseeuw_findq(am,n,(n+1)/2,index2)
+            med(j)=rlfindq(am,n,(n+1)/2,index2)
           endif
           do 86 i=1,n
  86         ndist(i)=dabs(dat(i,j)-med(j))
-          mad(j)=rousseeuw_findq(ndist,n,nhalff,index2)
+          mad(j)=rlfindq(ndist,n,nhalff,index2)
           if((mad(j)-0.D0).lt.eps) then
             do 80,k=1,j-1
               do 79,i=1,n
  79             dat(i,k)=dat(i,k)*mad(k)+med(k)
  80         continue
-            call rousseeuw_covinit(sscp1,nvar+1,nvar+1)
+            call rlcovinit(sscp1,nvar+1,nvar+1)
             do 88 k=1,nsel
               do 89 m=1,nvar
  89             rec(m)=dat(index2(k),m)
-              call rousseeuw_admit(rec,nvar,nvar+1,sscp1)
+              call rladmit(rec,nvar,nvar+1,sscp1)
  88         continue
-            call rousseeuw_covar(nsel,nvar,nvar+1,sscp1,cova1,means,sd)
+            call rlcovar(nsel,nvar,nvar+1,sscp1,cova1,means,sd)
             call rs(nvar,nvar,cova1,w,matz,z,fv1,fv2,ierr)
             if(z(j).ne.1) then
               do 77, kk=1,nvar
@@ -647,11 +647,11 @@ cc
  77           continue
             endif
  76         continue
-            call rousseeuw_dis(dat,z,ndist,n,nvar,n,nvar,means)
-            call rousseeuw_exact(kount,n,ndist,z,nvmax,nvmax1,nvar,
+            call rldis(dat,z,ndist,n,nvar,n,nvar,means)
+            call rlexact(kount,n,ndist,z,nvmax,nvmax1,nvar,
      *        sscp1,rec,dat,nmax,cova1,means,sd,nvar+1,weight)
-            call rousseeuw_covcopy(cova1,initcov,nvar,nvar)
-            call rousseeuw_covcopy(means,initmean,nvar,1)
+            call rlcovcopy(cova1,initcov,nvar,nvar)
+            call rlcovcopy(means,initmean,nvar,1)
             do 78,jjj=1,nvar
  78           plane(1,jjj)=z(jjj)
             fit=2
@@ -701,9 +701,9 @@ cc
 cc
 cc  The number of trial subsamples is represented by nrep, which depends
 cc  on the data situation.
-cc  When all (p+1)-subsets out of n can be drawn, the subroutine rousseeuw_genpn
+cc  When all (p+1)-subsets out of n can be drawn, the subroutine rlgenpn
 cc  is used. Otherwise, random subsamples are drawn by the routine
-cc  rousseeuw_rangen. The trial subsamples are put in the array index1. The
+cc  rlrangen. The trial subsamples are put in the array index1. The
 cc  same thing happens for large datasets, except that the number of
 cc  observations is nmini instead of n. 
 cc
@@ -757,15 +757,15 @@ cc
 	  deti=0.D0
 	  detimin1=0.D0
 	  step=0
-	  call rousseeuw_covinit(sscp1,nvar+1,nvar+1)
+	  call rlcovinit(sscp1,nvar+1,nvar+1)
 	  if((part.and..not.fine).or.(.not.part.and..not.final)) then
 	    if(part) then
-		call rousseeuw_rangen(mini(ii),nsel,index1,seed)
+		call rlrangen(mini(ii),nsel,index1,seed)
 	    else
 	      if(all) then
-		call rousseeuw_genpn(n,nsel,index1)
+		call rlgenpn(n,nsel,index1)
 	      else
-		call rousseeuw_rangen(n,nsel,index1,seed)
+		call rlrangen(n,nsel,index1,seed)
 	      endif
 	    endif
 	  endif
@@ -780,24 +780,24 @@ cc  and m1stock (for the second stage), and in the matrices cstock and mstock
 cc  (for the third stage).
 cc
 cc  The inverse cinv1 of the covariance matrix is calculated by the
-cc  subroutine rousseeuw_covsweep, together with its determinant det. 
+cc  subroutine rlcovsweep, together with its determinant det. 
 cc
- 9550     call rousseeuw_covinit(sscp1,nvar+1,nvar+1)
+ 9550     call rlcovinit(sscp1,nvar+1,nvar+1)
           if(.not.fine.and.part) then
             do 121 j=1,pnsel
 	      do 123 m=1,nvar
  123            rec(m)=dath(index1(j),m)
-	      call rousseeuw_admit(rec,nvar,nvar+1,sscp1)
+	      call rladmit(rec,nvar,nvar+1,sscp1)
  121        continue
-	    call rousseeuw_covar(pnsel,nvar,nvar+1,sscp1,cova1,means,sd)
+	    call rlcovar(pnsel,nvar,nvar+1,sscp1,cova1,means,sd)
 	  endif
           if(.not.part.and..not.final) then
             do 122 j=1,pnsel
               do 124 m=1,nvar
  124            rec(m)=dat(index1(j),m)
-              call rousseeuw_admit(rec,nvar,nvar+1,sscp1)
+              call rladmit(rec,nvar,nvar+1,sscp1)
  122        continue
-            call rousseeuw_covar(pnsel,nvar,nvar+1,sscp1,cova1,means,sd)
+            call rlcovar(pnsel,nvar,nvar+1,sscp1,cova1,means,sd)
           endif
 	  if (final) then
 	      if(mstock(i,1).ne.1000000.D0) then
@@ -814,9 +814,9 @@ cc
 	      qorder=1.D0
 	      do 129,jjj=1,nvar
  129            z(jjj)=plane(1,jjj)
-	      call rousseeuw_dis(dat,z,ndist,n,nvar,nn,nvar,
+	      call rldis(dat,z,ndist,n,nvar,nn,nvar,
      *        means)
-	        dist2=rousseeuw_findq(ndist,nn,nhalf,index2)
+	        dist2=rlfindq(ndist,nn,nhalf,index2)
 		goto 9555
             endif
 	  endif
@@ -836,9 +836,9 @@ cc
 	      qorder=1.D0
 	      do 135,jjj=1,nvar
  135            z(jjj)=plane(ii,jjj)
-	      call rousseeuw_dis(dath,z,ndist,nmaxi,nvmax,nn,nvar,
+	      call rldis(dath,z,ndist,nmaxi,nvmax,nn,nvar,
      *        means)
-	      call rousseeuw_shsort(ndist,nn)  
+	      call rlshsort(ndist,nn)  
 	      qorder=ndist(nhalf)
 	      if(dabs(qorder-0.D0).lt.10.D-8.and.kount.eq.0
      *        .and.n.gt.nmini*kmini) then
@@ -851,7 +851,7 @@ cc
 	        flag(1)=0 
                 do 139,kkk=1,nvar
  139              plane(1,kkk)=z(kkk)
-                call rousseeuw_store2(nvar,cstock,mstock,nvmax2,nvmax,
+                call rlstore2(nvar,cstock,mstock,nvmax2,nvmax,
      *          kmini,cova1,means,i,mcdndex,kount)
                 kount=1
 		goto 1000
@@ -861,13 +861,13 @@ cc
 		  goto 1000  
                 else
                   flag(1)=1
-	          dist2=rousseeuw_findq(ndist,nn,nhalf,index2)
+	          dist2=rlfindq(ndist,nn,nhalf,index2)
 		  goto 9555
 	        endif
 	      endif
             endif
 	  endif
-	  call rousseeuw_covcopy(cova1,cinv1,nvar,nvar)
+	  call rlcovcopy(cova1,cinv1,nvar,nvar)
 	  det=1.D0
 	  do 200 j=1,nvar
 	    pivot=cinv1((j-1)*nvar+j)
@@ -876,22 +876,22 @@ cc
               call rs(nvar,nvar,cova1,w,matz,z,fv1,fv2,ierr)
 	      qorder=1.D0
               if(.not.part.or.final) then
-                call rousseeuw_dis(dat,z,ndist,n,nvar,nn,nvar,means)
+                call rldis(dat,z,ndist,n,nvar,nn,nvar,means)
               else
-                call rousseeuw_dis(dath,z,ndist,nmaxi,nvmax,nn,nvar,
+                call rldis(dath,z,ndist,nmaxi,nvmax,nn,nvar,
      *								means)
               endif
-	      call rousseeuw_shsort(ndist,nn)  
+	      call rlshsort(ndist,nn)  
 	      qorder=ndist(nhalf)
 	      if(dabs(qorder-0.D0).lt.10.D-8.and.
      *        .not.part) then
-                call rousseeuw_transfo(cova1,means,dat,med,mad,nvar,n)
+                call rltransfo(cova1,means,dat,med,mad,nvar,n)
                 call rs(nvar,nvar,cova1,w,matz,z,fv1,fv2,ierr)
-                call rousseeuw_dis(dat,z,ndist,n,nvar,nn,nvar,means)
-                call rousseeuw_exact(kount,n,ndist,z,nvmax,nvmax1,nvar,
+                call rldis(dat,z,ndist,n,nvar,nn,nvar,means)
+                call rlexact(kount,n,ndist,z,nvmax,nvmax1,nvar,
      *          sscp1,rec,dat,nmax,cova1,means,sd,nvar+1,weight)
-            call rousseeuw_covcopy(cova1,initcov,nvar,nvar)
-            call rousseeuw_covcopy(means,initmean,nvar,1)
+            call rlcovcopy(cova1,initcov,nvar,nvar)
+            call rlcovcopy(means,initmean,nvar,1)
             do 140,jjj=1,nvar
  140           plane(1,jjj)=z(jjj)
                 fit=2
@@ -899,27 +899,27 @@ cc
 	      else
 	        if(dabs(qorder-0.D0).lt.10.D-8.and.part
      *          .and.kount.eq.0) then
-	          call rousseeuw_dis(dat,z,ndist,n,nvar,n,nvar,
+	          call rldis(dat,z,ndist,n,nvar,n,nvar,
      *            means)
-		  call rousseeuw_shsort(ndist,n)  
+		  call rlshsort(ndist,n)  
                   if(dabs(ndist(nhalff)-0.D0).lt.10.D-8) then
-                    call rousseeuw_transfo(cova1,means,dat,med,mad,
+                    call rltransfo(cova1,means,dat,med,mad,
      *										nvar,n)
                     call rs(nvar,nvar,cova1,w,matz,z,fv1,fv2,ierr)
-                    call rousseeuw_dis(dat,z,ndist,n,nvar,nn,nvar,means)
-                    call rousseeuw_exact(kount,n,ndist,z,nvmax,nvmax1,
+                    call rldis(dat,z,ndist,n,nvar,nn,nvar,means)
+                    call rlexact(kount,n,ndist,z,nvmax,nvmax1,
      *                                 nvar,sscp1,rec,dat,nmax,cova1,
      *                                 means,sd,nvar+1,weight)
-            call rousseeuw_covcopy(cova1,initcov,nvar,nvar)
-            call rousseeuw_covcopy(means,initmean,nvar,1)
+            call rlcovcopy(cova1,initcov,nvar,nvar)
+            call rlcovcopy(means,initmean,nvar,1)
             do 142,jjj=1,nvar
  142           plane(1,jjj)=z(jjj)
                     fit=2
                     goto 9999
                   endif
-	          call rousseeuw_dis(dath,z,ndist,nmaxi,nvmax,nn,nvar,
+	          call rldis(dath,z,ndist,nmaxi,nvmax,nn,nvar,
      *                              means)
-	          call rousseeuw_shsort(ndist,nn)  
+	          call rlshsort(ndist,nn)  
                   kount=nhalf
                   do 141,kkk=nhalf+1,nn
                     if(dabs(ndist(kkk)-0.D0).lt.10.D-8) then
@@ -929,7 +929,7 @@ cc
 		  flag((ii-1)*10+1)=0 
                   do 143,kkk=1,nvar
  143                plane(ii,kkk)=z(kkk)
-                  call rousseeuw_store1(nvar,c1stock,m1stock,nvmax2,
+                  call rlstore1(nvar,c1stock,m1stock,nvmax2,
      *            nvmax,kmini,cova1,means,i,km10,ii,mcdndex,kount)
                   kount=1
 		  goto 1000
@@ -938,18 +938,18 @@ cc
      *            kount.ne.0) then
 		    goto 1000  
 		  else
-		    call rousseeuw_ishsort(index1,pnsel)
-                    call rousseeuw_prdraw(index1,pnsel,seed,nn)
+		    call rlishsort(index1,pnsel)
+                    call rlprdraw(index1,pnsel,seed,nn)
                     pnsel=pnsel+1
 		    goto 9550
 		  endif
 		endif
 	      endif
 	    endif
-	    call rousseeuw_covsweep(cinv1,nvar,j)
+	    call rlcovsweep(cinv1,nvar,j)
  200      continue
 cc
-cc  Mahalanobis distances are computed with the subroutine rousseeuw_mahad
+cc  Mahalanobis distances are computed with the subroutine rlmahad
 cc  and stored in the array ndist.
 cc  The k-th order statistic of the mahalanobis distances is stored
 cc  in dist2. The array index2 containes the indices of the
@@ -963,10 +963,10 @@ cc
 	    do 153 mm=1,nvar
  153          rec(mm)=dath(j,mm)
             endif
-	    t=rousseeuw_mahad(rec,nvar,means,cinv1)
+	    t=rlmahad(rec,nvar,means,cinv1)
 	    ndist(j)=t
  151      continue
-	  dist2=rousseeuw_findq(ndist,nn,nhalf,index2)
+	  dist2=rlfindq(ndist,nn,nhalf,index2)
 cc
 cc  The variable kstep represents the number of iterations. They depend on
 cc  the situation of the program (k1, k2, or k3). Within each
@@ -978,10 +978,10 @@ cc  The iteration stops when two subsequent determinants become equal.
 cc
  9555     do 400 step=1,kstep
 	    tottimes=tottimes+1
-	    call rousseeuw_covinit(sscp1,nvar+1,nvar+1)
+	    call rlcovinit(sscp1,nvar+1,nvar+1)
 	    do 155, j=1,nhalf
  155          temp(j)=index2(j)
-	    call rousseeuw_ishsort(temp,nhalf)
+	    call rlishsort(temp,nhalf)
 	    do 157 j=1,nhalf
               if(.not.part.or.final) then
                 do 158 mm=1,nvar
@@ -990,10 +990,10 @@ cc
 	      do 159 mm=1,nvar
  159            rec(mm)=dath(temp(j),mm)
               endif
-	      call rousseeuw_admit(rec,nvar,nvar+1,sscp1)
+	      call rladmit(rec,nvar,nvar+1,sscp1)
  157        continue
-	    call rousseeuw_covar(nhalf,nvar,nvar+1,sscp1,cova1,means,sd)
-	    call rousseeuw_covcopy(cova1,cinv1,nvar,nvar)
+	    call rlcovar(nhalf,nvar,nvar+1,sscp1,cova1,means,sd)
+	    call rlcovcopy(cova1,cinv1,nvar,nvar)
 	    det=1.D0
 	    do 600 j=1,nvar
 	      pivot=cinv1((j-1)*nvar+j)
@@ -1001,20 +1001,20 @@ cc
 	      if(pivot.lt.eps) then
 		if(final.or..not.part.or.(fine.and..not.final
      *          .and.n.le.nmini*kmini)) then
-                  call rousseeuw_transfo(cova1,means,dat,med,mad,nvar,n)
+                  call rltransfo(cova1,means,dat,med,mad,nvar,n)
                   call rs(nvar,nvar,cova1,w,matz,z,fv1,fv2,ierr)
                   if(final.or..not.part) then
-                    call rousseeuw_dis(dath,z,ndist,nmax,nvmax,nn,nvar,
+                    call rldis(dath,z,ndist,nmax,nvmax,nn,nvar,
      *                means)
                   else
-                    call rousseeuw_dis(dath,z,ndist,nmaxi,nvmax,nn,nvar,
+                    call rldis(dath,z,ndist,nmaxi,nvmax,nn,nvar,
      *                means)
                   endif
-                  call rousseeuw_exact(kount,n,ndist,z,nvmax,nvmax1,
+                  call rlexact(kount,n,ndist,z,nvmax,nvmax1,
      *            nvar,sscp1,rec,dat,nmax,cova1,means,sd,nvar+1,
      *            weight)
-            call rousseeuw_covcopy(cova1,initcov,nvar,nvar)
-            call rousseeuw_covcopy(means,initmean,nvar,1)
+            call rlcovcopy(cova1,initcov,nvar,nvar)
+            call rlcovcopy(means,initmean,nvar,1)
             do 160,jjj=1,nvar
  160           plane(1,jjj)=z(jjj)
                   fit=2
@@ -1022,26 +1022,26 @@ cc
                 endif
 	        if(part.and..not.fine.and.kount.eq.0) then
                   call rs(nvar,nvar,cova1,w,matz,z,fv1,fv2,ierr)
-		  call rousseeuw_dis(dat,z,ndist,n,nvar,n,nvar,
+		  call rldis(dat,z,ndist,n,nvar,n,nvar,
      *            means)
-		  call rousseeuw_shsort(ndist,n)  
+		  call rlshsort(ndist,n)  
                   if(dabs(ndist(nhalff)-0.D0).lt.10.D-8) then
-                    call rousseeuw_transfo(cova1,means,dat,med,mad,
+                    call rltransfo(cova1,means,dat,med,mad,
      *										nvar,n)
                     call rs(nvar,nvar,cova1,w,matz,z,fv1,fv2,ierr)
-                    call rousseeuw_dis(dat,z,ndist,n,nvar,n,nvar,means)
-                    call rousseeuw_exact(kount,n,ndist,z,nvmax,nvmax1,
+                    call rldis(dat,z,ndist,n,nvar,n,nvar,means)
+                    call rlexact(kount,n,ndist,z,nvmax,nvmax1,
      *										nvar,sscp1,rec,dat,nmax,cova1,means,sd,nvar+1,
      *										weight)
-            call rousseeuw_covcopy(cova1,initcov,nvar,nvar)
-            call rousseeuw_covcopy(means,initmean,nvar,1)
+            call rlcovcopy(cova1,initcov,nvar,nvar)
+            call rlcovcopy(means,initmean,nvar,1)
             do 161,jjj=1,nvar
  161           plane(1,jjj)=z(jjj)
                     fit=2
                     goto 9999
                   endif
-		  call rousseeuw_dis(dath,z,ndist,nmaxi,nvmax,nn,nvar,means)
-		  call rousseeuw_shsort(ndist,nn)  
+		  call rldis(dath,z,ndist,nmaxi,nvmax,nn,nvar,means)
+		  call rlshsort(ndist,nn)  
                   kount=nhalf
                   do 162,kkk=nhalf+1,nn
                     if(dabs(ndist(kkk)-0.D0).lt.10.D-8) then
@@ -1051,7 +1051,7 @@ cc
 		  flag((ii-1)*10+1)=0 
                   do 164, kkk=1,nvar
  164                plane(ii,kkk)=z(kkk)
-                  call rousseeuw_store1(nvar,c1stock,m1stock,nvmax2,
+                  call rlstore1(nvar,c1stock,m1stock,nvmax2,
      *            nvmax,kmini,cova1,means,i,km10,ii,mcdndex,kount)
                   kount=1
 	          goto 1000
@@ -1062,25 +1062,25 @@ cc
 	        endif
 	        if(fine.and..not.final.and.kount.eq.0) then
                   call rs(nvar,nvar,cova1,w,matz,z,fv1,fv2,ierr)
-	          call rousseeuw_dis(dat,z,ndist,n,nvar,n,nvar,means)
-		  call rousseeuw_shsort(ndist,n)  
+	          call rldis(dat,z,ndist,n,nvar,n,nvar,means)
+		  call rlshsort(ndist,n)  
                   if(dabs(ndist(nhalff)-0.D0).lt.10.D-8) then
-                    call rousseeuw_transfo(cova1,means,dat,med,mad,
+                    call rltransfo(cova1,means,dat,med,mad,
      *                    nvar,n)
                     call rs(nvar,nvar,cova1,w,matz,z,fv1,fv2,ierr)
-                    call rousseeuw_dis(dat,z,ndist,n,nvar,n,nvar,means)
-                    call rousseeuw_exact(kount,n,ndist,z,nvmax,nvmax1,
+                    call rldis(dat,z,ndist,n,nvar,n,nvar,means)
+                    call rlexact(kount,n,ndist,z,nvmax,nvmax1,
      *              nvar,sscp1,rec,dat,nmax,cova1,means,sd,nvar+1,
      *              weight)
-            call rousseeuw_covcopy(cova1,initcov,nvar,nvar)
-            call rousseeuw_covcopy(means,initmean,nvar,1)
+            call rlcovcopy(cova1,initcov,nvar,nvar)
+            call rlcovcopy(means,initmean,nvar,1)
             do 165,jjj=1,nvar
  165           plane(1,jjj)=z(jjj)
                     fit=2
                     goto 9999
                   endif
-      call rousseeuw_dis(dath,z,ndist,nmaxi,nvmax,nn,nvar,means)
-		  call rousseeuw_shsort(ndist,nn)  
+      call rldis(dath,z,ndist,nmaxi,nvmax,nn,nvar,means)
+		  call rlshsort(ndist,nn)  
                   kount=nhalf
                   do 166,kkk=nhalf+1,nn
                     if(dabs(ndist(kkk)-0.D0).lt.10.D-8) then
@@ -1090,7 +1090,7 @@ cc
 		  flag(1)=0 
                   do 168,kkk=1,nvar
  168                plane(1,kkk)=z(kkk)
-                  call rousseeuw_store2(nvar,cstock,mstock,nvmax2,nvmax,
+                  call rlstore2(nvar,cstock,mstock,nvmax2,nvmax,
      *            kmini,cova1,means,i,mcdndex,kount)
                   kount=1
 		  goto 1000
@@ -1100,7 +1100,7 @@ cc
 		  endif
 	        endif
 	      endif
-	      call rousseeuw_covsweep(cinv1,nvar,j)
+	      call rlcovsweep(cinv1,nvar,j)
  600        continue
 	    if(step.ge.2 .and. det.eq.detimin1) then
 	      goto 5000 
@@ -1115,21 +1115,21 @@ cc
 	      do 173 mm=1,nvar
  173            rec(mm)=dath(j,mm)
               endif
-	      t=rousseeuw_mahad(rec,nvar,means,cinv1)
+	      t=rlmahad(rec,nvar,means,cinv1)
 	      ndist(j)=t
  171        continue
-	    dist2=rousseeuw_findq(ndist,nn,nhalf,index2)
+	    dist2=rlfindq(ndist,nn,nhalf,index2)
 	    dist=dsqrt(dist2)
 	    if(((i.eq.1.and.step.eq.1.and..not.fine)
      *      .or.det.lt.object).and.(final)) then
-	      medi2=rousseeuw_findq(ndist,nn,int(n/2),index1)
+	      medi2=rlfindq(ndist,nn,int(n/2),index1)
 	      object=det
 	      do 175 jjj=1,nhalf
 		inbest(jjj)=index2(jjj)
  175          continue
-	      call rousseeuw_covcopy(cova1,cova2,nvar,nvar)
-	      call rousseeuw_covcopy(cinv1,cinv2,nvar,nvar)
-	      call rousseeuw_covcopy(means,bmeans,nvar,1)
+	      call rlcovcopy(cova1,cova2,nvar,nvar)
+	      call rlcovcopy(cinv1,cinv2,nvar,nvar)
+	      call rlcovcopy(means,bmeans,nvar,1)
 	    endif
  400      continue
 cc
@@ -1282,26 +1282,26 @@ cc
 	do 261, j=1,nhalf
 	  temp(j)=inbest(j)
  261    continue
-	call rousseeuw_ishsort(temp,nhalf)
+	call rlishsort(temp,nhalf)
         do 271,j=1,nvar
  271      means(j)=bmeans(j)*mad(j)+med(j)
-        call rousseeuw_covcopy(means,initmean,nvar,1)
+        call rlcovcopy(means,initmean,nvar,1)
 cc
         do 9145 i=1,nvar
           do 9147 j=1,nvar
  9147       cova1((i-1)*nvar+j)=cova2((i-1)*nvar+j)*mad(i)*mad(j)
  9145   continue
-        call rousseeuw_covcopy(cova1,initcov,nvar,nvar)
+        call rlcovcopy(cova1,initcov,nvar,nvar)
         det=object
         do 9149 j=1,nvar
           det=det*mad(j)*mad(j)
  9149   continue
 cc
-        call rousseeuw_covmult(cova1,nvar,nvar,medi2/chimed(nvar))
-        call rousseeuw_covmult(cova2,nvar,nvar,medi2/chimed(nvar)) 
-        call rousseeuw_covmult(cinv2,nvar,nvar,
+        call rlcovmult(cova1,nvar,nvar,medi2/chimed(nvar))
+        call rlcovmult(cova2,nvar,nvar,medi2/chimed(nvar)) 
+        call rlcovmult(cinv2,nvar,nvar,
      *				1.D0/(medi2/chimed(nvar))) 
-        call rousseeuw_covcopy(cova1,adcov,nvar,nvar)
+        call rlcovcopy(cova1,adcov,nvar,nvar)
 cc
 cc      The MCD location is in bmeans.
 cc      The MCD scatter matrix is in cova2,
@@ -1310,13 +1310,13 @@ cc
 cc      For every observation we compute its MCD distance
 cc      and compare it to a cutoff value.
 cc
-	call rousseeuw_covinit(sscp1,nvar+1,nvar+1)
+	call rlcovinit(sscp1,nvar+1,nvar+1)
 	nin=0
 	cutoff=chi2(nvar)
 	do 280 i=1,n
 	  do 282 mm=1,nvar
  282      rec(mm)=dat(i,mm) 
-	  dist2=rousseeuw_mahad(rec,nvar,bmeans,cinv2)
+	  dist2=rlmahad(rec,nvar,bmeans,cinv2)
 	  if(dist2.le.cutoff) then
 	    nin=nin+1
             weight(i)=1
@@ -1325,7 +1325,7 @@ cc
 	  endif
  280    continue
 cc
-        call rousseeuw_transfo(cova2,bmeans,dat,med,mad,nvar,n)
+        call rltransfo(cova2,bmeans,dat,med,mad,nvar,n)
 	goto 9999
 cc ******************************************************************
  9200   fit=-1
@@ -1341,7 +1341,7 @@ ccccc
 ccccc
 ccccc
 ccccc
-      subroutine rousseeuw_exact(kount,nn,ndist,z,nvmax,nvmax1,nvar,
+      subroutine rlexact(kount,nn,ndist,z,nvmax,nvmax1,nvar,
      *  sscp1,rec,dat,nmax,cova1,means,sd,nvar1,weight)
 cc
 cc Determines how many objects lie on the hyperplane with equation 
@@ -1358,7 +1358,7 @@ cc
       double precision sd(nvar)
       integer weight(nn)
 cc
-      call rousseeuw_covinit(sscp1,nvar+1,nvar+1)
+      call rlcovinit(sscp1,nvar+1,nvar+1)
       kount=0
       do 10,kk=1,nn
 	if(dabs(ndist(kk)-0.D0).lt.10.D-8) then
@@ -1366,17 +1366,17 @@ cc
           weight(kk)=1
           do 20,j=1,nvar
  20         rec(j)=dat(kk,j)
-          call rousseeuw_admit(rec,nvar,nvar+1,sscp1)
+          call rladmit(rec,nvar,nvar+1,sscp1)
         else
           weight(kk)=0
 	endif
  10   continue 
-      call rousseeuw_covar(kount,nvar,nvar+1,sscp1,cova1,means,sd)
+      call rlcovar(kount,nvar,nvar+1,sscp1,cova1,means,sd)
       return
       end
 ccccc
 ccccc
-      subroutine rousseeuw_transfo(cova,means,dat,med,mad,nvar,n)
+      subroutine rltransfo(cova,means,dat,med,mad,nvar,n)
 cc
       double precision cova(nvar,nvar)
       double precision means(nvar)
@@ -1394,13 +1394,13 @@ cc
       end
 ccccc
 ccccc
-      integer function rousseeuw_ncomb(k,n)
+      integer function rlncomb(k,n)
 cc
 cc  Computes the number of combinations of k out of n.
 cc  (To avoid integer overflow during the computation,
 cc  ratios of reals are multiplied sequentially.)
 cc  For comb > 1E+009 the resulting 'comb' may be too large
-cc  to be put in the integer 'rousseeuw_ncomb', but the main program
+cc  to be put in the integer 'rlncomb', but the main program
 cc  only calls this function for small enough n and k.
 cc
       integer k,n
@@ -1411,12 +1411,12 @@ cc
       fact=(dble(n-j+1.0))/(dble(k-j+1.0))
       comb=comb*fact
  10   continue
-      rousseeuw_ncomb=int(comb+0.5D0)
+      rlncomb=int(comb+0.5D0)
       return
       end
 ccccc
 ccccc
-      subroutine rousseeuw_covmult(a,n1,n2,fac)
+      subroutine rlcovmult(a,n1,n2,fac)
 cc
 cc  Multiplies the matrix a by the real factor fac.
 cc
@@ -1432,7 +1432,7 @@ cc
       end
 ccccc
 ccccc
-      subroutine rousseeuw_admit(rec,nvar,nvar1,sscp)
+      subroutine rladmit(rec,nvar,nvar1,sscp)
 cc
 cc  Updates the sscp matrix with the additional case rec.
 cc
@@ -1453,7 +1453,7 @@ cc
       end
 ccccc
 ccccc
-      subroutine rousseeuw_covar(n,nvar,nvar1,sscp,cova,means,sd)
+      subroutine rlcovar(n,nvar,nvar1,sscp,cova,means,sd)
 cc
 cc  Computes the classical mean and covariance matrix.
 cc
@@ -1489,9 +1489,9 @@ cc
       end
 ccccc
 ccccc
-        subroutine rousseeuw_correl(nvar,a,b,sd)
+        subroutine rlcorrel(nvar,a,b,sd)
 cc
-cc  rousseeuw_transforms the scatter matrix a to the correlation matrix b.
+cc  rltransforms the scatter matrix a to the correlation matrix b.
 cc
 	double precision a(nvar,nvar)
 	double precision b(nvar,nvar)
@@ -1512,17 +1512,17 @@ cc
 	end
 ccccc
 ccccc
-	subroutine rousseeuw_rangen(n,nsel,index,seed)
+	subroutine rlrangen(n,nsel,index,seed)
 cc
 cc    Randomly draws nsel cases out of n cases.
 cc    Here, index is the index set.
 cc
 	integer seed
 	integer index(nsel)
-	double precision rousseeuw_uniran
+	double precision rluniran
 cc
 	do 100 i=1,nsel
- 10       num=int(rousseeuw_uniran(seed)*n)+1
+ 10       num=int(rluniran(seed)*n)+1
 	  if(i.gt.1) then
 	    do 50 j=1,i-1
 	      if(index(j).eq.num) goto 10
@@ -1534,23 +1534,23 @@ cc
 	end
 ccccc
 ccccc
-	function rousseeuw_uniran(seed)
+	function rluniran(seed)
 cc
 cc  Draws a random number from the uniform distribution on [0,1].
 cc
-	real rousseeuw_uniran
+	real rluniran
 	integer seed
 	integer quot
 cc
 	seed=seed*5761+999
 	quot=seed/65536
 	seed=seed-quot*65536
-	rousseeuw_uniran=float(seed)/65536.D0
+	rluniran=float(seed)/65536.D0
 	return
 	end
 ccccc
 ccccc
-	subroutine rousseeuw_shsort(a,n)
+	subroutine rlshsort(a,n)
 cc
 cc  Sorts the array a of length n.
 cc
@@ -1580,7 +1580,7 @@ cc
 	end
 ccccc
 ccccc
-	subroutine rousseeuw_ishsort(a,kk)
+	subroutine rlishsort(a,kk)
 cc
 cc  Sorts the integer array a of length kk.
 cc
@@ -1610,14 +1610,14 @@ cc
 	end
 cccc
 ccccc
-        subroutine rousseeuw_prdraw(a,pnsel,seed,nn)
+        subroutine rlprdraw(a,pnsel,seed,nn)
 cc
         integer a(nn)
         integer pnsel
         integer seed
 cc
         jndex=pnsel
-        nrand=int(rousseeuw_uniran(seed)*(nn-jndex))+1
+        nrand=int(rluniran(seed)*(nn-jndex))+1
         jndex=jndex+1
         a(jndex)=nrand+jndex-1
         do 5, i=1,jndex-1
@@ -1634,14 +1634,14 @@ cc
         end
 ccccc
 ccccc
-	function rousseeuw_mahad(rec,nvar,means,sigma)
+	function rlmahad(rec,nvar,means,sigma)
 cc
 cc  Computes a Mahalanobis-type distance.
 cc
 	double precision rec(nvar)
 	double precision means(nvar)
 	double precision sigma(nvar,nvar)
-	double precision rousseeuw_mahad
+	double precision rlmahad
 	double precision t
 cc
 	t=0
@@ -1650,16 +1650,16 @@ cc
 	    t=t+(rec(j)-means(j))*(rec(k)-means(k))*sigma(j,k)
  90       continue
  100    continue
-	rousseeuw_mahad=t
+	rlmahad=t
 	return
 	end
 ccccc
 ccccc
-	function rousseeuw_findq(aw,ncas,k,index)
+	function rlfindq(aw,ncas,k,index)
 cc
 cc  Finds the k-th order statistic of the array aw of length ncas.
 cc
-	double precision rousseeuw_findq
+	double precision rlfindq
 	double precision aw(ncas)
 	double precision ax,wa
 	integer index(ncas)
@@ -1693,12 +1693,12 @@ cc
  80     if(j.lt.k) l=jnc
 	if(k.lt.jnc) lr=j
 	goto 20
- 90     rousseeuw_findq=aw(k)
+ 90     rlfindq=aw(k)
 	return
 	end
 ccccc
 ccccc
-	subroutine rousseeuw_rdraw(a,n,seed,ntot,mini,ngroup,kmini)
+	subroutine rlrdraw(a,n,seed,ntot,mini,ngroup,kmini)
 cc
 cc  Draws ngroup nonoverlapping subdatasets out of a dataset of size n,
 cc  such that the selected case numbers are uniformly distributed from 1 to n.
@@ -1710,7 +1710,7 @@ cc
 	jndex=0
 	do 10 k=1,ngroup
 	  do 20 m=1,mini(k)
-	    nrand=int(rousseeuw_uniran(seed)*(n-jndex))+1 
+	    nrand=int(rluniran(seed)*(n-jndex))+1 
 	    jndex=jndex+1
 	    if(jndex.eq.1) then
 	      a(1,jndex)=nrand
@@ -1736,30 +1736,30 @@ cc
 	end
 ccccc
 ccccc
-	function rousseeuw_odd(n)
+	function rlodd(n)
 cc
-	logical rousseeuw_odd
+	logical rlodd
 cc
-	rousseeuw_odd=.true.
-	if(2*(n/2).eq.n) rousseeuw_odd=.false.
+	rlodd=.true.
+	if(2*(n/2).eq.n) rlodd=.false.
 	return
 	end
 ccccc
 ccccc
-	integer function rousseeuw_nbreak(nhalf,n,nvar)
+	integer function rlnbreak(nhalf,n,nvar)
 cc
 cc  Computes the breakdown value of the MCD estimator 
 cc
 	if (nhalf.le.(n+nvar+1)/2) then
-	  rousseeuw_nbreak=(nhalf-nvar)*100/n
+	  rlnbreak=(nhalf-nvar)*100/n
 	else
-	  rousseeuw_nbreak=(n-nhalf+1)*100/n
+	  rlnbreak=(n-nhalf+1)*100/n
 	endif
 	return
 	end
 ccccc
 ccccc     
-       subroutine rousseeuw_dis(da,z,ndist,nm,nv,nn,nvar,
+       subroutine rldis(da,z,ndist,nm,nv,nn,nvar,
      * means)
 cc
 cc Computes the distance between the objects of da and a hyperplane with
@@ -1779,7 +1779,7 @@ cc
        end
 ccccc
 ccccc     
-      subroutine rousseeuw_store2(nvar,cstock,mstock,nvmax2,nvmax,
+      subroutine rlstore2(nvar,cstock,mstock,nvmax2,nvmax,
      * kmini,cova1,means,i,mcdndex,kount)
 cc
 cc  Stores the coefficients of a hyperplane 
@@ -1814,7 +1814,7 @@ cc
       end
 ccccc
 ccccc
-      subroutine rousseeuw_store1(nvar,c1stock,m1stock,nvmax2,nvmax,
+      subroutine rlstore1(nvar,c1stock,m1stock,nvmax2,nvmax,
      * kmini,cova1,means,i,km10,ii,mcdndex,kount)
 cc
       double precision c1stock(km10,nvmax2)
@@ -1845,10 +1845,10 @@ cc
       end
 ccccc
 ccccc
-        subroutine rousseeuw_mcduni(w,ncas,jqu,slutn,bstd,aw,aw2,
+        subroutine rlmcduni(w,ncas,jqu,slutn,bstd,aw,aw2,
      *    factor,len)
 cc
-cc  rousseeuw_mcduni : calculates the MCD in the univariate case.
+cc  rlmcduni : calculates the MCD in the univariate case.
 cc           w contains the ordered observations 
 cc
        implicit double precision(a-h,o-z), integer(i-n)
@@ -1900,7 +1900,7 @@ c http://lib.stat.cmu.edu/general/minvol
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cc
-        subroutine rousseeuw_genpn(n,nsel,index)
+        subroutine rlgenpn(n,nsel,index)
         integer index(nsel)
         k=nsel
         index(k)=index(k)+1
@@ -1915,7 +1915,7 @@ cc
         end
 cc
 cc
-        subroutine rousseeuw_covsweep(a,nvar,k)
+        subroutine rlcovsweep(a,nvar,k)
         double precision a(nvar,nvar)
         double precision b
         double precision d
@@ -1937,7 +1937,7 @@ cc
         end
 cc
 cc
-        subroutine rousseeuw_covcopy(a,b,n1,n2)
+        subroutine rlcovcopy(a,b,n1,n2)
         double precision a(n1,n2)
         double precision b(n1,n2)
         do 100 i=1,n1
@@ -1949,7 +1949,7 @@ cc
         end
 cc
 cc
-        subroutine rousseeuw_covinit(a,n1,n2)
+        subroutine rlcovinit(a,n1,n2)
         double precision a(n1,n2)
         do 100 i=1,n1
           do 90 j=1,n2

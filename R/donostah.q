@@ -63,7 +63,7 @@ donostah <- function(x, control)
 
 	storage.mode(covmat) <- "double"
 
-	sdlist <- .Fortran("sds",
+	sdlist <- .Fortran("rlds",
                       n = as.integer(n),
                       p = as.integer(p),
                       nresamp = as.integer(nresamp),

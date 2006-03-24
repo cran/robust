@@ -1,4 +1,4 @@
-      subroutine sds(n,np,nresamp,x,tune,wk,locat,cov,maxres,
+      subroutine rlds(n,np,nresamp,x,tune,wk,locat,cov,maxres,
      1     nresper,w,z,icent,iwork)
 c
 c
@@ -39,15 +39,15 @@ c
       naux=nind+np
 
       call fseedi()
-      call S_weights(n,np,nresamp,x,tune,w,z,locat,wk(nr),iwork(nind),
+      call rlweights(n,np,nresamp,x,tune,w,z,locat,wk(nr),iwork(nind),
      1             cov,wk(naux),maxres,nresper,icent)
-      call S_donostah(n,np,x,w,locat,cov,icent)
+      call rldonostah(n,np,x,w,locat,cov,icent)
       call fseedo()
       return
       end 
 
 
-      subroutine S_weights(n,np,nresamp,x,c,w,z,a,b,ind,wk,
+      subroutine rlweights(n,np,nresamp,x,c,w,z,a,b,ind,wk,
      1                   u,maxres,nresper,icent)
       implicit double precision (a-h,o-z)
       dimension x(n,np),z(n),a(np),b(n),w(n),ind(np),u(n)
@@ -58,37 +58,37 @@ c
       z1=dble(k1)
       zn=dble(n)
       z3=(1+(z1/zn))/2
-      call S_quntbi(z3, cc)
+      call rlquntbi(z3, cc)
       do i=1,n
          z(i)=-1.
          enddo
       nresper=0
       if (nresamp.eq.0) then
-         call S_all(n,np,nresper,x,a,b,w,z,ind,wk,u,k1,k2,cc,icent)
+         call rlall(n,np,nresper,x,a,b,w,z,ind,wk,u,k1,k2,cc,icent)
       else
          k=0
          do while (k.lt.maxres.and.nresper.lt.nresamp)
             k=k+1
-            call S_subsamp(n,np,ind)
-            call S_process(n,np,nresper,x,a,b,w,z,ind,wk,u,k1,
+            call rlsubsamp(n,np,ind)
+            call rlprocess(n,np,nresper,x,a,b,w,z,ind,wk,u,k1,
      +           k2,cc,icent)
           enddo
       endif
       do i=1,n
-         call S_rwetml(z(i)/c,w(i))
+         call rlrwetml(z(i)/c,w(i))
       enddo
       return
       end
 
 
-      subroutine S_all(n,np,nresper,x,a,b,w,z,ind,wk,u,k1,k2,cc,icent)
+      subroutine rlall(n,np,nresper,x,a,b,w,z,ind,wk,u,k1,k2,cc,icent)
       implicit double precision (a-h,o-z)
       dimension x(n,np),z(n),a(np),b(n),w(n),ind(np),u(n)
       dimension wk(np,np)
       do j=1,np
          ind(j)=j
          enddo
-      call S_process(n,np,nresper,x,a,b,w,z,ind,wk,u,k1,k2,cc,icent)
+      call rlprocess(n,np,nresper,x,a,b,w,z,ind,wk,u,k1,k2,cc,icent)
       j=0
       do while (np-j.ge.1)
          if (ind(np-j).eq.n-j) then
@@ -98,7 +98,7 @@ c
             do k=np-j+1,np
                ind(k)=ind(k-1)+1
             enddo
-            call S_process(n,np,nresper,x,a,b,w,z,ind,
+            call rlprocess(n,np,nresper,x,a,b,w,z,ind,
      +           wk,u,k1,k2,cc,icent)
             j=0
          endif
@@ -107,13 +107,13 @@ c
       end
 
 
-      subroutine S_process(n,np,nresper,x,a,b,w,z,ind,wk,
+      subroutine rlprocess(n,np,nresper,x,a,b,w,z,ind,wk,
      +     u,k1,k2,cc,icent)
       implicit double precision (a-h,o-z)
       dimension x(n,np),z(n),a(np),b(n),w(n),ind(np),u(n)
       dimension wk(np,np)
       data tola,tolr,big1,big2 /1.d-15, 1.d-8,1.d+2,1.d+15/
-      call S_vectora(n,np,x,a,ind,wk,icent,ierr)
+      call rlvectora(n,np,x,a,ind,wk,icent,ierr)
       if (ierr.eq.0) then
          nresper=nresper+1
          do i=1,n
@@ -123,7 +123,7 @@ c
             enddo
          enddo
          bmed=0.0d0
-         if(icent.ne.0) bmed=S_amed(b,n,u)
+         if(icent.ne.0) bmed=rlamed(b,n,u)
          do i=1,n
             w(i)=abs(b(i)-bmed)
          enddo
@@ -133,7 +133,7 @@ c
          enddo
          ww=ww/n         
          if(ww.ge.tola) then
-            call S_sort(w,n,1)
+            call rlsort(w,n,1)
             bmad=(w(k1)+w(k2))/2
             bmad=bmad/cc 
             if(bmad.ge.tolr *ww) then
@@ -152,7 +152,7 @@ c
       end
 
 
-      subroutine S_vectora(n,np,x,a,ind,wk,icent,ierr)
+      subroutine rlvectora(n,np,x,a,ind,wk,icent,ierr)
       implicit double precision (a-h,o-z)
       dimension x(n,np),a(np),ind(np),wk(np,np)
       do k=1,np
@@ -160,12 +160,12 @@ c
             wk(j,k)=x(ind(k),j)
          enddo
       enddo
-      call S_direc(wk,np,np,icent,ierr,a)
+      call rldirec(wk,np,np,icent,ierr,a)
       return
       end
 
 
-      subroutine S_donostah(n,np,x,w,locat,cov,icent)
+      subroutine rldonostah(n,np,x,w,locat,cov,icent)
       implicit double precision (a-h,o-z)
       double precision locat(np)
       dimension x(n,np),w(n),cov(np,np)
@@ -201,15 +201,15 @@ c
       end
 
 
-      subroutine S_subsamp(n,np,ind)
+      subroutine rlsubsamp(n,np,ind)
       implicit double precision (a-h,o-z)
       dimension ind(np)
       en=dble(n)
-      call splusrunif(RND)
+      call roblibrunif(RND)
       ind(1)=int(en*RND+1.)
       if (np.eq.1) return
       k=2
-   10 call splusrunif(RND)
+   10 call roblibrunif(RND)
       ind(k)=int(en*RND+1.)
       do i=1,k-1
          if (ind(i).eq.ind(k)) go to 10
@@ -220,20 +220,20 @@ c
       end
 
                                                                  
-      double precision function S_amed(z,n,aux)
+      double precision function rlamed(z,n,aux)
       implicit double precision (a-h,o-z)
       DIMENSION Z(n),aux(n)
       DO 100 I=1,N                                                  
   100 AUX(I)=Z(I)                                                   
-      CALL S_SORT (AUX,N,1)                                           
+      CALL rlSORT (AUX,N,1)                                           
       I=N/2                                                         
       K=I*2                                                         
-      S_amed=AUX(I+1)                                                 
-      IF (k.GE.N) S_amed=(S_amed+AUX(I))/2.                             
+      rlamed=AUX(I+1)                                                 
+      IF (k.GE.N) rlamed=(rlamed+AUX(I))/2.                             
       RETURN                                                        
       END
 
-      SUBROUTINE S_SORT (A,N,SWITCH)                                   
+      SUBROUTINE RLSORT (A,N,SWITCH)                                   
       implicit double precision (a-h,o-z)
       DIMENSION A(n)                                               
       INTEGER SWITCH                                                 
@@ -265,31 +265,31 @@ c
       END           
 
 
-	double precision function S_dprodd(x,y,nn)
+	double precision function rldprodd(x,y,nn)
 	implicit double precision (a-h,o-z)
 	dimension x(nn), y(nn)
-	S_dprodd=0.
+	rldprodd=0.
 	do  i=1,nn
-	   S_dprodd=S_dprodd+x(i)*y(i)
+	   rldprodd=rldprodd+x(i)*y(i)
             enddo
 	return
 	end
 
 
-	 double precision function S_robust_dnorm(x,nn)
+	 double precision function rlrobustdnorm(x,nn)
 	implicit double precision (a-h,o-z)
 	dimension x(nn)
-	S_robust_dnorm=S_dprodd(x,x,nn)
-            S_robust_dnorm=dsqrt(S_robust_dnorm)
+	rlrobustdnorm=rldprodd(x,x,nn)
+            rlrobustdnorm=dsqrt(rlrobustdnorm)
 	return
 	end
 
 
-	subroutine S_xnorma(x,nn,ierr,tol)
+	subroutine rlxnorma(x,nn,ierr,tol)
         implicit double precision (a-h,o-z)
         dimension x(nn)
         ierr=1
-        dn=S_robust_dnorm(x,nn)
+        dn=rlrobustdnorm(x,nn)
         if (dn.le.tol) then
            ierr=1
            return
@@ -303,35 +303,35 @@ c
         end
 
 
-	subroutine S_orthog(xx,nn,mm,nmain,ierr)
+	subroutine rlorthog(xx,nn,mm,nmain,ierr)
         implicit double precision (a-h,o-z)
         dimension xx(nmain,mm)
         data tola,tolr /1.d-15, 1.d-8/
 C In original code tolb was never initialized (was 0 on Solaris, random on HP)
         tolb = tola
         do  j=1,mm
-           call  S_xnorma(xx(1,j),nn,ierr,tola)
+           call  rlxnorma(xx(1,j),nn,ierr,tola)
            if (ierr.gt.0) return
         enddo
         mm1=mm-1
         do  j=1,mm1
-           call  S_xnorma(xx(1,j),nn,ierr,tolr)
+           call  rlxnorma(xx(1,j),nn,ierr,tolr)
            if (ierr.ne.0) return
            j1=j+1
            do k=j1,mm
-              dp=S_dprodd(xx(1,j),xx(1,k),nn)
+              dp=rldprodd(xx(1,j),xx(1,k),nn)
               do  i=1,nn
                  xx(i,k)=xx(i,k)-xx(i,j)*dp
               enddo
            enddo
         enddo
-	call  S_xnorma(xx(1,mm),nn,ierr,tolb)
-C       if (ierr .ne. 0) write(*,*) 'S_xnorma(...,tolb) failed!'
+	call  rlxnorma(xx(1,mm),nn,ierr,tolb)
+C       if (ierr .ne. 0) write(*,*) 'rlxnorma(...,tolb) failed!'
 	return
 	end
 
 
-	subroutine S_ortdir(xx,mm,nmain,dire)
+	subroutine rlortdir(xx,mm,nmain,dire)
         implicit double precision (a-h,o-z)
         dimension xx(nmain,1), dire(mm)
         tol=1./dsqrt(dble(mm))
@@ -344,7 +344,7 @@ C       if (ierr .ne. 0) write(*,*) 'S_xnorma(...,tolb) failed!'
               enddo
            enddo 
            dire(k)=dire(k)+1
-           dn=S_robust_dnorm(dire,mm)
+           dn=rlrobustdnorm(dire,mm)
            if (dn.ge.tol) goto 40
         enddo
 40      do  i=1,mm
@@ -354,7 +354,7 @@ C       if (ierr .ne. 0) write(*,*) 'S_xnorma(...,tolb) failed!'
         end
 
 
-        subroutine S_direc(xx,mm,nmain,icent,ierr,dire)
+        subroutine rldirec(xx,mm,nmain,icent,ierr,dire)
         implicit double precision (a-h,o-z)
         dimension xx(nmain,mm), dire(mm)
         mm1=mm
@@ -366,7 +366,7 @@ C       if (ierr .ne. 0) write(*,*) 'S_xnorma(...,tolb) failed!'
               enddo
            enddo
         endif
-        call S_orthog(xx,mm,mm1,nmain,ierr)
-        if (ierr.eq.0) call S_ortdir(xx,mm,nmain,dire)
+        call rlorthog(xx,mm,mm1,nmain,ierr)
+        if (ierr.eq.0) call rlortdir(xx,mm,nmain,dire)
         return
         end

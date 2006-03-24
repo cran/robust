@@ -1,4 +1,4 @@
-c$$$      SUBROUTINE S_MACHD(I,X)
+c$$$      SUBROUTINE RLMACHD(I,X)
 c$$$C.......................................................................
 c$$$C
 c$$$C
@@ -58,15 +58,15 @@ c$$$      END
 c$$$C
 c$$$C==========================================================================
 C     
-c$$$      DOUBLE PRECISION FUNCTION S_EXU(X)
+c$$$      DOUBLE PRECISION FUNCTION RLEXU(X)
 c$$$      DOUBLE PRECISION X
-c$$$      S_EXU=X
+c$$$      RLEXU=X
 c$$$      RETURN
 c$$$      END
 C
 C-----------------------------------------------------------------------
 C
-c$$$      DOUBLE PRECISION FUNCTION S_XLOGD(X)
+c$$$      DOUBLE PRECISION FUNCTION RLXLOGD(X)
 c$$$C.......................................................................
 c$$$C
 c$$$C   COPYRIGHT 1992 Alfio Marazzi
@@ -76,26 +76,26 @@ c$$$C.......................................................................
 c$$$      implicit double precision(a-h,o-z)
 c$$$      DATA NCALL,XMIN,YMIN/0,0.D0,0.D0/
 c$$$      IF (NCALL.EQ.0) THEN
-c$$$        CALL S_MACHD(4,XMIN)
-c$$$        CALL S_MACHD(5,YMIN)
+c$$$        CALL RLMACHD(4,XMIN)
+c$$$        CALL RLMACHD(5,YMIN)
 c$$$        NCALL=1
 c$$$      ENDIF 
 c$$$C
 c$$$C  EXTENDED NATURAL LOGARITHM FUNCTION
 c$$$C
 c$$$      IF (X.LE.0.D0) THEN
-c$$$        S_XLOGD=0.D0
+c$$$        RLXLOGD=0.D0
 c$$$      ELSEIF (X.LE.XMIN) THEN
-c$$$        S_XLOGD=YMIN
+c$$$        RLXLOGD=YMIN
 c$$$      ELSE
-c$$$        S_XLOGD=DLOG(X)
+c$$$        RLXLOGD=DLOG(X)
 c$$$      ENDIF
 c$$$      RETURN
 c$$$      END 
 c$$$C
 c$$$C-----------------------------------------------------------------------
 c$$$C
-c$$$      DOUBLE PRECISION FUNCTION S_XEXPD(X)
+c$$$      DOUBLE PRECISION FUNCTION RLXEXPD(X)
 c$$$C.......................................................................
 c$$$C
 c$$$C   COPYRIGHT 1992 Alfio Marazzi
@@ -105,8 +105,8 @@ c$$$C.......................................................................
 c$$$      DOUBLE PRECISION X,DMIN,DMAX,XBIG
 c$$$      DATA NCALL,DMIN,DMAX,XBIG/0,0.D0,0.D0,0.D0/
 c$$$      IF (NCALL.EQ.0) THEN
-c$$$        CALL S_MACHD(3,DMIN)
-c$$$        CALL S_MACHD(6,XBIG)
+c$$$        CALL RLMACHD(3,DMIN)
+c$$$        CALL RLMACHD(6,XBIG)
 c$$$        XBIG=XBIG/10.D0
 c$$$        DMAX=DLOG(XBIG)
 c$$$        NCALL=1
@@ -115,16 +115,16 @@ c$$$C
 c$$$C  EXTENDED EXPONENTIAL FUNCTION
 c$$$C
 c$$$      IF (X.LE.DMIN) THEN
-c$$$        S_XEXPD=0.D0
+c$$$        RLXEXPD=0.D0
 c$$$      ELSEIF (X.GE.DMAX) THEN
-c$$$        S_XEXPD=XBIG
+c$$$        RLXEXPD=XBIG
 c$$$      ELSE
-c$$$        S_XEXPD=DEXP(X)
+c$$$        RLXEXPD=DEXP(X)
 c$$$      ENDIF
 c$$$      RETURN
 c$$$      END
 c$$$C
-      SUBROUTINE S_XERF(KODE,X,P)
+      SUBROUTINE RLXERF(KODE,X,P)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -133,18 +133,18 @@ C   AUTHOR : A. MARAZZI
 C.......................................................................
 C
       implicit double precision(a-h,o-z)
-      EXTERNAL S_XEXPD
+      EXTERNAL RLXEXPD
       DATA SPI/2.506628274631D0/
 c      IF (KODE.NE.1.AND.KODE.NE.2) CALL MESSGE(500,'XERF  ',1)
       X2=-X*X/2.D0
-      P=S_XEXPD(X2)
+      P=RLXEXPD(X2)
       IF (KODE.EQ.2) P=P/SPI
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_GAUSSD (KODE,X,P)
+      SUBROUTINE RLGAUSSD (KODE,X,P)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -157,7 +157,7 @@ C
       DATA               SQR1D2/.7071067811865475D0/
 C
 c      IF (KODE.NE.1.AND.KODE.NE.2) CALL MESSGE(500,'GAUSSD',1)
-      CALL S_CERFD(-X*SQR1D2,CD)
+      CALL RLCERFD(-X*SQR1D2,CD)
       P = .5D0 * CD
       IF (KODE.EQ.2) P=1.D0-P
       RETURN
@@ -165,7 +165,7 @@ c      IF (KODE.NE.1.AND.KODE.NE.2) CALL MESSGE(500,'GAUSSD',1)
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_CERFD(X,F)
+      SUBROUTINE RLCERFD(X,F)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -174,12 +174,12 @@ C   AUTHOR : A. RANDRIAMIHARISOA
 C
 C.......................................................................
 C
-      DOUBLE PRECISION   F,X,S_XEXPD
+      DOUBLE PRECISION   F,X,RLXEXPD
       DIMENSION          P(5),Q(4),P1(9),Q1(8),P2(6),Q2(5)
       DOUBLE PRECISION   P,Q,P1,Q1,P2,Q2,XMIN,XLARGE,SQRPI,XX,
      *                   RES,XSQ,XNUM,XDEN,XI,XBIG
       INTEGER            ISW,I
-      EXTERNAL S_XEXPD
+      EXTERNAL RLXEXPD
 C                                  COEFFICIENTS FOR 0.0 .LE. Y .LT.
 C                                  .477
       DATA               P(1)/113.8641541510502D0/,
@@ -279,7 +279,7 @@ C                                  MINIMAX APPROXIMATION FOR CERFD
          XDEN = XDEN*XI+Q2(I)
    50 CONTINUE
       RES = (SQRPI+XI*XNUM/XDEN)/XX
-   60 RES = RES*S_XEXPD(-XSQ)
+   60 RES = RES*RLXEXPD(-XSQ)
       IF (ISW.EQ.-1) RES = 2.0D0-RES
       GO TO 70
    65 RES = 0.0D0
@@ -289,7 +289,7 @@ C                                  MINIMAX APPROXIMATION FOR CERFD
 c
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_INTGRT(F,FARR,N,FEXT,GEXT,A,B,EPSABS,EPSREL,KEY,
+      SUBROUTINE RLINTGRT(F,FARR,N,FEXT,GEXT,A,B,EPSABS,EPSREL,KEY,
      1           LIMIT,RESULT,ABSERR,NEVAL,IER,WORK,IWORK,NPR,PARAM)
 
 C.......................................................................
@@ -317,7 +317,7 @@ C     1   .OR.LIMIT.GT.500)  CALL MESSGE(500,'INTGRD',1)
       BLIST=ALIST+LIMIT
       RLIST=BLIST+LIMIT
       ELIST=RLIST+LIMIT
-      CALL S_QAGE1T(F,FARR,N,FEXT,GEXT,A,B,EPSABS,EPSREL,KEY,LIMIT,
+      CALL RLQAGE1T(F,FARR,N,FEXT,GEXT,A,B,EPSABS,EPSREL,KEY,LIMIT,
      1     RESULT,ABSERR,NEVAL,IER,
      2     WORK,WORK(BLIST),WORK(RLIST),WORK(ELIST),IWORK,LAST,
      2	   NPR,PARAM)
@@ -327,7 +327,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_QAGE1T(F,FARR,N,FEXT,GEXT,A,B,EPSABS,EPSREL,KEY,
+      SUBROUTINE RLQAGE1T(F,FARR,N,FEXT,GEXT,A,B,EPSABS,EPSREL,KEY,
      *  LIMIT,
      *  RESULT,ABSERR,NEVAL,IER,ALIST,BLIST,RLIST,ELIST,IORD,LAST,
      * 	NPR,PARAM)
@@ -381,9 +381,9 @@ C           UFLOW  IS THE SMALLEST POSITIVE MAGNITUDE.
 C           OFLOW  IS THE LARGEST MAGNITUDE.
 C
 C***FIRST EXECUTABLE STATEMENTS
-      CALL S_MACHD(7,EPMACH)
-      CALL S_MACHD(4,UFLOW)
-      CALL S_MACHD(6,OFLOW)
+      CALL RLMACHD(7,EPMACH)
+      CALL RLMACHD(4,UFLOW)
+      CALL RLMACHD(6,OFLOW)
 C
 C           TEST ON VALIDITY OF PARAMETERS
 C           ------------------------------
@@ -411,7 +411,7 @@ C
       C = dble(FLOAT(KEYF))
       NEVAL = 0
       IF (KEYF.EQ.1)
-     *  CALL S_Q1K15T(F,FARR,N,FEXT,GEXT,A,B,RESULT,ABSERR,DEFABS,
+     *  CALL RLQ1K15T(F,FARR,N,FEXT,GEXT,A,B,RESULT,ABSERR,DEFABS,
      *  RESABS,NPR,PARAM)
 
       LAST = 1
@@ -452,10 +452,10 @@ C
         AA2 = BB1
         BB2 = BLIST(MAXERR)
         IF (KEYF.EQ.1)
-     *  CALL S_Q1K15T(F,FARR,N,FEXT,GEXT,AA1,BB1,AREA1,ERROR1,
+     *  CALL RLQ1K15T(F,FARR,N,FEXT,GEXT,AA1,BB1,AREA1,ERROR1,
      *          RESABS,DEFAB1,NPR,PARAM)
         IF (KEYF.EQ.1)
-     *  CALL S_Q1K15T(F,FARR,N,FEXT,GEXT,AA2,BB2,AREA2,ERROR2,
+     *  CALL RLQ1K15T(F,FARR,N,FEXT,GEXT,AA2,BB2,AREA2,ERROR2,
      *          RESABS,DEFAB2,NPR,PARAM)
         NEVAL = NEVAL+1
         AREA12 = AREA1+AREA2
@@ -507,7 +507,7 @@ C           CALL SUBROUTINE QSORTD TO MAINTAIN THE DESCENDING ORDERING
 C           IN THE LIST OF ERROR ESTIMATES AND SELECT THE SUBINTERVAL
 C           WITH THE LARGEST ERROR ESTIMATE (TO BE BISECTED NEXT).
 C
-   20   CALL S_QSORTD(LIMIT,LAST,MAXERR,ERRMAX,ELIST,IORD,NRMAX)
+   20   CALL RLQSORTD(LIMIT,LAST,MAXERR,ERRMAX,ELIST,IORD,NRMAX)
 C***JUMP OUT OF DO-LOOP
         IF(IER.NE.0.OR.ERRSUM.LE.ERRBND) GO TO 40
    30 CONTINUE
@@ -529,7 +529,7 @@ C  999 IF (IER.NE.0) CALL MESSGE(400+IER,'QAGE1D',0)
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_Q1K15T
+      SUBROUTINE RLQ1K15T
      *  (F,FARR,N,FEXT,GEXT,A,B,RESULT,ABSERR,RESABS,RESASC,NPR,PARAM)
 C.......................................................................
 C
@@ -595,9 +595,9 @@ C           UFLOW IS THE SMALLEST POSITIVE MAGNITUDE.
 C           OFLOW IS THE LARGEST MAGNITUDE.
 C
 C***FIRST EXECUTABLE STATEMENTS
-      CALL S_MACHD(7,EPMACH)
-      CALL S_MACHD(4,UFLOW)
-      CALL S_MACHD(6,OFLOW)
+      CALL RLMACHD(7,EPMACH)
+      CALL RLMACHD(4,UFLOW)
+      CALL RLMACHD(6,OFLOW)
 C
       CENTR = 5.0D-01*(A+B)
       HLGTH = 5.0D-01*(B-A)
@@ -654,7 +654,7 @@ C
 c$$$c
 c$$$c***********************************************************************
 c$$$c
-c$$$      SUBROUTINE S_QSORTD(LIMIT,LAST,MAXERR,ERMAX,ELIST,IORD,NRMAX)
+c$$$      SUBROUTINE RLQSORTD(LIMIT,LAST,MAXERR,ERMAX,ELIST,IORD,NRMAX)
 c$$$C.......................................................................
 c$$$C
 c$$$C   R O B E T H  -  R O B S Y S   RELEASE 3.0 (COPYRIGHT) 1985, 1990
@@ -741,7 +741,7 @@ c$$$      END
 c$$$C
 c$$$C-----------------------------------------------------------------------
 c$$$C
-c$$$      SUBROUTINE S_LGAMAD(X,GL)
+c$$$      SUBROUTINE RLLGAMAD(X,GL)
 c$$$C.......................................................................
 c$$$C
 c$$$C   AUTHORS :     M.C. PIKE AND I.D. HILL (1966)
@@ -772,7 +772,7 @@ c$$$      END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_INGAMA(X,P,G)
+      SUBROUTINE RLINGAMA(X,P,G)
 C.......................................................................
 C
 C   AUTHOR :     G. P. BHATTACHARJEE (1970)
@@ -785,17 +785,17 @@ C.......................................................................
 C
       implicit double precision(a-h,o-z)
       DIMENSION PN(6)
-      EXTERNAL S_XEXPD
+      EXTERNAL RLXEXPD
       DATA TOL/1.0D-8/
 C
       G=0.D0
       IF (X.EQ.0.D0) RETURN
 C      IF (X.LT.0..OR.P.LE.0.) CALL MESSGE(500,'INGAMA',1)
-      CALL S_MACHD(6,OFLO)
+      CALL RLMACHD(6,OFLO)
       OFLO=OFLO*1.D-15
-      CALL S_LGAMAD(P,GP)
+      CALL RLLGAMAD(P,GP)
       GIN=0.D0
-      FACTOR=S_XEXPD(P*DLOG(X)-X-GP)
+      FACTOR=RLXEXPD(P*DLOG(X)-X-GP)
       IF (X.GT.1.D0.AND.X.GE.P) GOTO 30
 C
 C  CALCULATION BY SERIES EXPANSION
@@ -843,7 +843,7 @@ C
       RETURN
       END
 C
-c$$$      DOUBLE PRECISION FUNCTION S_GAMDIGAMA(X)
+c$$$      DOUBLE PRECISION FUNCTION RLGAMDIGAMA(X)
 c$$$C.......................................................................
 c$$$C
 c$$$C   DI-GAMMA(X) FOR X.GT.0.
@@ -868,20 +868,20 @@ c$$$      Z2=1.D0/(Z*Z)
 c$$$      S=DLOG(Z) - 1.D0/(2.D0*Z) + Z2*(- 1.D0/12.D0 + Z2*(1.D0/120.D0 +
 c$$$     + Z2*(-1.D0/252.D0 + Z2*(1.D0/240.D0 + Z2*(- 1.D0/132.D0 + Z2*(
 c$$$     + 691.D0/(12.D0*2730.D0) - Z2/12.D0)))))) - T
-c$$$      S_GAMDIGAMA=S
+c$$$      RLGAMDIGAMA=S
 c$$$      RETURN
 c$$$      END
 C
-      SUBROUTINE S_DIGAMA(X,RESULT)
-      DOUBLE PRECISION X,RESULT,S_GAMDIGAMA
-      EXTERNAL S_GAMDIGAMA
-      RESULT=S_GAMDIGAMA(X)
+      SUBROUTINE RLDIGAMA(X,RESULT)
+      DOUBLE PRECISION X,RESULT,RLGAMDIGAMA
+      EXTERNAL RLGAMDIGAMA
+      RESULT=RLGAMDIGAMA(X)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_SRT1(A,N,K1,K2)
+      SUBROUTINE RLSRT1(A,N,K1,K2)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -921,7 +921,7 @@ c      IF (I.LE.N1) GOTO 10
 c$$$C
 c$$$C-----------------------------------------------------------------------
 c$$$C
-c$$$      SUBROUTINE S_SRT2(A,B,N,K1,K2)
+c$$$      SUBROUTINE RLSRT2(A,B,N,K1,K2)
 c$$$C.......................................................................
 c$$$C
 c$$$C   COPYRIGHT 1992 Alfio Marazzi
@@ -964,7 +964,7 @@ c$$$      END
 C*** 
 C======================================================================
 C*** 
-      SUBROUTINE S_QUANTD(P,XX)
+      SUBROUTINE RLQUANTD(P,XX)
 C**********************************************************************
 C     Normal distribution inverse
 C
@@ -975,12 +975,12 @@ C
 C     If P or 1-P .lt. machine EPS returns +/- xx(EPS)
 C**********************************************************************
       DOUBLE PRECISION p,q,eps,xx,strtx,xcur,cum,pp,dx,
-     +       s_stvaln,s_dennor
+     +       rlstvaln,rldennor
       LOGICAL qporq
-      EXTERNAL s_stvaln,s_dennor
+      EXTERNAL rlstvaln,rldennor
       DATA NCALL,MAXIT,EPS/0,100,0.D0/
       IF (NCALL.EQ.0) THEN
-        CALL S_MACHD(2,EPS)
+        CALL RLMACHD(2,EPS)
         NCALL=1
       ENDIF
 C
@@ -996,14 +996,14 @@ C
 C
 C     INITIALIZATION STEP
 C
-   20 strtx = s_stvaln(pp)
+   20 strtx = rlstvaln(pp)
       xcur = strtx
 C
 C     NEWTON INTERATIONS
 C
       DO 30,i = 1,maxit
-          call S_GAUSSD(1,xcur,cum)
-          dx = (cum-pp)/s_dennor(xcur)
+          call RLGAUSSD(1,xcur,cum)
+          dx = (cum-pp)/rldennor(xcur)
           xcur = xcur - dx
           IF (DABS(dx/xcur).LT.eps) GO TO 40
    30 CONTINUE
@@ -1021,20 +1021,20 @@ C
       RETURN
       END
 C
-      DOUBLE PRECISION FUNCTION s_dennor(x)
+      DOUBLE PRECISION FUNCTION rldennor(x)
       DOUBLE PRECISION x,r2pi,nhalf
       DATA  r2pi,nhalf/0.3989422804014326D0,-0.5D0/
-      s_dennor = r2pi*dexp(nhalf*x*x)
+      rldennor = r2pi*dexp(nhalf*x*x)
       RETURN
       END
 C
-      DOUBLE PRECISION FUNCTION s_stvaln(p)
+      DOUBLE PRECISION FUNCTION rlstvaln(p)
 C**********************************************************************
 C                    STarting VALue for Neton-Raphon
 C                calculation of Normal distribution Inverse
 C**********************************************************************
-      DOUBLE PRECISION p,sign,y,z,xden(5),xnum(5),s_devlpl
-      EXTERNAL s_devlpl
+      DOUBLE PRECISION p,sign,y,z,xden(5),xnum(5),rldevlpl
+      EXTERNAL rldevlpl
       DATA xnum/-0.322232431088D0,-1.000000000000D0,-0.342242088547D0,
      +     -0.204231210245D-1,-0.453642210148D-4/
       DATA xden/0.993484626060D-1,0.588581570495D0,0.531103462366D0,
@@ -1048,12 +1048,12 @@ C     ..
    10 sign = 1.0D0
       z = 1.0D0 - p
    20 y = dsqrt(-2.0D0*dlog(z))
-      s_stvaln = y + s_devlpl(xnum,5,y)/s_devlpl(xden,5,y)
-      s_stvaln = sign*s_stvaln
+      rlstvaln = y + rldevlpl(xnum,5,y)/rldevlpl(xden,5,y)
+      rlstvaln = sign*rlstvaln
       RETURN
       END
 C
-      DOUBLE PRECISION FUNCTION s_devlpl(a,n,x)
+      DOUBLE PRECISION FUNCTION rldevlpl(a,n,x)
 C**********************************************************************
 C     returns  A(1) + A(2)*X + ... + A(N)*X**(N-1)
 C**********************************************************************
@@ -1062,12 +1062,12 @@ C**********************************************************************
       DO 10,i=n-1,1,-1
         term = a(i) + term*x
    10 CONTINUE
-      s_devlpl = term
+      rldevlpl = term
       RETURN
       END
 
 C ----------------------------------------------------------------------
-      SUBROUTINE S_QGAMMA (P, A, X)
+      SUBROUTINE RLQGAMMA (P, A, X)
 C ----------------------------------------------------------------------
 C            INVERSE INCOMPLETE GAMMA RATIO FUNCTION
 C
@@ -1076,7 +1076,7 @@ C     SCHRODER ITERATION IS EMPLOYED.
 C                      ------------
 C
 C     X IS A VARIABLE. IF P = 0 THEN X IS ASSIGNED THE VALUE 0,
-C     OTHERWISE, S_QGAMMA ATTEMPTS TO OBTAIN A SOLUTION FOR P(A,X) = P.
+C     OTHERWISE, RLQGAMMA ATTEMPTS TO OBTAIN A SOLUTION FOR P(A,X) = P.
 C     IF THE ROUTINE IS SUCCESSFUL THEN THE SOLUTION IS STORED IN X.
 C     
 C     MESSAGE THAT REPORTS THE ERROR STATUS OF THE RESULTS.
@@ -1098,7 +1098,7 @@ C     ADAPTED FOR ROBETH BY A.RANDRIAMIHARISOA
 C     -------------------
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION LN10, EPS0(2),AMIN(2),BMIN(2),DMIN(2),EMIN(2)
-      EXTERNAL S_XEXPD,S_XLOGD
+      EXTERNAL RLXEXPD,RLXLOGD
 C     -------------------
 C     LN10 = LN(10)
 C     C = EULER CONSTANT
@@ -1126,17 +1126,17 @@ C            LARGEST POSITIVE NUMBER.
 C
        IF (NCALL.EQ.0) THEN
          NCALL=1
-         CALL S_MACHD(2,E)
-         CALL S_MACHD(3,EXMIN)
+         CALL RLMACHD(2,E)
+         CALL RLMACHD(3,EXMIN)
          XMIN=DEXP(EXMIN)
-         CALL S_MACHD(4,XL)
-         CALL S_MACHD(5,YL)
-         CALL S_MACHD(6,XMAX)
+         CALL RLMACHD(4,XL)
+         CALL RLMACHD(5,YL)
+         CALL RLMACHD(6,XMAX)
        ENDIF
       X0=0.D0
       Q=1.D0-P
       X = 0.D0
-c      IF (A.LE.0..OR.P.LT.0..OR.P.GT.1.) CALL MESSGE(500,'S_QGAMMA',1)
+c      IF (A.LE.0..OR.P.LT.0..OR.P.GT.1.) CALL MESSGE(500,'RLQGAMMA',1)
 C     T = DBLE(P) + DBLE(Q) - 1.D0
 C     IF (ABS(T) .GT. E) GO TO 520
 C
@@ -1157,36 +1157,36 @@ C        SELECTION OF THE INITIAL APPROXIMATION XN OF X
 C                       WHEN A .LT. 1
 C
       IF (A .GT. 1.D0) GO TO 30
-      CALL S_LGAMAD(A+1.D0,GL)
-      G = S_XEXPD(GL)
+      CALL RLLGAMAD(A+1.D0,GL)
+      G = RLXEXPD(GL)
 C     G = GAMMA(A + 1.0)
       QG = Q*G
       IF (QG .EQ. 0.D0) GO TO 560
       B = QG/A
       IF (QG .GT. 0.6D0*A) GO TO 20
       IF (A .GE. 0.30D0 .OR. B .LT. 0.35D0) GO TO 10
-         T = S_XEXPD(-(B + C))
-         U = T*S_XEXPD(T)
-         XN = T*S_XEXPD(U)
+         T = RLXEXPD(-(B + C))
+         U = T*RLXEXPD(T)
+         XN = T*RLXEXPD(U)
          GO TO 100
 C
    10 IF (B .GE. 0.45D0) GO TO 20
       IF (B .EQ. 0.D0) GO TO 560
-C      Y = -S_XLOGD(B,XL,YL)
-      Y = -S_XLOGD(B)
+C      Y = -RLXLOGD(B,XL,YL)
+      Y = -RLXLOGD(B)
       S = 0.5D0 + (0.5D0 - A)
-C      Z = S_XLOGD(Y,XL,YL)
-      Z = S_XLOGD(Y)
+C      Z = RLXLOGD(Y,XL,YL)
+      Z = RLXLOGD(Y)
       T = Y - S*Z
       IF (B .LT. 0.15D0) GO TO 11
-C         XN = Y - S*S_XLOGD(T,XL,YL) - S_XLOGD(1.D0+S/(T+1.D0),XL,YL)
-         XN = Y - S*S_XLOGD(T) - S_XLOGD(1.D0+S/(T+1.D0))
+C         XN = Y - S*RLXLOGD(T,XL,YL) - RLXLOGD(1.D0+S/(T+1.D0),XL,YL)
+         XN = Y - S*RLXLOGD(T) - RLXLOGD(1.D0+S/(T+1.D0))
          GO TO 200
    11 IF (B .LE. 1.D-2) GO TO 12
          U = ((T + 2.D0*(3.D0 - A))*T + (2.D0 - A)*(3.D0 - A))/
      *           ((T + (5.D0 - A))*T + 2.D0)
-C         XN = Y - S*S_XLOGD(T,XL,YL) - S_XLOGD(U,XL,YL)
-         XN = Y - S*S_XLOGD(T) - S_XLOGD(U)
+C         XN = Y - S*RLXLOGD(T,XL,YL) - RLXLOGD(U,XL,YL)
+         XN = Y - S*RLXLOGD(T) - RLXLOGD(U)
          GO TO 200
    12 C1 = -S*Z
       C2 = -S*(1.D0 + C1)
@@ -1204,12 +1204,12 @@ C         XN = Y - S*S_XLOGD(T,XL,YL) - S_XLOGD(U,XL,YL)
       RETURN
 C
    20 IF (B*Q .GT. 1.D-8) GO TO 21
-         XN = S_XEXPD(-(Q/A + C))
+         XN = RLXEXPD(-(Q/A + C))
          GO TO 23
    21 IF (P .LE. 0.9D0) GO TO 22
-         CALL S_LGAMAD(1.D0+A,GL)
-C         XN = S_XEXPD((S_XLOGD(1.D0-Q,XL,YL) + GL)/A)
-         XN = S_XEXPD((S_XLOGD(1.D0-Q) + GL)/A)
+         CALL RLLGAMAD(1.D0+A,GL)
+C         XN = RLXEXPD((RLXLOGD(1.D0-Q,XL,YL) + GL)/A)
+         XN = RLXEXPD((RLXLOGD(1.D0-Q) + GL)/A)
          GO TO 23
    22 XN = DEXP(DLOG(P*G)/A)
    23 IF (XN .EQ. 0.D0) GO TO 510
@@ -1221,11 +1221,11 @@ C        SELECTION OF THE INITIAL APPROXIMATION XN OF X
 C                       WHEN A .GT. 1
 C
    30 IF (Q .LE. 0.5D0) GO TO 31
-C         W = S_XLOGD(P,XL,YL)
-         W = S_XLOGD(P)
+C         W = RLXLOGD(P,XL,YL)
+         W = RLXLOGD(P)
          GO TO 32
-C   31 W = S_XLOGD(Q,XL,YL)
-   31 W = S_XLOGD(Q)
+C   31 W = RLXLOGD(Q,XL,YL)
+   31 W = RLXLOGD(Q)
    32 T = SQRT(-2.D0*W)
       S = T - (((A3*T + A2)*T + A1)*T + A0)/((((B4*T + B3)*T
      *                + B2)*T + B1)*T + 1.D0)
@@ -1244,7 +1244,7 @@ C
 C
    40 IF (P .LE. 0.5D0) GO TO 50
       IF (XN .LT. 3.D0*A) GO TO 200
-      CALL S_LGAMAD(A,GL)
+      CALL RLLGAMAD(A,GL)
       Y = -(W + GL)
       D = DMAX1(2.D0, A*(A - 1.D0))
       IF (Y .LT. LN10*D) GO TO 41
@@ -1252,29 +1252,29 @@ C
          Z = DLOG(Y)
          GO TO 12
    41 T = A - 1.D0
-C      XN = Y + T*S_XLOGD(XN,XL,YL) - S_XLOGD(1.D0-T/(XN + 1.D0),XL,YL)
-      XN = Y + T*S_XLOGD(XN) - S_XLOGD(1.D0-T/(XN + 1.D0))
-C      XN = Y + T*S_XLOGD(XN,XL,YL) - S_XLOGD(1.D0-T/(XN + 1.D0),XL,YL)
-      XN = Y + T*S_XLOGD(XN) - S_XLOGD(1.D0-T/(XN + 1.D0))
+C      XN = Y + T*RLXLOGD(XN,XL,YL) - RLXLOGD(1.D0-T/(XN + 1.D0),XL,YL)
+      XN = Y + T*RLXLOGD(XN) - RLXLOGD(1.D0-T/(XN + 1.D0))
+C      XN = Y + T*RLXLOGD(XN,XL,YL) - RLXLOGD(1.D0-T/(XN + 1.D0),XL,YL)
+      XN = Y + T*RLXLOGD(XN) - RLXLOGD(1.D0-T/(XN + 1.D0))
       GO TO 200
 C
    50 AP1 = A + 1.D0
       IF (XN .GT. 0.7D0*AP1) GO TO 101
-      CALL S_LGAMAD(AP1,GL)
+      CALL RLLGAMAD(AP1,GL)
       W = W + GL
       IF (XN .GT. 0.15D0*AP1) GO TO 60
          AP2 = A + 2.D0
          AP3 = A + 3.D0
-         X = S_XEXPD((W + X)/A)
-C         TX = S_XLOGD(1.D0 + (X/AP1)*(1.D0 + X/AP2),XL,YL) 
-         TX = S_XLOGD(1.D0 + (X/AP1)*(1.D0 + X/AP2)) 
-         X = S_XEXPD((W + X - TX)/A)
-C         TX = S_XLOGD(1.D0 + (X/AP1)*(1.D0 + X/AP2),XL,YL)
-         TX = S_XLOGD(1.D0 + (X/AP1)*(1.D0 + X/AP2))
-         X = S_XEXPD((W + X - TX)/A)
-C         TX = S_XLOGD(1.D0+(X/AP1)*(1.D0+(X/AP2)*(1.D0+X/AP3)),XL,YL)
-         TX = S_XLOGD(1.D0+(X/AP1)*(1.D0+(X/AP2)*(1.D0+X/AP3)))
-         X = S_XEXPD((W + X - TX)/A)
+         X = RLXEXPD((W + X)/A)
+C         TX = RLXLOGD(1.D0 + (X/AP1)*(1.D0 + X/AP2),XL,YL) 
+         TX = RLXLOGD(1.D0 + (X/AP1)*(1.D0 + X/AP2)) 
+         X = RLXEXPD((W + X - TX)/A)
+C         TX = RLXLOGD(1.D0 + (X/AP1)*(1.D0 + X/AP2),XL,YL)
+         TX = RLXLOGD(1.D0 + (X/AP1)*(1.D0 + X/AP2))
+         X = RLXEXPD((W + X - TX)/A)
+C         TX = RLXLOGD(1.D0+(X/AP1)*(1.D0+(X/AP2)*(1.D0+X/AP3)),XL,YL)
+         TX = RLXLOGD(1.D0+(X/AP1)*(1.D0+(X/AP2)*(1.D0+X/AP3)))
+         X = RLXEXPD((W + X - TX)/A)
          XN = X
          IF (XN .GT. 1.D-2*AP1) GO TO 60
          IF (XN .LE. EMIN(IOP)*AP1) RETURN
@@ -1287,11 +1287,11 @@ C
          T = T*(XN/APN)
          SUM = SUM + T
          IF (T .GT. 1.D-4) GO TO 61
-C      T = W - S_XLOGD(SUM,XL,YL)
-      T = W - S_XLOGD(SUM)
-      XN = S_XEXPD((XN + T)/A)
-C      XN = XN*(1.D0 - (A*S_XLOGD(XN,XL,YL) - XN -T)/(A - XN))
-      XN = XN*(1.D0 - (A*S_XLOGD(XN) - XN -T)/(A - XN))
+C      T = W - RLXLOGD(SUM,XL,YL)
+      T = W - RLXLOGD(SUM)
+      XN = RLXEXPD((XN + T)/A)
+C      XN = XN*(1.D0 - (A*RLXLOGD(XN,XL,YL) - XN -T)/(A - XN))
+      XN = XN*(1.D0 - (A*RLXLOGD(XN) - XN -T)/(A - XN))
       GO TO 101
 C
 C                 SCHRODER ITERATION USING P
@@ -1305,10 +1305,10 @@ C
 C
   110 IF (IERR .GE. 20) GO TO 530
       IERR = IERR + 1
-      CALL S_INGAMA (XN, A, PN)
+      CALL RLINGAMA (XN, A, PN)
       QN=1.D0-PN
       IF (PN .EQ. 0.D0 .OR. QN .EQ. 0.D0) GO TO 550
-      R = S_RCOMP(A,XN)
+      R = RLRCOMP(A,XN)
       IF (R .EQ. 0.D0) GO TO 550
       T = (PN - P)/R
       W = 0.5D0*(AM1 - XN)
@@ -1339,10 +1339,10 @@ C
 C
   210 IF (IERR .GE. 20) GO TO 530
       IERR = IERR + 1
-      CALL S_INGAMA (XN, A, PN) 
+      CALL RLINGAMA (XN, A, PN) 
       QN=1.D0-PN
       IF (PN .EQ. 0.D0 .OR. QN .EQ. 0.D0) GO TO 550
-      R = S_RCOMP(A,XN)
+      R = RLRCOMP(A,XN)
       IF (R .EQ. 0.D0) GO TO 550
       T = (Q - QN)/R
       W = 0.5D0*(AM1 - XN)
@@ -1368,32 +1368,32 @@ C
   400 X = XMAX
       RETURN
 C
-C  410 X = -S_XLOGD(1.-P,XL,YL)
-  410 X = -S_XLOGD(1.-P)
+C  410 X = -RLXLOGD(1.-P,XL,YL)
+  410 X = -RLXLOGD(1.-P)
       RETURN
 C
   510 X=-403
-c     CALL MESSGE(403,'S_QGAMMA',0)
+c     CALL MESSGE(403,'RLQGAMMA',0)
       RETURN
 C
   530 X=-406
-c     CALL MESSGE(406,'S_QGAMMA',0)
+c     CALL MESSGE(406,'RLQGAMMA',0)
       RETURN
 C
   540 X=-407
-c     CALL MESSGE(407,'S_QGAMMA',0)
+c     CALL MESSGE(407,'RLQGAMMA',0)
       RETURN
 C
   550 X = XN
-c      CALL MESSGE(408,'S_QGAMMA',0)
+c      CALL MESSGE(408,'RLQGAMMA',0)
       RETURN
 C
   560 X = XMAX
-c      CALL MESSGE(408,'S_QGAMMA',0)
+c      CALL MESSGE(408,'RLQGAMMA',0)
       RETURN
       END
 C
-      DOUBLE PRECISION FUNCTION S_REXP(X)
+      DOUBLE PRECISION FUNCTION RLREXP(X)
       implicit double precision(a-h,o-z)
 C     ------------------------------------------------------------------
 C     COMPUTATION OF EXP(X) - 1
@@ -1409,13 +1409,13 @@ C     ------------------
 C
    10 W = DEXP(X)
       IF (X .GT. 0.D0) GO TO 20
-         S_REXP = (W - 0.5D0) - 0.5D0
+         RLREXP = (W - 0.5D0) - 0.5D0
          RETURN
-   20 S_REXP = W*(0.5D0 + (0.5D0 - 1.D0/W))
+   20 RLREXP = W*(0.5D0 + (0.5D0 - 1.D0/W))
       RETURN
       END
 C
-      DOUBLE PRECISION FUNCTION S_RLOG(X)
+      DOUBLE PRECISION FUNCTION RLRLOG(X)
       implicit double precision(a-h,o-z)
 C     -------------------
 C     COMPUTATION OF  X - 1 - LN(X)
@@ -1450,16 +1450,16 @@ C
    30 R = U/(U + 2.D0)
       T = R*R
       W = ((P2*T + P1)*T + P0)/((Q2*T + Q1)*T + 1.D0)
-      S_RLOG = 2.D0*T*(1.D0/(1.D0 - R) - R*W) + W1
+      RLRLOG = 2.D0*T*(1.D0/(1.D0 - R) - R*W) + W1
       RETURN
 C
 C
   100 R = (X - 0.5D0) - 0.5D0
-      S_RLOG = R - DLOG(X)
+      RLRLOG = R - DLOG(X)
       RETURN
       END
 C
-      DOUBLE PRECISION FUNCTION S_GAM1(A)
+      DOUBLE PRECISION FUNCTION RLGAM1(A)
 C     ------------------------------------------------------------------
 C     COMPUTATION OF 1/GAMMA(A+1) - 1  FOR -0.5 .LE. A .LE. 1.5
 C     ------------------------------------------------------------------
@@ -1488,7 +1488,7 @@ C     -------------------
       IF (D .GT. 0.D0) T = D - 0.5D0
       IF (T) 30,10,20
 C
-   10 S_GAM1 = 0.D0
+   10 RLGAM1 = 0.D0
       RETURN
 C
    20 TOP = (((((P(7)*T + P(6))*T + P(5))*T + P(4))*T + P(3))*T
@@ -1496,9 +1496,9 @@ C
       BOT = (((Q(5)*T + Q(4))*T + Q(3))*T + Q(2))*T + 1.D0
       W = TOP/BOT
       IF (D .GT. 0.D0) GO TO 21
-         S_GAM1 = A*W
+         RLGAM1 = A*W
          RETURN
-   21 S_GAM1 = (T/A)*((W - 0.5D0) - 0.5D0)
+   21 RLGAM1 = (T/A)*((W - 0.5D0) - 0.5D0)
       RETURN
 C
    30 TOP = (((((((R(9)*T + R(8))*T + R(7))*T + R(6))*T + R(5))*T
@@ -1506,13 +1506,13 @@ C
       BOT = (S2*T + S1)*T + 1.D0
       W = TOP/BOT
       IF (D .GT. 0.D0) GO TO 31
-         S_GAM1 = A*((W + 0.5D0) + 0.5D0)
+         RLGAM1 = A*((W + 0.5D0) + 0.5D0)
          RETURN
-   31 S_GAM1 = T*W/A
+   31 RLGAM1 = T*W/A
       RETURN
       END
 c
-      DOUBLE PRECISION FUNCTION S_RCOMP(A,X)
+      DOUBLE PRECISION FUNCTION RLRCOMP(A,X)
       implicit double precision(a-h,o-z)
 C     -------------------
 C     EVALUATION OF EXP(-X)*X**A/GAMMA(A)
@@ -1521,33 +1521,33 @@ C     RT2PIN = 1/SQRT(2*PI)
 C     -------------------
       DATA RT2PIN/.398942280401433D0/
 C     -------------------
-      S_RCOMP = 0.D0
+      RLRCOMP = 0.D0
       IF (A .GE. 20.D0) GO TO 20
       T = A*DLOG(X) - X
       IF (A .GE. 1.D0) GO TO 10
-         S_RCOMP = (A*DEXP(T))*(1.D0 + S_GAM1(A))
+         RLRCOMP = (A*DEXP(T))*(1.D0 + RLGAM1(A))
          RETURN
-   10 CALL S_LGAMAD(A,AL)      
-      S_RCOMP = S_XEXPD(T-AL)  !/GAMMA(A)
+   10 CALL RLLGAMAD(A,AL)      
+      RLRCOMP = RLXEXPD(T-AL)  !/GAMMA(A)
       RETURN
 C
    20 U = X/A
       IF (U .EQ. 0.D0) RETURN
       T = (1.D0/A)**2
       T1 = (((0.75D0*T - 1.D0)*T + 3.5D0)*T - 105.D0)/(A*1260.D0)
-      T1 = T1 - A*S_RLOG(U)
-      S_RCOMP = RT2PIN*DSQRT(A)*S_XEXPD(T1)
+      T1 = T1 - A*RLRLOG(U)
+      RLRCOMP = RT2PIN*DSQRT(A)*RLXEXPD(T1)
       RETURN
       END
 C-----------------------------------------------------------------------
-      SUBROUTINE S_PWEIBL(ALPHA,SIGMA,X,P)
+      SUBROUTINE RLPWEIBL(ALPHA,SIGMA,X,P)
       implicit double precision(a-h,o-z)
       DATA NCALL,EXMIN,XLGMN,YLGMN/0,3*0.D0/
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(3,EXMIN)
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
+        CALL RLMACHD(3,EXMIN)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
       ENDIF
 c     IF (ALPHA.LE.0..OR.SIGMA.LE.0.) CALL MESSGE(500,'PWEIBL',1)
       P=0.D0
@@ -1564,15 +1564,15 @@ c     IF (ALPHA.LE.0..OR.SIGMA.LE.0.) CALL MESSGE(500,'PWEIBL',1)
       RETURN
       END
 C
-      SUBROUTINE S_QWEIBL(ALPHA,SIGMA,P,X)
+      SUBROUTINE RLQWEIBL(ALPHA,SIGMA,P,X)
       implicit double precision(a-h,o-z)
       DATA NCALL,EXMIN,XLGMN,YLGMN,XMAX/0,4*0.D0/
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(3,EXMIN)
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
-        CALL S_MACHD(6,XMAX)
+        CALL RLMACHD(3,EXMIN)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
+        CALL RLMACHD(6,XMAX)
       ENDIF
 c      IF (ALPHA.LE.0.D0.OR.SIGMA.LE.0..OR.P.LT.0..OR.P.GT.1.) 
 c     +CALL MESSGE(500,'QWEIBL',1)
@@ -1592,13 +1592,13 @@ c     +CALL MESSGE(500,'QWEIBL',1)
       RETURN
       END 
 C-----------------------------------------------------------------------
-      SUBROUTINE S_PLNORM(ALPHA,SIGMA,X,P)
+      SUBROUTINE RLPLNORM(ALPHA,SIGMA,X,P)
       implicit double precision(a-h,o-z)
       DATA NCALL,XLGMN,YLGMN/0,0.D0,0.D0/
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
       ENDIF
 c      IF (SIGMA.LE.0.D0.OR.X.LT.0.D0) CALL MESSGE(500,'PLNORM',1)
       P=0.D0
@@ -1606,35 +1606,35 @@ c      IF (SIGMA.LE.0.D0.OR.X.LT.0.D0) CALL MESSGE(500,'PLNORM',1)
       ALOGX=YLGMN
       IF (X.GT.YLGMN) ALOGX=DLOG(X)
       Z=(ALOGX-ALPHA)/SIGMA
-      CALL S_GAUSSD(1,Z,P)
+      CALL RLGAUSSD(1,Z,P)
       RETURN
       END
 C
-      SUBROUTINE S_QLNORM(ALPHA,SIGMA,P,X)
+      SUBROUTINE RLQLNORM(ALPHA,SIGMA,P,X)
       implicit double precision(a-h,o-z)
 c      DOUBLE PRECISION QQ
-      EXTERNAL S_XEXPD
+      EXTERNAL RLXEXPD
       DATA NCALL,EXMIN,XMAX/0,0.D0,0.D0/
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(3,EXMIN)
-        CALL S_MACHD(6,XMAX)
+        CALL RLMACHD(3,EXMIN)
+        CALL RLMACHD(6,XMAX)
       ENDIF
 c      IF (SIGMA.LE.0.D0.OR.P.LT.0.D0.OR.P.GT.1.) CALL MESSGE(500,'QLNORM',1)
       X=0.D0
       IF (P.LE.0.D0) RETURN
       X=XMAX
       IF (P.GE.1.D0) RETURN
-      CALL S_QUANTD(DBLE(P),QQ)
+      CALL RLQUANTD(DBLE(P),QQ)
       T=ALPHA+DBLE(QQ*SIGMA)
-      X=S_XEXPD(T)
+      X=RLXEXPD(T)
       RETURN
       END
 C-----------------------------------------------------------------------
-      SUBROUTINE S_TMEANE(X,N,BETA,POS)
+      SUBROUTINE RLTMEANE(X,N,BETA,POS)
       implicit double precision(a-h,o-z)
       DIMENSION X(N)
-      CALL S_SRT1(X,N,1,N)
+      CALL RLSRT1(X,N,1,N)
       EN=DBLE(FLOAT(N))
       IF (DABS(BETA-0.5D0).LT.1.D-5) THEN
         MED=INT(EN/2.)
@@ -1665,37 +1665,37 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C      
-      SUBROUTINE S_TMADVE(X,N,BETA,GAM,POS,SCAL,SX)
+      SUBROUTINE RLTMADVE(X,N,BETA,GAM,POS,SCAL,SX)
       implicit double precision(a-h,o-z)
       DIMENSION X(N),SX(N)
-      CALL S_TMEANE(X,N,BETA,POS)
+      CALL RLTMEANE(X,N,BETA,POS)
       DO 100 I=1,N
   100 SX(I)=DABS(X(I)-POS)
-      CALL S_TMEANE(SX,N,GAM,SCAL)
+      CALL RLTMEANE(SX,N,GAM,SCAL)
       RETURN
       END
 C-----------------------------------------------------------------------
-      SUBROUTINE S_TRMNG(ALPHA,SIGMA,BETA,mF)
+      SUBROUTINE RLTRMNG(ALPHA,SIGMA,BETA,mF)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION mF
       IF (DABS(BETA-0.5D0).LT.1.D-5) THEN
-        CALL S_QGAMMA(0.5D0,ALPHA,Q)
+        CALL RLQGAMMA(0.5D0,ALPHA,Q)
         mF=SIGMA*Q
         RETURN
       ENDIF
       IF (BETA.LT.1.D-5) THEN
         mF=SIGMA*ALPHA
       ELSE
-        CALL S_QGAMMA(BETA,ALPHA,QL)
-        CALL S_QGAMMA(1.D0-BETA,ALPHA,QU)
-        CALL S_INGAMA(QL,ALPHA+1.D0,GGL)
-        CALL S_INGAMA(QU,ALPHA+1.D0,GGU)
+        CALL RLQGAMMA(BETA,ALPHA,QL)
+        CALL RLQGAMMA(1.D0-BETA,ALPHA,QU)
+        CALL RLINGAMA(QL,ALPHA+1.D0,GGL)
+        CALL RLINGAMA(QU,ALPHA+1.D0,GGU)
         mF=SIGMA*(GGU-GGL)*ALPHA/(1.D0-2.D0*BETA)
       ENDIF
       RETURN
       END
 C 
-      DOUBLE PRECISION FUNCTION S_EQAD1G(DD,V,NV,PARAM)
+      DOUBLE PRECISION FUNCTION RLEQAD1G(DD,V,NV,PARAM)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION DD,V(NV),M,MMD,PARAM(1)
       ALPHA=V(1)
@@ -1703,20 +1703,20 @@ C
       M    =V(4)
       D=DBLE(DD)
       DUMMY=PARAM(1)
-      CALL S_INGAMA(M+D,ALPHA,P1)
+      CALL RLINGAMA(M+D,ALPHA,P1)
       MMD=M-D
       IF (MMD.LT.0.D0) MMD=0.D0
-      CALL S_INGAMA(MMD,ALPHA,P2)
+      CALL RLINGAMA(MMD,ALPHA,P2)
       TMP=P1-P2-(1.D0-GAM)
-      S_EQAD1G=DBLE(TMP)
+      RLEQAD1G=DBLE(TMP)
       RETURN
       END
 C      
-      SUBROUTINE S_QAD1DG(ALPHA,BETA,GAM,TOL,QAD1,ISOL)
+      SUBROUTINE RLQAD1DG(ALPHA,BETA,GAM,TOL,QAD1,ISOL)
       implicit double precision(a-h,o-z)
-      DOUBLE PRECISION S_EQAD1G,QAD,SMIN,SMAX,PARAM(1)
+      DOUBLE PRECISION RLEQAD1G,QAD,SMIN,SMAX,PARAM(1)
       DIMENSION Q(4)
-      EXTERNAL S_EQAD1G
+      EXTERNAL RLEQAD1G
 c      COMMON/DATI/NQ
       QAD1=0.D0
       ISOL=0
@@ -1724,19 +1724,19 @@ c      COMMON/DATI/NQ
       Q(1)=ALPHA
       Q(2)=BETA
       Q(3)=GAM
-      CALL S_TRMNG(ALPHA,1.D0,BETA,Q(4))
-      CALL S_QGAMMA(0.999D0,ALPHA,UPPER)
+      CALL RLTRMNG(ALPHA,1.D0,BETA,Q(4))
+      CALL RLQGAMMA(0.999D0,ALPHA,UPPER)
       SMIN=0.D0
       SMAX=DBLE(UPPER)
 c      TOLD=DBLE(TOL)
-      CALL S_RGFLD(S_EQAD1G,Q,0.D0,SMIN,SMAX,TOL,100,QAD,ITERM,NQ,PARAM)
+      CALL RLRGFLD(RLEQAD1G,Q,0.D0,SMIN,SMAX,TOL,100,QAD,ITERM,NQ,PARAM)
 c     IF (ITERM.NE.1) RETURN
       QAD1=DBLE(QAD)
       ISOL=1
       RETURN
       END
 C
-      DOUBLE PRECISION FUNCTION S_ASLVDG(AA,V)
+      DOUBLE PRECISION FUNCTION RLASLVDG(AA,V)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION V(5),M
       POS =V(1)
@@ -1745,17 +1745,17 @@ C
       GAM =V(4)
       TOL =V(5)
       ALPHA=DBLE(AA)
-      CALL S_TRMADG(ALPHA,1.D0,BETA,GAM,TOL,M,D)
+      CALL RLTRMADG(ALPHA,1.D0,BETA,GAM,TOL,M,D)
       TMP=M/D - POS/SCAL
-      S_ASLVDG=DBLE(TMP)
+      RLASLVDG=DBLE(TMP)
       RETURN
       END
 C
-      SUBROUTINE S_SOLVDG(POS,SCAL,BETA,GAM,ALFA1,ALFA2,TOL,ALPHA,ISOL)
+      SUBROUTINE RLSOLVDG(POS,SCAL,BETA,GAM,ALFA1,ALFA2,TOL,ALPHA,ISOL)
       implicit double precision(a-h,o-z)
 c      DOUBLE PRECISION ASLVDG,A,B,FA,FB,TL,TOLD,X,XN,FN
       DIMENSION V(5)
-      EXTERNAL S_ASLVDG
+      EXTERNAL RLASLVDG
       DATA TL/1.D-10/
       ALPHA=0.D0
       ISOL=0
@@ -1771,10 +1771,10 @@ c      DOUBLE PRECISION ASLVDG,A,B,FA,FB,TL,TOLD,X,XN,FN
       MAXIT=100
 C     WARNING: 
 C     A CALL TO RGFLD HERE CAUSES RECURSION AND WRONG RESULTS!!
-C     CALL S_RGFLD(ASLVDG,V,0.D0,A,B,TOLD,MAXIT,X,ITERM)
+C     CALL RLRGFLD(ASLVDG,V,0.D0,A,B,TOLD,MAXIT,X,ITERM)
       ITR=1
-      FA=S_ASLVDG(A,V)
-      FB=S_ASLVDG(B,V)
+      FA=RLASLVDG(A,V)
+      FB=RLASLVDG(B,V)
 C
 C  REGULA FALSI ITERATION
 C
@@ -1784,7 +1784,7 @@ c      CALL MESSGE(401,'RGFLD ',0)
    30 XN=(A*FB-B*FA)/(FB-FA)
       TOLD=DBLE(TOL)
       IF (XN.GE.100.D0) TOLD=DMIN1(5.D-3,TOLD)
-      FN=S_ASLVDG(XN,V)
+      FN=RLASLVDG(XN,V)
       IF (ITR.GE.MAXIT) GOTO 60
       IF (DABS(FN).LT.TOLD) GOTO 70
       IF (FA*FN.LE.0.D0) GOTO 40
@@ -1808,31 +1808,31 @@ C
       RETURN
       END
 C
-      SUBROUTINE S_TRMADG(ALPHA,SIGMA,BETA,GAM,TOL,mF,sF)
+      SUBROUTINE RLTRMADG(ALPHA,SIGMA,BETA,GAM,TOL,mF,sF)
       implicit double precision(a-h,o-z)
 c      DOUBLE PRECISION AA,A0,PA0,B0,A1,PA1,B1,A2,PA2,B2,SS,SUP,SLOW
       DOUBLE PRECISION mF,MMQ
-      CALL S_TRMNG(ALPHA,SIGMA,BETA,mF)
+      CALL RLTRMNG(ALPHA,SIGMA,BETA,mF)
       IF (DABS(GAM-0.5D0).LT.1.D-5) THEN
-        CALL S_QAD1DG(ALPHA,BETA,GAM,TOL,QAD1,ISOL)
+        CALL RLQAD1DG(ALPHA,BETA,GAM,TOL,QAD1,ISOL)
         sF=SIGMA*QAD1
       ELSE
         GAM0=GAM
         AA=DBLE(ALPHA)
         SS=DBLE(SIGMA)
-        CALL S_INGAMA(DBLE(mF)/SS,AA+1.D0,PA0)
+        CALL RLINGAMA(DBLE(mF)/SS,AA+1.D0,PA0)
         A0=PA0*AA*SS
-        CALL S_INGAMA(DBLE(mF)/SS,AA,B0)
- 100    CALL S_QAD1DG(ALPHA,BETA,GAM0,TOL,QAD1,ISOL)
+        CALL RLINGAMA(DBLE(mF)/SS,AA,B0)
+ 100    CALL RLQAD1DG(ALPHA,BETA,GAM0,TOL,QAD1,ISOL)
         QADF=SIGMA*QAD1
-        CALL S_INGAMA(DBLE(mF + QADF)/SS,AA+1.D0,PA1)
+        CALL RLINGAMA(DBLE(mF + QADF)/SS,AA+1.D0,PA1)
         A1=PA1*AA*SS
         MMQ=(mF-QADF)/SIGMA
         IF (MMQ.LT.0.D0) MMQ=0.D0
-        CALL S_INGAMA(DBLE(MMQ),AA+1.D0,PA2)
+        CALL RLINGAMA(DBLE(MMQ),AA+1.D0,PA2)
         A2=PA2*AA*SS
-        CALL S_INGAMA(DBLE(mF + QADF)/SS,AA,B1)
-        CALL S_INGAMA(DBLE(MMQ),AA,B2)
+        CALL RLINGAMA(DBLE(mF + QADF)/SS,AA,B1)
+        CALL RLINGAMA(DBLE(MMQ),AA,B2)
         IF (DABS(GAM-GAM0).LT.1.D-6) THEN 
           SUP=(A1 + A2 - 2.D0*A0) - DBLE(mF) * (B1 + B2 - 2.D0*B0)
           GAM0=1.D0-GAM
@@ -1845,7 +1845,7 @@ c      DOUBLE PRECISION AA,A0,PA0,B0,A1,PA1,B1,A2,PA2,B2,SS,SUP,SLOW
       RETURN
       END
 C-----------------------------------------------------------------------
-      DOUBLE PRECISION FUNCTION S_LEQNG(LL,V,NV,PARAM)
+      DOUBLE PRECISION FUNCTION RLLEQNG(LL,V,NV,PARAM)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION LL, V(NV),PARAM(1)
       DATA U0,ALF0,F0/3*0.D0/
@@ -1857,7 +1857,7 @@ C-----------------------------------------------------------------------
       IF (DABS(U-U0).LT.1.D-5.AND.DABS(ALPHA-ALF0).LT.1.D-5) THEN
         F2=F0
         X=EL
-        CALL S_QGAMMA(X,ALPHA,QX)
+        CALL RLQGAMMA(X,ALPHA,QX)
       ELSE
         X=U
         U0=U
@@ -1870,50 +1870,50 @@ C-----------------------------------------------------------------------
         IF (1.D0-X.LT.1D-5) THEN
           FX=1.D0
         ELSE
-          CALL S_INGAMA(QX,ALPHA+1.D0,FX)
+          CALL RLINGAMA(QX,ALPHA+1.D0,FX)
         ENDIF
       ENDIF
       IF (DABS(X-U).LT.1.D-6) THEN
         F0=FX
         F2=FX
         X=EL
-        CALL S_QGAMMA(X,ALPHA,QX)
+        CALL RLQGAMMA(X,ALPHA,QX)
         GOTO 100
       ELSE
         V(3)=QX
         F1=FX
       ENDIF
       TMP=(F2-F1)/(U-EL)-1.D0
-      S_LEQNG=DBLE(TMP)
+      RLLEQNG=DBLE(TMP)
       RETURN
       END
 C      
-      SUBROUTINE S_QUQLDG(U,ALPHA,SIGMA,TOL,QL,QU,ISOL)
+      SUBROUTINE RLQUQLDG(U,ALPHA,SIGMA,TOL,QL,QU,ISOL)
       implicit double precision(a-h,o-z)
-c      DOUBLE PRECISION S_LEQNG,QQL,SMIN,SMAX,TOLD
+c      DOUBLE PRECISION RLLEQNG,QQL,SMIN,SMAX,TOLD
       DIMENSION Q(3),PARAM(1)
-      EXTERNAL S_LEQNG
+      EXTERNAL RLLEQNG
 c      COMMON/DATI/NQ
       QL=0.D0
       ISOL=0
       NQ=3
       Q(1)=U
       Q(2)=ALPHA
-      CALL S_QGAMMA(U,ALPHA,QU)
+      CALL RLQGAMMA(U,ALPHA,QU)
       Q(3)=QU
       PARAM(1)=QU
       QU=QU*SIGMA
       SMIN=0.D0
       SMAX=1.D0
       TOLD=DBLE(TOL)
-      CALL S_RGFLD(S_LEQNG,Q,0.D0,SMIN,SMAX,TOLD,100,QQL,ITERM,NQ,PARAM)
+      CALL RLRGFLD(RLLEQNG,Q,0.D0,SMIN,SMAX,TOLD,100,QQL,ITERM,NQ,PARAM)
       IF (ITERM.NE.1) RETURN
       QL=Q(3)*SIGMA
       ISOL=1
       RETURN
       END
 C
-      DOUBLE PRECISION FUNCTION S_GAMMAD(SIGMA,ALFA,X)
+      DOUBLE PRECISION FUNCTION RLGAMMAD(SIGMA,ALFA,X)
 C.......................................................................
 C
 C   COPYRIGHT 1993 Alfio Marazzi
@@ -1926,14 +1926,14 @@ c      DOUBLE PRECISION X,XLGMN,YLGMN,GALIM,S,ALOGS,ALOGAM,ALF,F,V,Z,GL
       DATA NCALL,XLGMN,YLGMN,GALIM/0,0.D0,0.D0,0.D0/
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(3,GALIM)
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
+        CALL RLMACHD(3,GALIM)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
 c        GALIM=DLOG(1.D-10)
       ENDIF
 c      IF (SIGMA.LE.0.D0.OR.ALFA.LE.0.D0.OR.X.LT.0.D0)
-c     1 CALL MESSGE(500,'S_GAMMAD',1)
-      S_GAMMAD=0.D0
+c     1 CALL MESSGE(500,'RLGAMMAD',1)
+      RLGAMMAD=0.D0
       IF (X.EQ.0.D0) RETURN
       S=X/DBLE(SIGMA)
       ALOGS=YLGMN
@@ -1956,11 +1956,11 @@ c     1 CALL MESSGE(500,'S_GAMMAD',1)
      +   .0007936507D0)*Z - .0027777778D0)*Z+.0833333333D0)/V
       ALOGAM=(ALF-1.D0)*ALOGS-S-DLOG(DBLE(SIGMA))-GL
       IF (ALOGAM.LE.GALIM) RETURN
-      S_GAMMAD=DEXP(ALOGAM)
+      RLGAMMAD=DEXP(ALOGAM)
       RETURN
       END
 C
-      SUBROUTINE S_MEDMAD(X,NT,TETA,TMEANF,TMADF)
+      SUBROUTINE RLMEDMAD(X,NT,TETA,TMEANF,TMADF)
 c      implicit double precision(a-h,o-z)
       DOUBLE PRECISION BETA,GAM,mF,fm,uF,lF,WF,TRMNF,TRMDF,GX,
      + FQGLOW,FQGUP,D1,D1F,D2,D2F,QGUP2F,quF,fquF,A1F,B1,B1F,QGLOW2F
@@ -2060,28 +2060,28 @@ c IF.trmadv.f
 C
 C-----------------------------------------------------------------------
 C
-      DOUBLE PRECISION FUNCTION S_IFGANS(DX,WGT,N,EXGAM,EXPSI,NT,TETA)
+      DOUBLE PRECISION FUNCTION RLIFGANS(DX,WGT,N,EXGAM,EXPSI,NT,TETA)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION ANS,EXGAM,EXPSI,DX,IFG(1),WGT(N),TETA(NT),XX(1)
       EXTERNAL EXGAM,EXPSI
 C     COMMON/TETAPR/TETA(60)        
 C
-      S_IFGANS=0.D0
+      RLIFGANS=0.D0
       ANS=EXGAM(WGT(2),WGT(1),DX)
       IF (ANS.LE.1.D-15) RETURN
       ALPHA=WGT(1)   
       SIGMA=WGT(2)
       ITC=INT(SNGL(WGT(3)))
       XX(1)=DX
-      CALL S_IFGAMA(XX,TETA,1,NT,ALPHA,SIGMA,ITC,0,IFG)
+      CALL RLIFGAMA(XX,TETA,1,NT,ALPHA,SIGMA,ITC,0,IFG)
       IF (ITC.GE.0) IFG(1)=IFG(1)*IFG(1)
-      S_IFGANS=IFG(1)*ANS
+      RLIFGANS=IFG(1)*ANS
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE S_IFGAMA(DX,TETA,NX,NT,ALPHA,SIGMA,ITC,ITT,IFG)
+      SUBROUTINE RLIFGAMA(DX,TETA,NX,NT,ALPHA,SIGMA,ITC,ITT,IFG)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION  mF,MpF,madF,medF,J1,J0G,J1G,IFG(NX),X
       DIMENSION TETA(NT),DX(NX)
@@ -2096,7 +2096,7 @@ c      ENDIF
       DO 500 IX=1,NX
       X=DX(IX)
       IF (TETA(1).EQ.2) GOTO 200
-      CALL S_MEDMAD(X,NT,TETA,TRMNF,TRMDF)
+      CALL RLMEDMAD(X,NT,TETA,TRMNF,TRMDF)
       IF (ITC.NE.1.AND.ITC.NE.2) GOTO 103
       IF (ITC.EQ.1) XIF=TRMNF
       IF (ITC.EQ.2) XIF=TRMDF
@@ -2288,14 +2288,14 @@ c IF.tcmean.g
       RETURN
       END
 C
-      SUBROUTINE S_AVTCMG(TETA,NT,ALPHA,SIGMA,ITC,UPPER,TIL,SUM,
+      SUBROUTINE RLAVTCMG(TETA,NT,ALPHA,SIGMA,ITC,UPPER,TIL,SUM,
      +           IWORK,WORK)
       implicit double precision(a-h,o-z)
-      DOUBLE PRECISION S_IFGANS,TILD,ERRSTD,WORK,S_GAMMAD,LO,HI,SUM
+      DOUBLE PRECISION RLIFGANS,TILD,ERRSTD,WORK,RLGAMMAD,LO,HI,SUM
       DIMENSION TETA(NT),WGT(3),IWORK(80),WORK(320)
 c      COMMON/INTEGN/AINTEG(4),IWORK(80),WORK(320)
 c      COMMON/TETAPR/TETA(60)
-      EXTERNAL S_IFGANS,S_GAMMAD,s_exu
+      EXTERNAL RLIFGANS,RLGAMMAD,rlexu
 C
 C     INITIALISATION
 C
@@ -2312,13 +2312,13 @@ c      TETA(I)=THETA(I)
 c  100 CONTINUE
       SUM=0.D0
       TILD=DBLE(TIL)
-      CALL S_INTGRT(S_IFGANS,WGT,3,S_GAMMAD,s_exu,LO,HI,TILD,TILD,
+      CALL RLINTGRT(RLIFGANS,WGT,3,RLGAMMAD,rlexu,LO,HI,TILD,TILD,
      1            KEY,LIMIT,SUM,ERRSTD,NEVAL,IER,WORK,IWORK,NT,TETA)
       RETURN
       END
 C
 C=======================================================================
-      SUBROUTINE S_TRMNLW(ALPHA,SIGMA,BETA,mF)
+      SUBROUTINE RLTRMNLW(ALPHA,SIGMA,BETA,mF)
       implicit double precision(a-h,o-z)      
       DOUBLE PRECISION GL,GU,mF
       IF (DABS(BETA-0.5D0).LT.1.D-5) THEN
@@ -2328,35 +2328,35 @@ C=======================================================================
       IF (BETA.LT.1.D-5) THEN
         mF=-0.5772157D0
       ELSE
-        CALL S_QWEIBL(1.D0,1.D0,BETA,QL)
-        CALL S_QWEIBL(1.D0,1.D0,1.D0-BETA,QU)
-        CALL S_SUMLGM(DBLE(QL),1.D0,GL)
-        CALL S_SUMLGM(DBLE(QU),1.D0,GU)
+        CALL RLQWEIBL(1.D0,1.D0,BETA,QL)
+        CALL RLQWEIBL(1.D0,1.D0,1.D0-BETA,QU)
+        CALL RLSUMLGM(DBLE(QL),1.D0,GL)
+        CALL RLSUMLGM(DBLE(QU),1.D0,GU)
         mF=DBLE(GU-GL)/(1.D0-2.D0*BETA)
       ENDIF
   100 mF=mF/ALPHA + DLOG(SIGMA)
       RETURN
       END
 C 
-      DOUBLE PRECISION FUNCTION S_EQADLW(DD,V,NV,PARAM)
+      DOUBLE PRECISION FUNCTION RLEQADLW(DD,V,NV,PARAM)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION DD,V(NV),M,PARAM(1)
       BETA =V(1)
       GAM  =V(2)
       DUMMY=PARAM(1)
       D=DBLE(DD)
-      CALL S_TRMNLW(1.D0,1.D0,BETA,M)
-      CALL S_PWEIBL(1.D0,1.D0,DEXP(M+D),P1)
-      CALL S_PWEIBL(1.D0,1.D0,DEXP(M-D),P2)
+      CALL RLTRMNLW(1.D0,1.D0,BETA,M)
+      CALL RLPWEIBL(1.D0,1.D0,DEXP(M+D),P1)
+      CALL RLPWEIBL(1.D0,1.D0,DEXP(M-D),P2)
       TMP=P1-P2-(1.D0-GAM)
-      S_EQADLW=DBLE(TMP)
+      RLEQADLW=DBLE(TMP)
       RETURN
       END
 C      
-      SUBROUTINE S_QAD1LW(BETA,GAM,TOL,QAD1,ISOL)
+      SUBROUTINE RLQAD1LW(BETA,GAM,TOL,QAD1,ISOL)
       implicit double precision(a-h,o-z)
-      DOUBLE PRECISION S_EQADLW,QAD,SMIN,SMAX,TOLD,PARAM(1),Q(2)
-      EXTERNAL S_EQADLW
+      DOUBLE PRECISION RLEQADLW,QAD,SMIN,SMAX,TOLD,PARAM(1),Q(2)
+      EXTERNAL RLEQADLW
 C     COMMON/DATI/NQ
       QAD1=0.D0
       ISOL=0
@@ -2367,37 +2367,37 @@ C     COMMON/DATI/NQ
       SMIN=0.D0
       SMAX=10.D0
       TOLD=DBLE(TOL)
-      CALL S_RGFLD(S_EQADLW,Q,0.D0,SMIN,SMAX,TOLD,100,QAD,ITRM,NQ,PARAM)
+      CALL RLRGFLD(RLEQADLW,Q,0.D0,SMIN,SMAX,TOLD,100,QAD,ITRM,NQ,PARAM)
       IF (ITRM.NE.1) RETURN
       QAD1=DBLE(QAD)
       ISOL=1
       RETURN
       END
 C
-      SUBROUTINE S_TRMADLW(ALPHA,BETA,GAM,TOL,mF,sF,ISOL)
+      SUBROUTINE RLTRMADLW(ALPHA,BETA,GAM,TOL,mF,sF,ISOL)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION AA0,AA1,AA2,mF
       ISOL=1
-      CALL S_TRMNLW(1.D0,1.D0,BETA,mF)
+      CALL RLTRMNLW(1.D0,1.D0,BETA,mF)
       IF (DABS(GAM-0.5D0).LT.1.D-5) THEN
-        CALL S_QAD1LW(BETA,GAM,TOL,sF,ISOL)
+        CALL RLQAD1LW(BETA,GAM,TOL,sF,ISOL)
       ELSEIF(DABS(GAM-0.4D0).LT.1.D-5.AND.DABS(BETA-0.4D0).LT.1.D-5)THEN
         sF=0.7707968D0
       ELSE
         GAM0=GAM
         EmF=DEXP(mF)
-        CALL S_SUMLGM(DBLE(EmF),1.D0,AA0)
+        CALL RLSUMLGM(DBLE(EmF),1.D0,AA0)
         A0=DBLE(AA0)
-        CALL S_PWEIBL(1.D0,1.D0,EmF,B0)
- 100    CALL S_QAD1LW(BETA,GAM0,TOL,QADF,JSOL)
+        CALL RLPWEIBL(1.D0,1.D0,EmF,B0)
+ 100    CALL RLQAD1LW(BETA,GAM0,TOL,QADF,JSOL)
         EmQ=DEXP(mF+QADF)
-        CALL S_SUMLGM(DBLE(EmQ),1.D0,AA1)
+        CALL RLSUMLGM(DBLE(EmQ),1.D0,AA1)
         A1=DBLE(AA1)
-        CALL S_PWEIBL(1.D0,1.D0,EmQ,B1)
+        CALL RLPWEIBL(1.D0,1.D0,EmQ,B1)
         EmQ=DEXP(mF-QADF)
-        CALL S_SUMLGM(DBLE(EmQ),1.D0,AA2)
+        CALL RLSUMLGM(DBLE(EmQ),1.D0,AA2)
         A2=DBLE(AA2)
-        CALL S_PWEIBL(1.D0,1.D0,EmQ,B2)
+        CALL RLPWEIBL(1.D0,1.D0,EmQ,B2)
         IF (DABS(GAM-GAM0).LT.1.D-6) THEN 
           SUP=(A1 + A2 - 2.D0 * A0) - mF * (B1 + B2 - 2.D0 * B0)
           GAM0=1.-GAM
@@ -2413,7 +2413,7 @@ C
       RETURN
       END
 C-----------------------------------------------------------------------
-      DOUBLE PRECISION FUNCTION S_LEQNW(LL,V,NV,PARAM)
+      DOUBLE PRECISION FUNCTION RLLEQNW(LL,V,NV,PARAM)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION LL,LX,V(NV),PARAM(1)
       U=V(1)
@@ -2429,7 +2429,7 @@ C-----------------------------------------------------------------------
           FX=1.D0
         ELSE
           LX=DLOG(1.D0/(1.D0-X))
-          CALL S_INGAMA(LX,1.D0/ALPHA+1.D0,FX)
+          CALL RLINGAMA(LX,1.D0/ALPHA+1.D0,FX)
         ENDIF
       ENDIF
       IF (DABS(X-U).LT.1D-6) THEN
@@ -2440,85 +2440,85 @@ C-----------------------------------------------------------------------
         F1=FX
       ENDIF
       TMP=(F2-F1)/(U-EL)-1.D0
-      S_LEQNW=DBLE(TMP)
+      RLLEQNW=DBLE(TMP)
       RETURN
       END
 C      
-      SUBROUTINE S_QUQLDW(U,ALPHA,SIGMA,TOL,QL,QU,ISOL)
+      SUBROUTINE RLQUQLDW(U,ALPHA,SIGMA,TOL,QL,QU,ISOL)
       implicit double precision(a-h,o-z)
-      DOUBLE PRECISION S_LEQNW,QQL,SMIN,SMAX,TOLD,PARAM(1),Q(2)
-      EXTERNAL S_LEQNW
+      DOUBLE PRECISION RLLEQNW,QQL,SMIN,SMAX,TOLD,PARAM(1),Q(2)
+      EXTERNAL RLLEQNW
 c     COMMON/DATI/NQ
       QL=0.D0
       ISOL=0
       NQ=2
-      CALL S_QWEIBL(ALPHA,SIGMA,U,QU)
+      CALL RLQWEIBL(ALPHA,SIGMA,U,QU)
       Q(1)=U
       Q(2)=ALPHA
       PARAM(1)=0.D0
       SMIN=0.D0
       SMAX=0.5D0
       TOLD=DBLE(TOL)
-      CALL S_RGFLD(S_LEQNW,Q,0.D0,SMIN,SMAX,TOLD,100,QQL,ITERM,NQ,PARAM)
+      CALL RLRGFLD(RLLEQNW,Q,0.D0,SMIN,SMAX,TOLD,100,QQL,ITERM,NQ,PARAM)
       IF (ITERM.NE.1) RETURN
       QQ=DBLE(QQL)
-      CALL S_QWEIBL(ALPHA,SIGMA,QQ,QL)
+      CALL RLQWEIBL(ALPHA,SIGMA,QQ,QL)
       ISOL=1
       RETURN
       END
 C
-      SUBROUTINE S_TRMNW(ALPHA,SIGMA,BETA,mF)
+      SUBROUTINE RLTRMNW(ALPHA,SIGMA,BETA,mF)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION mF,LPL,LPU
-      EXTERNAL S_XEXPD
+      EXTERNAL RLXEXPD
       IF (DABS(BETA-0.5D0).LT.1.D-5) THEN
-        CALL S_QWEIBL(ALPHA,SIGMA,0.5D0,mF)
+        CALL RLQWEIBL(ALPHA,SIGMA,0.5D0,mF)
         RETURN
       ENDIF
       ALF1=1.D0+1.D0/ALPHA
-      CALL S_LGAMAD(ALF1,GA)
+      CALL RLLGAMAD(ALF1,GA)
       IF (BETA.LT.1.D-5) THEN
-        mF=SIGMA*S_XEXPD(GA)
+        mF=SIGMA*RLXEXPD(GA)
       ELSE
-c       CALL S_QWEIBL(ALPHA,1.D0,BETA,QL)
-c       CALL S_QWEIBL(ALPHA,1.D0,1.D0-BETA,QU)
-c       CALL S_PWEIBL(ALPHA,1.D0,QL,PL)
-c       CALL S_PWEIBL(ALPHA,1.D0,QU,PU)
+c       CALL RLQWEIBL(ALPHA,1.D0,BETA,QL)
+c       CALL RLQWEIBL(ALPHA,1.D0,1.D0-BETA,QU)
+c       CALL RLPWEIBL(ALPHA,1.D0,QL,PL)
+c       CALL RLPWEIBL(ALPHA,1.D0,QU,PU)
         PU=1.D0-BETA
-        GU=PU*S_XEXPD(GA)
+        GU=PU*RLXEXPD(GA)
         IF (DABS(PU-1.D0).LT.1D-5) GOTO 20
         LPU=DLOG(1.D0/(1.D0-PU))
-        CALL S_INGAMA(LPU,ALF1,GU)
-        GU=GU*S_XEXPD(GA)
+        CALL RLINGAMA(LPU,ALF1,GU)
+        GU=GU*RLXEXPD(GA)
    20   PL=BETA
-        GL=PL*S_XEXPD(GA)
+        GL=PL*RLXEXPD(GA)
         IF (DABS(PL-1.D0).LT.1D-5) GOTO 40
         LPL=DLOG(1.D0/(1.D0-PL))
-        CALL S_INGAMA(LPL,ALF1,GL)
-        GL=GL*S_XEXPD(GA)
+        CALL RLINGAMA(LPL,ALF1,GL)
+        GL=GL*RLXEXPD(GA)
    40   mF=SIGMA*(GU-GL)/(1.D0-2.D0*BETA)
       ENDIF
       RETURN
       END
 
-      DOUBLE PRECISION FUNCTION S_EQADW(DD,V)
+      DOUBLE PRECISION FUNCTION RLEQADW(DD,V)
       DOUBLE PRECISION DD,V(3),M,D,ALPHA,BETA,GAM,P1,P2
       ALPHA=V(1)
       BETA =V(2)
       GAM  =V(3)
       D=DBLE(DD)
-      CALL S_TRMNW(ALPHA,1.D0,BETA,M)
-      CALL S_PWEIBL(ALPHA,1.D0,M+D,P1)
-      CALL S_PWEIBL(ALPHA,1.D0,M-D,P2)
+      CALL RLTRMNW(ALPHA,1.D0,BETA,M)
+      CALL RLPWEIBL(ALPHA,1.D0,M+D,P1)
+      CALL RLPWEIBL(ALPHA,1.D0,M-D,P2)
       TMP=P1-P2-(1.D0-GAM)
-      S_EQADW=DBLE(TMP)
+      RLEQADW=DBLE(TMP)
       RETURN
       END
 C      
-      SUBROUTINE S_QAD1W(ALPHA,BETA,GAM,TOL,QAD1,ISOL)
+      SUBROUTINE RLQAD1W(ALPHA,BETA,GAM,TOL,QAD1,ISOL)
       implicit double precision(a-h,o-z)
-      DOUBLE PRECISION S_EQADW,QAD,SMIN,SMAX,TOLD,PARAM(1),Q(3)
-      EXTERNAL S_EQADW
+      DOUBLE PRECISION RLEQADW,QAD,SMIN,SMAX,TOLD,PARAM(1),Q(3)
+      EXTERNAL RLEQADW
 C     COMMON/DATI/NQ
       QAD1=0.D0
       ISOL=0
@@ -2528,10 +2528,10 @@ C     COMMON/DATI/NQ
       Q(3)=GAM
       PARAM(1)=0.D0
       SMIN=0.D0
-      CALL S_QWEIBL(ALPHA,1.D0,0.999D0,Q9)
+      CALL RLQWEIBL(ALPHA,1.D0,0.999D0,Q9)
       SMAX=DBLE(Q9)
       TOLD=DBLE(TOL)
-      CALL S_RGFLD(S_EQADW,Q,0.D0,SMIN,SMAX,TOLD,100,QAD,ITERM,NQ,PARAM)
+      CALL RLRGFLD(RLEQADW,Q,0.D0,SMIN,SMAX,TOLD,100,QAD,ITERM,NQ,PARAM)
       IF (ITERM.NE.1) RETURN
       QAD1=DBLE(QAD)
       ISOL=1
@@ -2540,19 +2540,19 @@ C     COMMON/DATI/NQ
 C
 C-----------------------------------------------------------------------
 C
-      DOUBLE PRECISION FUNCTION S_WEIBUD(SIGMA,ALPHA,X)
+      DOUBLE PRECISION FUNCTION RLWEIBUD(SIGMA,ALPHA,X)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION X,XLGMN,YLGMN,EXMIN,T,TA,TMP,ALF,SS
       DATA NCALL,EXMIN,XLGMN,YLGMN/0,0.D0,0.D0,0.D0/
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(3,EXMIN)
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
+        CALL RLMACHD(3,EXMIN)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
       ENDIF
 c      IF (SIGMA.LE.0..OR.ALPHA.LE.0.0.OR.X.LT.0.D0)
-c     + CALL MESSGE(500,'S_WEIBUD',1)
-      S_WEIBUD=0.D0
+c     + CALL MESSGE(500,'RLWEIBUD',1)
+      RLWEIBUD=0.D0
       IF (X.LE.0.D0) RETURN
       SS=DBLE(SIGMA)
       T=X/SS
@@ -2563,11 +2563,11 @@ c     + CALL MESSGE(500,'S_WEIBUD',1)
       IF (ALF*TMP.GT.EXMIN) TA=DEXP(ALF*TMP)
       TMP=DLOG(ALF)-DLOG(SS)+(ALF-1.D0)*TMP-TA
       IF (TMP.LE.EXMIN) RETURN
-      S_WEIBUD=DEXP(TMP)
+      RLWEIBUD=DEXP(TMP)
       RETURN
       END
 C
-      DOUBLE PRECISION FUNCTION S_IFWANS(DX,WGT,N,EXWEB,EXPSI,NT,TETA)
+      DOUBLE PRECISION FUNCTION RLIFWANS(DX,WGT,N,EXWEB,EXPSI,NT,TETA)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION ANS,EXWEB,DX,IFW(1),WGT(N),TETA(NT)
       EXTERNAL EXWEB,EXPSI
@@ -2575,22 +2575,22 @@ C     COMMON/TETAPR/TETA(60)
 C
 C  Initializations
 C
-      S_IFWANS=0.D0
+      RLIFWANS=0.D0
       ANS=EXWEB(WGT(2),WGT(1),DX)
       IF (ANS.LE.1.D-15) RETURN
       ALPHA=WGT(1)   
       SIGMA=WGT(2)
       ITC=INT(SNGL(WGT(3)))
-      CALL S_IFWEIB(DX,TETA,1,NT,ALPHA,SIGMA,ITC,0,IFW)
+      CALL RLIFWEIB(DX,TETA,1,NT,ALPHA,SIGMA,ITC,0,IFW)
       IF (ITC.GE.0) IFW(1)=IFW(1)*IFW(1)
-      S_IFWANS=IFW(1)*ANS
+      RLIFWANS=IFW(1)*ANS
       RETURN
       END
 C
-      SUBROUTINE S_IFWEIB(DX,TETA,NX,NT,ALPHA,SIGMA,ITC,ITT,IFW)
+      SUBROUTINE RLIFWEIB(DX,TETA,NX,NT,ALPHA,SIGMA,ITC,ITT,IFW)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION TETA(NT),madF,medF,MU1W,J1,J0W,J1W,DX(NX),IFW(NX)
-      EXTERNAL S_XEXPD,S_GAMDIGAMA
+      EXTERNAL RLXEXPD,RLGAMDIGAMA
 c      COMMON/TETAPR/TETA(60)
       DATA NCALL,XLGMN,YLGMN,ALF0,GA,DGA/0,5*0.D0/
 C
@@ -2598,14 +2598,14 @@ C  Initializations
 C
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
       ENDIF
       IF (DABS(ALPHA-ALF0).GT.1D-6) THEN 
         TA=1.D0+1.D0/ALPHA
         ALF0=ALPHA
-        CALL S_LGAMAD(TA,GA)
-        DGA=S_GAMDIGAMA(TA)
+        CALL RLLGAMAD(TA,GA)
+        DGA=RLGAMDIGAMA(TA)
       ENDIF
 c      IF (ITT.EQ.1) THEN
 c        DO 100 I=1,NT
@@ -2618,7 +2618,7 @@ c      ENDIF
       IF (TETA(1).EQ.2) GOTO 200
       Y=YLGMN
       IF (X.GT.XLGMN) Y=DLOG(X)
-      CALL S_MEDMAD(Y,NT,TETA,TRMNF,TRMDF)
+      CALL RLMEDMAD(Y,NT,TETA,TRMNF,TRMDF)
       IF (ITC.EQ.1) XIF=TRMNF
       IF (ITC.EQ.2) XIF=TRMDF
       IF (ITC.EQ.1.OR.ITC.EQ.2) GOTO 300
@@ -2669,7 +2669,7 @@ c IF.H1.w
       XIF=H1W
       GOTO 300
 c IF.mu1.w
-  110 MU1W=-DGA*ALDSMW*S_XEXPD(GA)/ALPHA**2
+  110 MU1W=-DGA*ALDSMW*RLXEXPD(GA)/ALPHA**2
 c IF.ql1.w
       B=(u-TETA(48))*MU1W+(TETA(56)-TETA(55)-TETA(52)*TETA(35))*ALDSMW-
      +   TETA(53)*QU1W
@@ -2771,7 +2771,7 @@ c IF.H1.w
       XIF=H1W
       GOTO 300
 c IF.mu1.w
-  210 MU1W=-DGA*ALFDW*S_XEXPD(GA)/ALPHA**2      
+  210 MU1W=-DGA*ALFDW*RLXEXPD(GA)/ALPHA**2      
 c IF.ql1.w
       B=(u-TETA(16))*MU1W+(TETA(24)-TETA(23)-TETA(20)*TETA(3))*ALFDW
      +   - TETA(21)*QU1W
@@ -2810,13 +2810,13 @@ c IF.tcmean.w
       RETURN
       END
 C
-      SUBROUTINE S_AVTCMW(TETA,NT,ALPHA,SIGMA,ITC,UPPER,TIL,SUM,
+      SUBROUTINE RLAVTCMW(TETA,NT,ALPHA,SIGMA,ITC,UPPER,TIL,SUM,
      +           IWORK,WORK)
       implicit double precision(a-h,o-z)
-      DOUBLE PRECISION S_IFWANS,TILD,ERRSTD,WORK,S_WEIBUD,LO,HI,SUM
+      DOUBLE PRECISION RLIFWANS,TILD,ERRSTD,WORK,RLWEIBUD,LO,HI,SUM
       DIMENSION TETA(NT),WGT(3),IWORK(80),WORK(320)
 C     COMMON/TETAPR/TETA(60)
-      EXTERNAL S_IFWANS,S_WEIBUD,s_exu
+      EXTERNAL RLIFWANS,RLWEIBUD,rlexu
 C
 C     INITIALISATION
 C
@@ -2833,17 +2833,17 @@ c      TETA(I)=THETA(I)
 c  100 CONTINUE
       SUM=0.D0
       TILD=DBLE(TIL)
-      CALL S_INTGRT(S_IFWANS,WGT,3,S_WEIBUD,s_exu,LO,HI,TILD,TILD,
+      CALL RLINTGRT(RLIFWANS,WGT,3,RLWEIBUD,rlexu,LO,HI,TILD,TILD,
      1            KEY,LIMIT,SUM,ERRSTD,NEVAL,IER,WORK,IWORK,NT,TETA)
       RETURN
       END
 C
 C=======================================================================
 C
-      SUBROUTINE S_TRMNN(ALPHA,BETA,mF)
+      SUBROUTINE RLTRMNN(ALPHA,BETA,mF)
       implicit double precision(a-h,o-z)
-      DOUBLE PRECISION QL,QU,BB,DL,DU,GL,GU,PL,PU,s_dennor,mF
-      EXTERNAL s_dennor
+      DOUBLE PRECISION QL,QU,BB,DL,DU,GL,GU,PL,PU,rldennor,mF
+      EXTERNAL rldennor
       IF (DABS(BETA-0.5).LT.1.D-5) THEN
         mF=ALPHA
         RETURN
@@ -2852,37 +2852,37 @@ C
         mF=ALPHA
       ELSE
         BB=DBLE(BETA)
-        CALL S_QUANTD(BB,QL)
-        CALL S_QUANTD(1.D0-BB,QU)
-        DL=s_dennor(QL)
-        CALL S_GAUSSD(1,QL,PL)
+        CALL RLQUANTD(BB,QL)
+        CALL RLQUANTD(1.D0-BB,QU)
+        DL=rldennor(QL)
+        CALL RLGAUSSD(1,QL,PL)
         GL=-DL+DBLE(ALPHA)*PL
-        DU=s_dennor(QU)
-        CALL S_GAUSSD(1,QU,PU)
+        DU=rldennor(QU)
+        CALL RLGAUSSD(1,QU,PU)
         GU=-DU+DBLE(ALPHA)*PU
         mF=DBLE(GU-GL)/(1.D0-2.D0*BETA)
       ENDIF
       RETURN
       END
 C 
-      DOUBLE PRECISION FUNCTION S_EQADN(DD,V,NV,PARAM)
+      DOUBLE PRECISION FUNCTION RLEQADN(DD,V,NV,PARAM)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION DD,MM,P1,P2,V(NV),M,PARAM(1)
       BETA =V(1)
       GAM  =V(2)
       DUMMY=PARAM(1)
-      CALL S_TRMNN(0.D0,BETA,M)
+      CALL RLTRMNN(0.D0,BETA,M)
       MM=DBLE(M)
-      CALL S_GAUSSD(1,MM+DD,P1)
-      CALL S_GAUSSD(1,MM-DD,P2)
-      S_EQADN=P1-P2-DBLE(1.D0-GAM)
+      CALL RLGAUSSD(1,MM+DD,P1)
+      CALL RLGAUSSD(1,MM-DD,P2)
+      RLEQADN=P1-P2-DBLE(1.D0-GAM)
       RETURN
       END
 C      
-      SUBROUTINE S_QAD1N(BETA,GAM,TOL,QAD1,ISOL)
+      SUBROUTINE RLQAD1N(BETA,GAM,TOL,QAD1,ISOL)
       implicit double precision(a-h,o-z)
-      DOUBLE PRECISION S_EQADN,QAD,SMIN,SMAX,TOLD,PARAM(1),Q(2)
-      EXTERNAL S_EQADN
+      DOUBLE PRECISION RLEQADN,QAD,SMIN,SMAX,TOLD,PARAM(1),Q(2)
+      EXTERNAL RLEQADN
 C     COMMON/DATI/NQ
       QAD1=0.D0
       ISOL=0
@@ -2890,34 +2890,34 @@ C     COMMON/DATI/NQ
       Q(1)=BETA
       Q(2)=GAM
       PARAM(1)=0.D0
-      CALL S_QUANTD(0.999D0,SMAX)
+      CALL RLQUANTD(0.999D0,SMAX)
       SMIN=-SMAX
       TOLD=DBLE(TOL)
-      CALL S_RGFLD(S_EQADN,Q,0.D0,SMIN,SMAX,TOLD,100,QAD,ITERM,NQ,PARAM)
+      CALL RLRGFLD(RLEQADN,Q,0.D0,SMIN,SMAX,TOLD,100,QAD,ITERM,NQ,PARAM)
       IF (ITERM.NE.1) RETURN
       QAD1=DBLE(QAD)
       ISOL=1
       RETURN
       END
 C
-      SUBROUTINE S_TRMADN(SIGMA,BETA,GAM,TOL,sF,ISOL)
+      SUBROUTINE RLTRMADN(SIGMA,BETA,GAM,TOL,sF,ISOL)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION mF
       IF (DABS(GAM-0.5D0).LT.1.D-5) THEN
-        CALL S_QAD1N(BETA,GAM,TOL,sF,ISOL)
+        CALL RLQAD1N(BETA,GAM,TOL,sF,ISOL)
       ELSE
-        CALL S_TRMNN(0.D0,BETA,mF)
+        CALL RLTRMNN(0.D0,BETA,mF)
         GAM0=GAM
-        CALL S_XERF(2,mF,A0)
+        CALL RLXERF(2,mF,A0)
         A0=-A0
-        CALL S_GAUSSD(1,mF,B0)
- 100    CALL S_QAD1N(BETA,GAM0,TOL,QADF,JSOL)
-        CALL S_XERF(2,mF+QADF,A1)
+        CALL RLGAUSSD(1,mF,B0)
+ 100    CALL RLQAD1N(BETA,GAM0,TOL,QADF,JSOL)
+        CALL RLXERF(2,mF+QADF,A1)
         A1=-A1
-        CALL S_XERF(2,mF-QADF,A2)
+        CALL RLXERF(2,mF-QADF,A2)
         A2=-A2
-        CALL S_GAUSSD(1,mF+QADF,B1)
-        CALL S_GAUSSD(1,mF-QADF,B2)
+        CALL RLGAUSSD(1,mF+QADF,B1)
+        CALL RLGAUSSD(1,mF-QADF,B2)
         IF (DABS(GAM-GAM0).LT.1.D-6) THEN 
           SUP=(A1 + A2 - 2.D0 * A0) - mF * (B1 + B2 - 2.D0 * B0)
           ISOL=JSOL 
@@ -2933,7 +2933,7 @@ C
       RETURN
       END
 C-----------------------------------------------------------------------
-      DOUBLE PRECISION FUNCTION S_LEQNL(L,V,NV,PARAM)
+      DOUBLE PRECISION FUNCTION RLLEQNL(L,V,NV,PARAM)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION L,X,X0,XMS,F1,F2,FX,UU,LL,V(NV),PARAM(1)
       U=V(1)
@@ -2943,9 +2943,9 @@ C-----------------------------------------------------------------------
       UU=DBLE(U)
       IF (DABS(LL-UU).LT.0.0001D0) LL=LL-0.0002D0
       X=UU
-  100 CALL S_QUANTD(X,X0)
+  100 CALL RLQUANTD(X,X0)
       XMS=X0-DBLE(SIGMA)
-      CALL S_GAUSSD(1,XMS,FX)
+      CALL RLGAUSSD(1,XMS,FX)
       IF (DABS(X-UU).LT.1D-6) THEN
         F2=FX
         X=LL
@@ -2954,54 +2954,54 @@ C-----------------------------------------------------------------------
         F1=FX
       ENDIF
       XMS=(F2-F1)/(UU-LL)-1.D0
-      S_LEQNL=XMS
+      RLLEQNL=XMS
       RETURN
       END
 C      
-      SUBROUTINE S_QUQLDL(U,ALPHA,SIGMA,TOL,QL,QU,ISOL)
+      SUBROUTINE RLQUQLDL(U,ALPHA,SIGMA,TOL,QL,QU,ISOL)
       implicit double precision(a-h,o-z)
-      DOUBLE PRECISION S_LEQNL,QQL,QQU,SMIN,SMAX,TOLD,PARAM(1),Q(2)
-      EXTERNAL S_LEQNL,S_XEXPD
+      DOUBLE PRECISION RLLEQNL,QQL,QQU,SMIN,SMAX,TOLD,PARAM(1),Q(2)
+      EXTERNAL RLLEQNL,RLXEXPD
 C     COMMON/DATI/NQ
       QL=0.D0
       ISOL=0
       NQ=2
-      CALL S_QUANTD(DBLE(U),QQU)
+      CALL RLQUANTD(DBLE(U),QQU)
       QQU=DBLE(SIGMA)*QQU+DBLE(ALPHA)
-      QU=S_XEXPD(DBLE(QQU))
+      QU=RLXEXPD(DBLE(QQU))
       Q(1)=U
       Q(2)=SIGMA
       PARAM(1)=0.D0
       SMIN=1.D-4
       SMAX=0.98D0
       TOLD=DBLE(TOL)
-      CALL S_RGFLD(S_LEQNL,Q,0.D0,SMIN,SMAX,TOLD,100,QQL,ITERM,NQ,PARAM)
+      CALL RLRGFLD(RLLEQNL,Q,0.D0,SMIN,SMAX,TOLD,100,QQL,ITERM,NQ,PARAM)
       IF (ITERM.NE.1) RETURN
       QQ=DBLE(QQL)
-      CALL S_QLNORM(ALPHA,SIGMA,QQ,QL)
+      CALL RLQLNORM(ALPHA,SIGMA,QQ,QL)
       ISOL=1
       RETURN
       END
 C
-      DOUBLE PRECISION FUNCTION S_GAUSDD(SIGMA,MU,X)
+      DOUBLE PRECISION FUNCTION RLGAUSDD(SIGMA,MU,X)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION X,EXMIN,SPI,SS,T,X2,MU
       DATA NCALL,EXMIN,SPI/0,0.D0,2.506628274631D0/
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(3,EXMIN)
+        CALL RLMACHD(3,EXMIN)
       ENDIF
 c      IF (SIGMA.LE.0.) CALL MESSGE(500,'GAUSDD',1)
-      S_GAUSDD=0.D0
+      RLGAUSDD=0.D0
       SS=SIGMA
       T=(X-MU)/SS
       X2=-T*T/2.D0
       IF (X2.LE.EXMIN) RETURN
-      S_GAUSDD=DEXP(X2)/(SS*SPI)
+      RLGAUSDD=DEXP(X2)/(SS*SPI)
       RETURN
       END
 C
-      DOUBLE PRECISION FUNCTION S_IFLANS(DX,WGT,N,EXGAU,EXPSI,NT,TETA)
+      DOUBLE PRECISION FUNCTION RLIFLANS(DX,WGT,N,EXGAU,EXPSI,NT,TETA)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION ANS,EXGAU,EXMIN,DX,IFL(1),Z,WGT(N),TETA(NT)
       EXTERNAL EXGAU,EXPSI
@@ -3012,23 +3012,23 @@ C  Initializations
 C
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(3,EXMIN)
+        CALL RLMACHD(3,EXMIN)
       ENDIF
       Z=0.D0
       IF (Z.GT.EXMIN) Z=DEXP(DX)
-      S_IFLANS=0.D0
+      RLIFLANS=0.D0
       ANS=EXGAU(WGT(2),WGT(1),DX)
       IF (ANS.LE.1.D-20) RETURN
       ALPHA=WGT(1)   
       SIGMA=WGT(2)
       ITC=INT(SNGL(WGT(3)))
-      CALL S_IFLOGN(Z,TETA,1,NT,ALPHA,SIGMA,ITC,0,IFL)
+      CALL RLIFLOGN(Z,TETA,1,NT,ALPHA,SIGMA,ITC,0,IFL)
       IF (ITC.GE.0) IFL(1)=IFL(1)*IFL(1)
-      S_IFLANS=IFL(1)*ANS
+      RLIFLANS=IFL(1)*ANS
       RETURN
       END      
 C
-      SUBROUTINE S_IFLOGN(DX,TETA,NX,NT,ALPHA,SIGMA,ITC,ITT,IFL)
+      SUBROUTINE RLIFLOGN(DX,TETA,NX,NT,ALPHA,SIGMA,ITC,ITT,IFL)
       implicit double precision(a-h,o-z)
       DOUBLE PRECISION TETA(NT),J1,J0L,J1L,MU1L,DX(NX),IFL(NX)
 c     COMMON/TETAPR/TETA(60)
@@ -3038,8 +3038,8 @@ C  Initializations
 C
       IF (NCALL.EQ.0) THEN
         NCALL=1
-        CALL S_MACHD(4,XLGMN)
-        CALL S_MACHD(5,YLGMN)
+        CALL RLMACHD(4,XLGMN)
+        CALL RLMACHD(5,YLGMN)
       ENDIF
 c      IF (ITT.EQ.1) THEN
 c        DO 100 I=1,NT
@@ -3051,7 +3051,7 @@ c      ENDIF
       X=DBLE(DX(IX))
       Y=YLGMN
       IF (X.GT.XLGMN) Y=DLOG(X)
-      CALL S_MEDMAD(Y,NT,TETA,TRMNF,TRMDF)
+      CALL RLMEDMAD(Y,NT,TETA,TRMNF,TRMDF)
       IF (ITC.EQ.1) XIF=TRMNF
       IF (ITC.EQ.2) XIF=TRMDF
       IF (ITC.EQ.1.OR.ITC.EQ.2) GOTO 300
@@ -3145,13 +3145,13 @@ c IF.tcmean.l
       RETURN
       END
 C
-      SUBROUTINE S_AVTCML(TETA,NT,ALPHA,SIGMA,ITC,LOWER,UPPER,TIL,SUM,
+      SUBROUTINE RLAVTCML(TETA,NT,ALPHA,SIGMA,ITC,LOWER,UPPER,TIL,SUM,
      +           IWORK,WORK)
       implicit double precision(a-h,o-z)
-      DOUBLE PRECISION S_IFLANS,ERRSTD,WORK,S_GAUSDD,LO,HI,SUM,LOWER
+      DOUBLE PRECISION RLIFLANS,ERRSTD,WORK,RLGAUSDD,LO,HI,SUM,LOWER
       DIMENSION TETA(NT),WGT(3),IWORK(80),WORK(320)
 c     COMMON/TETAPR/TETA(60)
-      EXTERNAL S_IFLANS,S_GAUSDD,S_EXU
+      EXTERNAL RLIFLANS,RLGAUSDD,RLEXU
 C
 C     INITIALISATION
 C
@@ -3168,16 +3168,16 @@ c      TETA(I)=THETA(I)
 c  100 CONTINUE
       SUM=0.D0
       TILD=DBLE(TIL)
-      CALL S_INTGRT(S_IFLANS,WGT,3,S_GAUSDD,S_EXU,LO,HI,TILD,TILD,
+      CALL RLINTGRT(RLIFLANS,WGT,3,RLGAUSDD,RLEXU,LO,HI,TILD,TILD,
      1         KEY,LIMIT,SUM,ERRSTD,NEVAL,IER,WORK,IWORK,NT,TETA)
       RETURN
       END
 C
 C      SUBROUTINE IF2TST(IOPT,THETA,NT,X,N,Y)
-C      DOUBLE PRECISION IFGANS,IFWANS,IFLANS,GAUSDD,S_WEIBUD,S_GAMMAD,XX,Z
+C      DOUBLE PRECISION IFGANS,IFWANS,IFLANS,GAUSDD,RLWEIBUD,RLGAMMAD,XX,Z
 C      REAL THETA(NT),X(N),Y(N),WGT(3)
 C      COMMON/TETAPR/TETA(60)
-C      EXTERNAL IFGANS,IFWANS,IFLANS,GAUSDD,S_WEIBUD,S_GAMMAD,s_exu
+C      EXTERNAL IFGANS,IFWANS,IFLANS,GAUSDD,RLWEIBUD,RLGAMMAD,rlexu
 CC
 C      DO 100 I=1,NT
 C      TETA(I)=THETA(I)
@@ -3193,9 +3193,9 @@ C      endif
 C      JOPT=IABS(IOPT)
 C      DO 200 I=1,N
 C      XX=DBLE(X(I))
-C      IF (JOPT.EQ.1) Z=IFGANS(XX,WGT,3,S_GAMMAD,s_exu)
-C      IF (JOPT.EQ.2) Z=IFWANS(XX,WGT,3,S_WEIBUD,s_exu)
-C      IF (JOPT.EQ.3) Z=IFLANS(XX,WGT,3,GAUSDD,s_exu)
+C      IF (JOPT.EQ.1) Z=IFGANS(XX,WGT,3,RLGAMMAD,rlexu)
+C      IF (JOPT.EQ.2) Z=IFWANS(XX,WGT,3,RLWEIBUD,rlexu)
+C      IF (JOPT.EQ.3) Z=IFLANS(XX,WGT,3,GAUSDD,rlexu)
 C      Y(I)=DBLE(Z)
 C  200 CONTINUE
 C      RETURN
@@ -3203,7 +3203,7 @@ C      END
 c
 C+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 c$$$C
-c$$$      SUBROUTINE S_RGFLD(F,V,Y,A,B,TOL,MAXIT,X,ITERM,nv,param)
+c$$$      SUBROUTINE RLRGFLD(F,V,Y,A,B,TOL,MAXIT,X,ITERM,nv,param)
 c$$$C.......................................................................
 c$$$      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 c$$$      DIMENSION V(nv),param(1)
@@ -3250,7 +3250,7 @@ c$$$      END
 c
 c-----------------------------------------------------------------------
 c
-c$$$      SUBROUTINE S_SUMLGM(HI,ALPHA,GL)
+c$$$      SUBROUTINE RLSUMLGM(HI,ALPHA,GL)
 c$$$C
 c$$$C  INT  Log(x)*gamma(x,alpha) dx for x=0 to HI
 c$$$C
@@ -3259,13 +3259,13 @@ c$$$     1       PREC,SS,TERM
 c$$$      DATA NCALL,PREC/0,0.D0/
 c$$$      IF (NCALL.EQ.0) THEN
 c$$$        NCALL=1
-c$$$        CALL S_MACHD(2,PREC)
+c$$$        CALL RLMACHD(2,PREC)
 c$$$      ENDIF
 c$$$      GL=0.D0
 c$$$      IF (HI.LE.0.D0) RETURN
 c$$$      ALF=ALPHA
 c$$$      LOGHI=DLOG(HI)
-c$$$      CALL S_LGAMAD(ALF+1.D0,GA1)
+c$$$      CALL RLLGAMAD(ALF+1.D0,GA1)
 c$$$      GG=ALF*LOGHI-HI-GA1
 c$$$      SS=1.D0/ALF
 c$$$      SUM=DEXP(GG+DLOG(SS))
@@ -3275,7 +3275,7 @@ c$$$      SS=SS+1.D0/ALF
 c$$$      TERM=DEXP(GG+DLOG(SS))
 c$$$      SUM=SUM+TERM
 c$$$      IF (TERM.GT.PREC) GOTO 100
-c$$$      CALL S_INGAMA(HI,ALPHA,GX)
+c$$$      CALL RLINGAMA(HI,ALPHA,GX)
 c$$$      GL=LOGHI*GX-SUM
 c$$$      RETURN
 c$$$      END

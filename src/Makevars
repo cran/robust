@@ -1,7 +1,1 @@
 PKG_LIBS=$(BLAS_LIBS) $(LAPACK_LIBS)
-OBJECTS=checkbox.o ds11.o fastcov.o gamrob.o glmrob.o lmrobbi.o \
-        lmrobml.o lmrobmm.o mmprnt.o rb.o regar.o rocovm.o rqbr.o rqfn.o \
-        tdmean.o tmlfor.o wblrob.o xlapack.o Rcompatibility.o \
-        fastmcd.o sfastmcd.o
-
-

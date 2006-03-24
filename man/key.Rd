@@ -10,7 +10,7 @@
 }
 
 \usage{
-  key(x, y, text, lines, corner = c(0, 1), cex = par("cex"), col = par("col"), lty = par("lty"), lwd = par("lwd"), ...)
+  key(x, y, text, lines, corner = c(0, 1), cex = par("cex"), col = par("col"), lty = par("lty"), lwd = par("lwd"), pch = par("pch"), ...)
 }
 
 \arguments{
@@ -31,6 +31,8 @@
   \item{lty}{lty}
 
   \item{lwd}{lwd}
+
+  \item{pch}{pch}
 
   \item{\dots}{dots}
 }

@@ -16,7 +16,7 @@ void F77_SUB(fseedo)(void)
 }
 
 
-void F77_SUB(splusrunif)(Sfloat* px)
+void F77_SUB(roblibrunif)(Sfloat* px)
 {
 	*px = unif_rand();
 }
@@ -44,7 +44,7 @@ void F77_SUB(xerror)(const char* msg, Sint* n, Sint* p, Sint* i)
 
 
 
-Sfloat F77_SUB(spluserfc)(Sfloat* px)
+Sfloat F77_SUB(robliberfc)(Sfloat* px)
 //Sfloat erfc1(Sint ind, Sfloat x)
 {
     Sint ind = 0;
@@ -176,7 +176,7 @@ L60:
 } /* erfc1 */
 
 
-Sfloat F77_SUB(spluserf)(Sfloat* px)
+Sfloat F77_SUB(robliberf)(Sfloat* px)
 //Sfloat rl_erf(Sfloat x)
 {
     Sfloat x = *px;

@@ -4,7 +4,7 @@ C     AUTHOR: JEFFREY WANG
 C     MATHSOFT, INC.
 C     10/06/99
 C=======================================================================
-      SUBROUTINE S_CHI1ML(X,P)
+      SUBROUTINE RLCHI1ML(X,P)
 C.......................................................................
       DOUBLE PRECISION X,P,TMP,ZERO
       DATA ZERO/0.D0/
@@ -17,13 +17,13 @@ C-----------------------------------------------------------------------
          P=ZERO
          RETURN
       ENDIF
-      CALL S_GAUSBI( X,P)
-      CALL S_GAUSBI(-X,TMP)
+      CALL RLGAUSBI( X,P)
+      CALL RLGAUSBI(-X,TMP)
       P = P-TMP
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_RWETML(X,P)
+      SUBROUTINE RLRWETML(X,P)
 C.......................................................................
       DOUBLE PRECISION X,AX,P,COEF,ZERO
       DIMENSION COEF(4)
@@ -47,7 +47,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_RWEPML(X,P)
+      SUBROUTINE RLRWEPML(X,P)
 C.......................................................................
       DOUBLE PRECISION X,AX,P,COEF,ZERO
       DIMENSION COEF(4)
@@ -68,8 +68,8 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_FINLML(X,Y,WGT,RS,N,NP,MDX,THETA,SCAL,SF,SG,SH,IP,
-     +     SX,SY,TAU,ETA,IERR,IPS,XK,FAC,U)
+      SUBROUTINE RLFINLML(X,Y,WGT,RS,N,NP,MDX,THETA,SCAL,SF,SG,
+     +     SH,IP,SX,SY,TAU,ETA,IERR,IPS,XK,FAC,U)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION X(MDX,NP),Y(N),SX(MDX,NP),SY(N),WGT(N),RS(N)
@@ -86,11 +86,11 @@ C-----------------------------------------------------------------------
          U(I) = DM
          WGT(I)=DABS(DM)
  10   CONTINUE
-      CALL S_SRT1BI(WGT,N,1,N)
+      CALL RLSRT1BI(WGT,N,1,N)
       DN = DBLE(N)
       DM = ZERO
       DO 20 I=1,N
-         CALL S_CHI1ML(WGT(I),TMP)
+         CALL RLCHI1ML(WGT(I),TMP)
          TMP = DMAX1(TMP-(DBLE(I)-ONE)/DN,ZERO)
          IF (TMP .GT. DM) DM = TMP
  20   CONTINUE
@@ -102,11 +102,11 @@ C-----------------------------------------------------------------------
       HT = ZERO
       H1T = ZERO
       DO 25 I=1,N
-         PP = PP + S_PSPM2(U(I),IPS,XK)
+         PP = PP + RLPSPM2(U(I),IPS,XK)
          RT = U(I)/T
-         CALL S_RWEPML(RT,TMP)
+         CALL RLRWEPML(RT,TMP)
          HT = HT + TMP*RT
-         CALL S_RWETML(RT,TMP)
+         CALL RLRWETML(RT,TMP)
          H1T = H1T + TMP
          WGT(I) = DSQRT(TMP)
  25   CONTINUE
@@ -115,7 +115,7 @@ C-----------------------------------------------------------------------
       H1T = H1T/DN
       FAC = ZERO
       DO 35 I=1,N
-         FAC = FAC + (WGT(I)*WGT(I)*U(I)+HT/PP*S_PSIM2(U(I),
+         FAC = FAC + (WGT(I)*WGT(I)*U(I)+HT/PP*RLPSIM2(U(I),
      +        IPS,XK))**2
  35   CONTINUE
       FAC = FAC/DN/(H1T*H1T)
@@ -130,12 +130,12 @@ C-----------------------------------------------------------------------
  50   CONTINUE
       INTCH = 1
       IERR = 0
-      CALL S_RMTRM2(SX,N,NP,MDX,INTCH,TAU,KK,SF,SG,SH,IP)
+      CALL RLRMTRM2(SX,N,NP,MDX,INTCH,TAU,KK,SF,SG,SH,IP)
       IF (KK .NE. NP) THEN
          IERR = 1
          GOTO 80
       ENDIF
-      CALL S_RICLM2(SX,SY,N,NP,MDX,THETA,SH,IP)
+      CALL RLRICLM2(SX,SY,N,NP,MDX,THETA,SH,IP)
       DO 70 I=1,N
          TMP = Y(I)
          DO 60 J=1,NP
@@ -146,10 +146,10 @@ C-----------------------------------------------------------------------
  80   RETURN
       END
 C=======================================================================
-      SUBROUTINE S_FRSTML(X1,X2,Y,N,NP1,NP2,NQ,MDX,T1,T2,X1C,XTHETA1,
-     +     XTHETA2,XX,YY,IOPT,INTCH,NREP,TOLS,TOLR,TAU,MAXS1,ISEED,
-     +     IERR,SMIN,RS,RS0,SFGH1,SFGH2,IP2,SZ,IT,IPS,XK,BETA,BET0,
-     +     ITRACE)
+      SUBROUTINE RLFRSTML(X1,X2,Y,N,NP1,NP2,NQ,MDX,T1,T2,X1C,
+     +     XTHETA1,XTHETA2,XX,YY,IOPT,INTCH,NREP,TOLS,TOLR,TAU,MAXS1,
+     +     ISEED,IERR,SMIN,RS,RS0,SFGH1,SFGH2,IP2,SZ,IT,IPS,XK,BETA,
+     +     BET0,ITRACE)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION X1(MDX,NP1),X2(MDX,NP2),Y(N),RS(N),RS0(N)
@@ -186,7 +186,7 @@ C     STEP 1: DRAW A SUBSAMPLE OF (X2,Y)
 C-----------------------------------------------------------------------
  100  IF (IOPT.NE.3) THEN
          DO 130 K=1,NQ
- 110        CALL S_RNDM2(ISEED,RND)
+ 110        CALL RLRNDM2(ISEED,RND)
             ITK=RND*N+1
             DO 120 KK=1,K-1
                IF (ITK.EQ.IT(KK)) GOTO 110
@@ -199,7 +199,7 @@ C-----------------------------------------------------------------------
                IT(K)=K
  140        CONTINUE
          ELSE
-            CALL S_NCOMM2(N,NQ,IT)
+            CALL RLNCOMM2(N,NQ,IT)
          ENDIF
       ENDIF
       DO 160 K=1,NQ
@@ -219,10 +219,10 @@ C-----------------------------------------------------------------------
          K = K + 1
       ENDDO
       IF (ALLZERO) GOTO 700
-      CALL S_RMTRM2(XX,NQ,NP2,NQ,INTCH,TAU,KK,SFGH2(1,1),SFGH2(1,2),
-     +     SFGH2(1,3),IP2)
+      CALL RLRMTRM2(XX,NQ,NP2,NQ,INTCH,TAU,KK,SFGH2(1,1),
+     +     SFGH2(1,2),SFGH2(1,3),IP2)
       IF(KK.NE.NP2) GOTO 700
-      CALL S_RICLM2(XX,YY,NQ,NP2,NQ,XTHETA2,SFGH2(1,3),IP2)
+      CALL RLRICLM2(XX,YY,NQ,NP2,NQ,XTHETA2,SFGH2(1,3),IP2)
       DO 210 I=1,N
          S=Y(I)
          DO 200 J=1,NP2
@@ -238,7 +238,7 @@ C-----------------------------------------------------------------------
             X1C(I,J) = X1(I,J)
  300     CONTINUE
  310  CONTINUE
-      CALL S_LARSBI(X1C,RS,N,NP1,MDX,N,TAU,NIS,KK,KODE,
+      CALL RLLARSBI(X1C,RS,N,NP1,MDX,N,TAU,NIS,KK,KODE,
      +     S,XTHETA1,RS0,SZ,SFGH1(1,1),SFGH1(1,2),SFGH1(1,3),BET0)
 C-----------------------------------------------------------------------
 C     STEP 4: COMPUTE THE SCALE ESTIMATE
@@ -251,14 +251,14 @@ C-----------------------------------------------------------------------
             IF (ARI .NE. ZERO) S=DMIN1(S,ARI)
  430     CONTINUE
          IF (S .EQ. 1.0D7) GOTO 800
-         CALL S_STORM2(SZ,N,K1,S0)
+         CALL RLSTORM2(SZ,N,K1,S0)
          S0=2.D0*S0
          IF (S0 .EQ. ZERO) S0=S
          SRES=S0
       ENDIF
  435  D=ZERO
       DO 440 I=1,N
-         D=D+S_CHIM2(RS0(I)/SRES,IPS,XK)
+         D=D+RLCHIM2(RS0(I)/SRES,IPS,XK)
  440  CONTINUE
       IF (SMIN .NE. ZERO .AND. D .GT. CONST) GOTO 700
       IF (D .LE. CONST) GOTO 500
@@ -268,8 +268,8 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     STEP 5: SOLVE FOR SRES
 C-----------------------------------------------------------------------
- 500  CALL S_RSIGM2(RS0,SZ,S0,N,NP2,TOLR,ITYPE,ISIGMA,MAXS1,NIS,SRES,SZ,
-     +     SZ,IPS,XK,BETA,BET0)      
+ 500  CALL RLRSIGM2(RS0,SZ,S0,N,NP2,TOLR,ITYPE,ISIGMA,MAXS1,
+     +     NIS,SRES,SZ,SZ,IPS,XK,BETA,BET0)      
 C-----------------------------------------------------------------------
 C     STEP 6: UPDATE BEST FIT
 C-----------------------------------------------------------------------
@@ -312,7 +312,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_LUDCM2(X,N,IDX,W,IFAIL) 
+      SUBROUTINE RLLUDCM2(X,N,IDX,W,IFAIL) 
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION X(N,N),W(N),IDX(N)
@@ -376,7 +376,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_LUSLM2(X,N,IDX,Y)
+      SUBROUTINE RLLUSLM2(X,N,IDX,Y)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION X(N,N),Y(N),IDX(N)
@@ -408,7 +408,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_LUINM2(X,X1,N,IDX,W,IFAIL)
+      SUBROUTINE RLLUINM2(X,X1,N,IDX,W,IFAIL)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION X(N,N),X1(N,N),W(N),IDX(N)
@@ -422,14 +422,14 @@ C-----------------------------------------------------------------------
          ENDDO
       ENDDO
       IFAIL=0
-      CALL S_LUDCM2(X1,N,IDX,W,IFAIL)
+      CALL RLLUDCM2(X1,N,IDX,W,IFAIL)
       IF (IFAIL .EQ. 1) RETURN
       DO J=1,N
          DO I=1,N
             W(I)=ZERO
          ENDDO
          W(J)=ONE
-         CALL S_LUSLM2(X1,N,IDX,W)
+         CALL RLLUSLM2(X1,N,IDX,W)
          DO I=1,N
             X(I,J)=W(I)
          ENDDO
@@ -437,7 +437,7 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_INVSM2(X,N,IDX)
+      SUBROUTINE RLINVSM2(X,N,IDX)
 C.......................................................................
 C     INVERSE A SYMMETRIC MATRIX USING CHOLESKY DECOMPOSITION
 C-----------------------------------------------------------------------
@@ -486,24 +486,24 @@ C-----------------------------------------------------------------------
       RETURN
       END
 C=======================================================================
-      FUNCTION S_COVGM2(X,MDX,N,NP,DELTA,SIGMA)
+      FUNCTION RLCOVGM2(X,MDX,N,NP,DELTA,SIGMA)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DIMENSION X(MDX,NP),DELTA(NP)
       DATA ZERO/0.D0/
-      S_COVGM2=ZERO
+      RLCOVGM2=ZERO
       DO I=1,N
          TMP=ZERO
          DO J=1,NP
             TMP=TMP+X(I,J)*DELTA(J)
          ENDDO
          TMP=TMP/SIGMA
-         IF (TMP .GT. S_COVGM2) S_COVGM2=TMP
+         IF (TMP .GT. RLCOVGM2) RLCOVGM2=TMP
       ENDDO
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_YWAGM2(X,Y,THETA,SIGMA,N,NP,MDX,
+      SUBROUTINE RLYWAGM2(X,Y,THETA,SIGMA,N,NP,MDX,
      +     TOL,GAM,TAU,MAXIT,NIT,RS,DELTA,SC,SF,SG,SH,IP,SX)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -523,9 +523,9 @@ C     STEP 1. SET NIT := 1
 C-----------------------------------------------------------------------
  100  NIT=1
 C-----------------------------------------------------------------------
-C     STEP 2. COMPUTE S_RESDM2 AS R=Y-X*THETA
+C     STEP 2. COMPUTE RLRESDM2 AS R=Y-X*THETA
 C-----------------------------------------------------------------------
- 200  CALL S_RESDM2(X,Y,THETA,N,NP,MDX,RS)
+ 200  CALL RLRESDM2(X,Y,THETA,N,NP,MDX,RS)
 C-----------------------------------------------------------------------
 C     STEP 3. COMPUTE WEIGHTS AND APPLY THEM TO X; STORE RESULT IN SX
 C-----------------------------------------------------------------------
@@ -533,7 +533,7 @@ C-----------------------------------------------------------------------
          SC(I)=ONE
          IF (RS(I) .EQ. ZERO) GOTO 410
          T=RS(I)/SIGMA
-         SC(I)=S_PSIM2(T,4,XK)/T
+         SC(I)=RLPSIM2(T,4,XK)/T
  410     PI=DSQRT(SC(I))
          RS(I)=PI*RS(I)
          DO 420 J=1,NP
@@ -543,16 +543,16 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     STEP 4. SOLVE FOR DELTA
 C-----------------------------------------------------------------------
-      CALL S_RMTRM2(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
+      CALL RLRMTRM2(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
       IF (K.EQ.0) RETURN
       KK=MDX*(K-1)+K
-      IF (K.NE.NP) CALL S_SWAPM2(SX,SF,K,MDXP1,1,KK,K)
+      IF (K.NE.NP) CALL RLSWAPM2(SX,SF,K,MDXP1,1,KK,K)
       DO 500 JJ=1,LDIAG
          J=JJ
-         CALL S_H12M2(2,J,J+1,N,SX(1,J),1,SH(J),RS,1,N,1,N)
+         CALL RLH12M2(2,J,J+1,N,SX(1,J),1,SH(J),RS,1,N,1,N)
  500  CONTINUE
-      IF (K.NE.NP) CALL S_SWAPM2(SX,SF,K,MDXP1,1,KK,K)
-      CALL S_SOLVM2(SX,RS,NP,K,MDX,N)
+      IF (K.NE.NP) CALL RLSWAPM2(SX,SF,K,MDXP1,1,KK,K)
+      CALL RLSOLVM2(SX,RS,NP,K,MDX,N)
       IF (K.EQ.NP) GOTO 530
       KP1=K+1
       DO 510 J=KP1,NP
@@ -560,12 +560,12 @@ C-----------------------------------------------------------------------
  510  CONTINUE
       DO 520 J=1,K
          I=J
-         CALL S_H12M2(2,I,KP1,NP,SX(I,1),MDX,SG(I),RS,1,N,1,NP)
+         CALL RLH12M2(2,I,KP1,NP,SX(I,1),MDX,SG(I),RS,1,N,1,NP)
  520  CONTINUE
  530  DO 540 J=1,NP
          DELTA(J)=GAM*RS(J)
  540  CONTINUE
-      CALL S_PERMM2(DELTA,IP,LDIAG,NP)
+      CALL RLPERMM2(DELTA,IP,LDIAG,NP)
 C-----------------------------------------------------------------------
 C     STEP 6. COMPUTE NEW SOLUTION
 C-----------------------------------------------------------------------
@@ -576,14 +576,14 @@ C-----------------------------------------------------------------------
 C     STEP 7. STOP ITERATIONS IF DESIRED PRECISION IS REACHED
 C-----------------------------------------------------------------------
       IF (NIT.EQ.MAXIT) GOTO 800
-      IF(S_COVGM2(X,MDX,N,NP,DELTA,SIGMA) .LE. TOL) GOTO 800
+      IF(RLCOVGM2(X,MDX,N,NP,DELTA,SIGMA) .LE. TOL) GOTO 800
  700  NIT=NIT+1
       GOTO 200
- 800  CALL S_RESDM2(X,Y,THETA,N,NP,MDX,RS)
+ 800  CALL RLRESDM2(X,Y,THETA,N,NP,MDX,RS)
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_BETAM2(X1,X2,Y,N,NP1,NP2,MDX,S0,S1,B1,B2,T1,T2,RS,
+      SUBROUTINE RLBETAM2(X1,X2,Y,N,NP1,NP2,MDX,S0,S1,B1,B2,T1,T2,RS,
      +     RSTMP,TOLR,TAU,MAXIT,MAXS1,SFGH,IPS,XK,BETA,BET0,
      +     IFAIL,UV,A,B,CC,C2,D,BD,H,TC,X1C,IP,IDX)
 C.......................................................................
@@ -602,7 +602,7 @@ C-----------------------------------------------------------------------
       DO I=1,N
          TMP=RS(I)/(TC*S0)
          RS(I)=TMP
-         UV(I)=S_PSPM2(TMP,4,ONE)
+         UV(I)=RLPSPM2(TMP,4,ONE)
          TMP=Y(I)
          DO J=1,NP1
             TMP=TMP-X1(I,J)*B1(J)
@@ -626,7 +626,7 @@ C-----------------------------------------------------------------------
          ENDDO
       ENDDO
       IFAIL=0
-      CALL S_INVSM2(B,NP1,IFAIL)
+      CALL RLINVSM2(B,NP1,IFAIL)
       IF (IFAIL .EQ. 1) RETURN
       DO I=1,NP1
          DO J=1,NP2
@@ -653,7 +653,7 @@ C-----------------------------------------------------------------------
          UV(I)=ONE
          TMP=RS(I)
          IF (TMP .EQ. ZERO) GOTO 100
-         UV(I)=S_PSIM2(TMP,IPS,XK)/TMP
+         UV(I)=RLPSIM2(TMP,IPS,XK)/TMP
  100  CONTINUE
       DO I=1,NP2
          DO J=1,NP2
@@ -672,7 +672,7 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     STEP 3. UPDATES B1 AND B2 TO T1 AND T2
 C-----------------------------------------------------------------------
-      CALL S_LUINM2(CC,C2,NP2,IDX,B2,IFAIL)
+      CALL RLLUINM2(CC,C2,NP2,IDX,B2,IFAIL)
       IF (IFAIL .EQ. 1) RETURN
       DO I=1,NP2
          TMP=ZERO
@@ -681,26 +681,26 @@ C-----------------------------------------------------------------------
          ENDDO
          T2(I)=TMP
       ENDDO
-      CALL S_RESDM2(X2,Y,T2,N,NP2,MDX,RSTMP)
+      CALL RLRESDM2(X2,Y,T2,N,NP2,MDX,RSTMP)
       DO I=1,NP1
          T1(I)=B1(I)
       ENDDO
-      CALL S_YWAGM2(X1,RSTMP,T1,S0,N,NP1,MDX,TOLR,ONE,TAU,MAXIT,NIS,
-     +     RS,B1,UV,SFGH(1,1),SFGH(1,2),SFGH(1,3),IP,X1C)
+      CALL RLYWAGM2(X1,RSTMP,T1,S0,N,NP1,MDX,TOLR,ONE,TAU,MAXIT,
+     +     NIS,RS,B1,UV,SFGH(1,1),SFGH(1,2),SFGH(1,3),IP,X1C)
 C-----------------------------------------------------------------------
 C     STEP 4. UPDATES RESIDUALS AND SCALE
 C-----------------------------------------------------------------------
-      CALL S_RESDM2(X1,RSTMP,T1,N,NP1,MDX,RS)
+      CALL RLRESDM2(X1,RSTMP,T1,N,NP1,MDX,RS)
       NP=NP1+NP2
       ITYPE=1
       ISIGMA=1
-      CALL S_RSIGM2(RS,UV,S0,N,NP,TOLR,ITYPE,ISIGMA,MAXS1,NIS,S1,UV,
-     +     UV,IPS,XK,BETA,BET0)
+      CALL RLRSIGM2(RS,UV,S0,N,NP,TOLR,ITYPE,ISIGMA,MAXS1,
+     +     NIS,S1,UV,UV,IPS,XK,BETA,BET0)
       RETURN
       END
 C=======================================================================
-      SUBROUTINE S_DSCNM2(X1,X2,Y,N,NP1,NP2,MDX,S0,S1,B1,B2,T1,T2,RS,
-     +     RSTMP,TOLR,TAU,MAXIT,MAXS1,SFGH,IPS,XK,BETA,BET0,
+      SUBROUTINE RLDSCNM2(X1,X2,Y,N,NP1,NP2,MDX,S0,S1,B1,B2,T1,
+     +     T2,RS,RSTMP,TOLR,TAU,MAXIT,MAXS1,SFGH,IPS,XK,BETA,BET0,
      +     IFAIL,UV,A,B,CC,C2,D,BD,H,TC,X1C,IP,IDX,WP1,WP2,NIT,MAXK)
 C.......................................................................
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
@@ -729,7 +729,7 @@ C-----------------------------------------------------------------------
       DO I=1,NP2
          WP2(I)=B2(I)
       ENDDO
-      CALL S_BETAM2(X1,X2,Y,N,NP1,NP2,MDX,S0,S1,WP1,WP2,T1,T2,RS,
+      CALL RLBETAM2(X1,X2,Y,N,NP1,NP2,MDX,S0,S1,WP1,WP2,T1,T2,RS,
      +     RSTMP,TOLR,TAU,MAXIT,MAXS1,SFGH,IPS,XK,BETA,BET0,
      +     IFAIL,UV,A,B,CC,C2,D,BD,H,TC,X1C,IP,IDX)
       IF (IFAIL .EQ. 1) GOTO 800
@@ -744,15 +744,15 @@ C-----------------------------------------------------------------------
             H(I)=H(I)/TWO
             T2(I)=B2(I)+H(I)
          ENDDO
-         CALL S_RESDM2(X2,Y,T2,N,NP2,MDX,RS)
+         CALL RLRESDM2(X2,Y,T2,N,NP2,MDX,RS)
          DO I=1,NP1
             T1(I)=B1(I)
          ENDDO
-         CALL S_YWAGM2(X1,RS,T1,S0,N,NP1,MDX,TOLR,ONE,TAU,MAXIT,
+         CALL RLYWAGM2(X1,RS,T1,S0,N,NP1,MDX,TOLR,ONE,TAU,MAXIT,
      +        NIS,RSTMP,WP1,UV,SFGH(1,1),SFGH(1,2),SFGH(1,3),IP,X1C)
-         CALL S_RESDM2(X1,RSTMP,T1,N,NP1,MDX,RS)
-         CALL S_RSIGM2(RS,UV,S0,N,NP,TOLR,ITYPE,ISIGMA,MAXS1,NIS,S1,
-     +        UV,UV,IPS,XK,BETA,BET0)
+         CALL RLRESDM2(X1,RSTMP,T1,N,NP1,MDX,RS)
+         CALL RLRSIGM2(RS,UV,S0,N,NP,TOLR,ITYPE,ISIGMA,MAXS1,
+     +        NIS,S1,UV,UV,IPS,XK,BETA,BET0)
          IF (S1 .LT. S0) GOTO 600
          IF (K .GE. MAXK) GOTO 600
          K=K+1
