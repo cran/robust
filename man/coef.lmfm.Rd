@@ -8,7 +8,7 @@ Extract the model coefficients from an lmfm object.
 }
 
 \usage{
-coef.lmfm(object, ...)
+\method{coef}{lmfm}(object, ...)
 }
 
 \arguments{
@@ -25,7 +25,6 @@ a numeric matrix with one row for each model in \code{object} and one column for
 data(stack.dat)
 stack.fm <- fit.models(list(Robust = "lmRob", LS = "lm"), Loss ~ ., data = stack.dat)
 coef(stack.fm)
-coef.lmfm(stack.fm)
 }
 
 \keyword{methods}

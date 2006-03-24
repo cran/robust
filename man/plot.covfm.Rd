@@ -12,9 +12,9 @@
 }
 
 \usage{
-  plot.cov(x, which.plots = "ask", ...)
-  plot.covRob(x, which.plots = "ask", ...)
-  plot.covfm(x, which.plots = "ask", ...)
+\method{plot}{cov}(x, which.plots = "ask", ...)
+\method{plot}{covRob}(x, which.plots = "ask", ...)
+\method{plot}{covfm}(x, which.plots = "ask", ...)
 }
 
 \arguments{

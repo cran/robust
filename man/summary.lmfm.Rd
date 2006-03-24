@@ -8,7 +8,7 @@ Computes a summary of the linear models stored in an lmfm object.
 }
 
 \usage{
-summary.lmfm(object, correlation = FALSE, ...)
+\method{summary}{lmfm}(object, correlation = FALSE, ...)
 }
 
 \arguments{

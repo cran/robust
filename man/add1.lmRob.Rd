@@ -8,7 +8,7 @@
 }
 
 \usage{
-add1.lmRob(object, scope=. ~ ., scale, keep, ...)
+\method{add1}{lmRob}(object, scope=. ~ ., scale, keep, ...)
 }
 
 \arguments{

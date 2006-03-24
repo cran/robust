@@ -8,7 +8,7 @@ Creates a set plots useful for assessing a robustly fitted linear model.  The pl
 }
 
 \usage{
-plot.lmRob(x, which.plots = "ask",  ...)
+\method{plot}{lmRob}(x, which.plots = "ask",  ...)
 }
 
 \arguments{

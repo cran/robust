@@ -8,7 +8,7 @@ Displays the formula, coefficients, degrees of freedom, and the residual standar
 }
 
 \usage{
-print.summary.lmRob(x, ...)
+\method{print}{summary.lmRob}(x, ...)
 }
 
 \arguments{

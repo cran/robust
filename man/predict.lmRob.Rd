@@ -8,7 +8,7 @@ Extracts the fitted values from an \code{lmRob} object and returns a matrix of p
 }
 
 \usage{
-predict.lmRob(object, newdata, type = "response", se.fit = FALSE, terms = labels(object), ...)
+\method{predict}{lmRob}(object, newdata, type = "response", se.fit = FALSE, terms = labels(object), ...)
 }
 
 \arguments{

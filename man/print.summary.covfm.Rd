@@ -12,9 +12,9 @@
 }
 
 \usage{
-  print.summary.cov(x, print.distance = TRUE, ...)
-  print.summary.covRob(x, print.distance = TRUE, ...)
-  print.summary.covfm(x, print.distance = FALSE, ...)
+\method{print}{summary.cov}(x, print.distance = TRUE, ...)
+\method{print}{summary.covRob}(x, print.distance = TRUE, ...)
+\method{print}{summary.covfm}(x, print.distance = FALSE, ...)
 }
 
 \arguments{
@@ -26,7 +26,7 @@
 }
 
 \value{
-  x is invisibly returned.
+  \code{x} is invisibly returned.
 }
 
 \section{Side Effects}{

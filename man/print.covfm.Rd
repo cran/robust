@@ -12,9 +12,9 @@
 }
 
 \usage{
-  print.cov(x, ...)
-  print.covRob(x, ...)
-  print.covfm(x, ...)
+\method{print}{cov}(x, ...)
+\method{print}{covRob}(x, ...)
+\method{print}{covfm}(x, ...)
 }
 
 \arguments{
@@ -50,6 +50,5 @@
   print(woodmod.fm)
 }
 
-%\keyword{librobust}
 \keyword{methods}
 

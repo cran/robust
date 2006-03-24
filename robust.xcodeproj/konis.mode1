@@ -218,6 +218,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -253,7 +255,6 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>2</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -288,14 +289,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>DESCRIPTION</string>
+								<string>plot.lmfm.Rd</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -303,16 +302,23 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>DESCRIPTION</string>
+										<string>plot.lmfm.Rd</string>
 										<key>_historyCapacity</key>
 										<integer>10</integer>
 										<key>bookmark</key>
-										<string>DADD21410ADBC26C004EF6C8</string>
+										<string>DA98609D0ADE570B001FEE57</string>
 										<key>history</key>
 										<array>
-											<string>DA6F250A0AC2A27900D3A405</string>
-											<string>DADD213E0ADBC26C004EF6C8</string>
-											<string>DADD213F0ADBC26C004EF6C8</string>
+											<string>DA1B54C90ADD21060083C562</string>
+											<string>DA1B54CA0ADD21060083C562</string>
+											<string>DA1B54CB0ADD21060083C562</string>
+											<string>DA1B54CC0ADD21060083C562</string>
+											<string>DA1B54CD0ADD21060083C562</string>
+											<string>DA1B54CE0ADD21060083C562</string>
+											<string>DA1B54CF0ADD21060083C562</string>
+											<string>DA1B54D00ADD21060083C562</string>
+											<string>DA1B54D10ADD21060083C562</string>
+											<string>DA1B54E30ADD21060083C562</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -412,8 +418,16 @@
 											<string>DA6F48890A556DD10033C9CA</string>
 											<string>DA6F488B0A556DD10033C9CA</string>
 											<string>DA6F488D0A556DD10033C9CA</string>
-											<string>DA6F250C0AC2A27900D3A405</string>
-											<string>DADD21400ADBC26C004EF6C8</string>
+											<string>DA1B54D30ADD21060083C562</string>
+											<string>DA1B54D40ADD21060083C562</string>
+											<string>DA1B54D50ADD21060083C562</string>
+											<string>DA1B54D60ADD21060083C562</string>
+											<string>DA1B54D70ADD21060083C562</string>
+											<string>DA1B54D80ADD21060083C562</string>
+											<string>DA1B54D90ADD21060083C562</string>
+											<string>DA1B54DA0ADD21060083C562</string>
+											<string>DA1B54DD0ADD21060083C562</string>
+											<string>DA1B54DE0ADD21060083C562</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -471,9 +485,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>DADD21420ADBC26C004EF6C8</string>
+				<string>DA98609E0ADE570B001FEE57</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>DADD21430ADBC26C004EF6C8</string>
+				<string>DA98609F0ADE570B001FEE57</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -607,7 +621,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>/Users/konis/Documents/Projects/robust/robust.xcodeproj</string>
+		<string>/Volumes/konis/Documents/Projects/robust/robust.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>7 55 1020 942 0 0 1280 1002 </string>

@@ -9,7 +9,7 @@ recomputing it, successively omitting each of a number of specified terms.
 }
 
 \usage{
-drop1.lmRob(object, scope, scale, keep, fast = FALSE, ...)
+\method{drop1}{lmRob}(object, scope, scale, keep, fast = FALSE, ...)
 }
 
 \arguments{

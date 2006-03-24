@@ -8,7 +8,7 @@ Computes a summary of the robustly fitted linear model in an lmRob class object.
 }
 
 \usage{
-summary.lmRob(object, correlation = FALSE, bootstrap.se = FALSE, ...)
+\method{summary}{lmRob}(object, correlation = FALSE, bootstrap.se = FALSE, ...)
 }
 
 \arguments{

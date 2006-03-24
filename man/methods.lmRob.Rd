@@ -17,14 +17,14 @@ Accessor methods for the coefficients, deviance, formula, labels, model frame, m
 }
 
 \usage{
-coef.lmRob(object, ...)
-deviance.lmRob(object, ...)
-formula.lmRob(x, ...)
-labels.lmRob(object, ...)
-model.frame.lmRob(formula, ...)
-model.matrix.lmRob(object, ...)
-residuals.lmRob(object, ...)
-weights.lmRob(object, ...)
+\method{coef}{lmRob}(object, ...)
+\method{deviance}{lmRob}(object, ...)
+\method{formula}{lmRob}(x, ...)
+\method{labels}{lmRob}(object, ...)
+\method{model.frame}{lmRob}(formula, ...)
+\method{model.matrix}{lmRob}(object, ...)
+\method{residuals}{lmRob}(object, ...)
+\method{weights}{lmRob}(object, ...)
 }
 
 \arguments{
@@ -49,14 +49,14 @@ A vector, matrix or formula containing the requested component of the lmRob obje
 \examples{
 data(stack.dat)
 stack.rob <- lmRob(Loss ~ ., data = stack.dat) 
-coef.lmRob(stack.rob) 
-deviance.lmRob(stack.rob) 
-formula.lmRob(stack.rob) 
-labels.lmRob(stack.rob) 
-model.frame.lmRob(stack.rob) 
-model.matrix.lmRob(stack.rob) 
-residuals.lmRob(stack.rob) 
-weights.lmRob(stack.rob) 
+coef(stack.rob) 
+deviance(stack.rob) 
+formula(stack.rob) 
+labels(stack.rob) 
+model.frame(stack.rob) 
+model.matrix(stack.rob) 
+residuals(stack.rob) 
+weights(stack.rob) 
 }
 
 \keyword{methods}

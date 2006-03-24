@@ -12,9 +12,9 @@
 }
 
 \usage{
-  summary.cov(object, ...)
-  summary.covRob(object, ...)
-  summary.covfm(object, ...)
+\method{summary}{cov}(object, ...)
+\method{summary}{covRob}(object, ...)
+\method{summary}{covfm}(object, ...)
 }
 
 \arguments{

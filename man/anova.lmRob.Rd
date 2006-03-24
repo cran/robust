@@ -8,7 +8,7 @@ Produces an Anova table for a robustly fitted linear model.
 }
 
 \usage{
-anova.lmRob(object, ..., test = c("RF", "RWald"))
+\method{anova}{lmRob}(object, ..., test = c("RF", "RWald"))
 }
 
 \arguments{

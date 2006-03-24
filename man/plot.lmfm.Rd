@@ -8,7 +8,7 @@ Creates a set plots useful for comparing the fitted linear models in an lmfm obj
 }
 
 \usage{
-plot.lmfm(x, which.plots = "ask",  ...)
+\method{plot}{lmfm}(x, which.plots = "ask",  ...)
 }
 
 \arguments{

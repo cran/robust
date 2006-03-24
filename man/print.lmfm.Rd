@@ -8,7 +8,7 @@ Prints a brief description of the models contained in an lmfm object.
 }
 
 \usage{
-print.lmfm(x, ...)
+\method{print}{lmfm}(x, ...)
 }
 
 \arguments{
@@ -25,7 +25,6 @@ print.lmfm(x, ...)
 data(stack.dat)
 stack.fm <- fit.models(list(Robust = "lmRob", LS = "lm"), Loss ~ ., data = stack.dat)
 print(stack.fm)
-print.lmfm(stack.fm)
 }
 
 \keyword{methods}

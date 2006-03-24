@@ -8,7 +8,7 @@ Displays a side-by-side comparison of the summaries in \code{object}.
 }
 
 \usage{
-print.summary.lmfm(x, ...)
+\method{print}{summary.lmfm}(x, ...)
 }
 
 \arguments{
