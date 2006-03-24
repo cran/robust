@@ -1,8 +1,19 @@
 #include <S.h>
 #include "robust.h"
 
-void F77_SUB(fseedi)(void) { GetRNGstate(); }
-void F77_SUB(fseedo)(void) { PutRNGstate(); }
+
+void F77_SUB(fseedi)(void)
+{
+  long x = 100;
+  seed_in(&x);
+}
+
+
+void F77_SUB(fseedo)(void)
+{
+  long x = 100;
+  seed_out(&x);
+}
 
 
 void F77_SUB(splusrunif)(Sfloat* px)
@@ -14,14 +25,15 @@ void F77_SUB(splusrunif)(Sfloat* px)
 void F77_SUB(marriage)(Sint* a, Sint* b, Sint* c, Sfloat* d, Sint* e, Sfloat* f,
                        Sint* g, Sint* h, Sint* i, Sint* j, Sint* k, Sint* l)
 {
-	error("Genetic sampling not implemented.  Please report this to the package maintainers.");
+	error("Genetic sampling not implemented.  Please report this to the package maintainer.");
 }
 
 
 void F77_SUB(getrandind)(Sint* n, Sint* np, Sint* maxslen, Sint* ntind, Sint* ni)
 {
-	error("getrandind not implemented.  Please report this to the package maintainers.");
+	error("getrandind not implemented.  Please report this to the package maintainer.");
 }
+
 
 void F77_SUB(xerror)(const char* msg, Sint* n, Sint* p, Sint* i)
 {

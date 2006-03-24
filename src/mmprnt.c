@@ -12,12 +12,12 @@
 #include "newredef.h"
 #endif
 
-F77_NAME(mminitclk)(Sint *ct)
+void F77_NAME(mminitclk)(Sint *ct)
 {
   *ct = clock();
 }
 
-F77_NAME(mmprint)(Sint *nrep, Sint *itmp, Sint *ct, 
+void F77_NAME(mmprint)(Sint *nrep, Sint *itmp, Sint *ct, 
                   Sint *elap, Sint *ninc)
 {
   Sint lapt, nleft, ihr;
@@ -31,17 +31,20 @@ F77_NAME(mmprint)(Sint *nrep, Sint *itmp, Sint *ct,
   lapt = (Sint) ((*elap)/(*itmp)*tmp); 
   
   if (lapt < 60)
-    printf("00:00:%02ld left\n", lapt);
+    printf("00:00:%02d left\n", lapt);
+//    printf("00:00:%02ld left\n", lapt);
   else if (lapt < 360) {
     nleft = lapt/60;
     lapt = lapt % 60;
-    printf("00:%02ld:%02ld left\n", nleft, lapt);
+    printf("00:%02ld:%02d left\n", nleft, lapt);
+//    printf("00:%02ld:%02ld left\n", nleft, lapt);
   }
   else {
     ihr = lapt/360;
     lapt = lapt % 360;
     nleft = lapt/60;
     lapt = lapt % 60;
-    printf("%ld:%02ld:%02ld left\n", ihr, nleft, lapt);
+    printf("%ld:%02ld:%02d left\n", ihr, nleft, lapt);
+//    printf("%ld:%02ld:%02ld left\n", ihr, nleft, lapt);
   }
 }

@@ -2087,9 +2087,13 @@ C=======================================================================
 *     We clean the last elements of vectors theta and phi. 
 * 
       ndif=isp*nsd+idif 
-      do i=nq+1,nq 
-         theta(i)=zero
-      enddo 
+*
+*     BUG: This will never do anything.  Why is it here?  Better ask Alfio.
+*
+*      do i=nq+1,nq 
+*         theta(i)=zero
+*      enddo
+*
       do i=np+1,ndim2 
          phi(i)=zero
       enddo  

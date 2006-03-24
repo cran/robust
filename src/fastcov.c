@@ -11,7 +11,8 @@ Sfloat *eigenvectors_of_U (Sfloat *Y, Sint n, Sint p, Sfloat mu_const, Sfloat si
 Sfloat *eigenvectors_of_Ut (Sfloat *Y, Sint n, Sint p, Sfloat mu_const, Sfloat sigma_const);
 Sfloat mymedian (Sfloat *x, Sint n);
 Sfloat mymad (Sfloat *x, Sint n, Sfloat median_x);
-extern F77_NAME(rs)();
+extern void F77_NAME(dgemm)();
+extern void F77_NAME(rs)();
 //extern F77_NAME(dmatmult)();
 
 
