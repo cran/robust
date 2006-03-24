@@ -1,0 +1,28 @@
+<!doctype s-function-doc system "s-function-doc.dtd" [
+<!entity % S-OLD "INCLUDE">
+]
+>
+<s-function-doc>
+<s-topics>
+   <s-topic>residuals.lmRob</s-topic>
+</s-topics>
+<s-title>
+Use <s-expression>residuals()</s-expression> on an <s-expression>lmRob</s-expression> Object 
+</s-title>
+<s-description>
+This is a method for the function <s-expression>residuals()</s-expression> for objects inheriting from 
+class <s-expression>lmRob</s-expression>. See <s-expression>residuals</s-expression> or <s-expression>residuals.default</s-expression> for the general  
+behavior of this function and for the interpretation of <s-expression>object</s-expression>, <s-expression>type</s-expression>. 
+</s-description>
+<s-usage>
+<s-old-style-usage>
+residuals.lmRob(object, type) 
+</s-old-style-usage>
+</s-usage>
+<s-keywords>
+<s-keyword>librobust</s-keyword>
+</s-keywords>
+<s-docclass>
+function
+</s-docclass>
+</s-function-doc>

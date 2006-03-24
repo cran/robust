@@ -1,0 +1,89 @@
+<!doctype s-function-doc system "s-function-doc.dtd" [
+<!entity % S-OLD "INCLUDE">
+]
+>
+<s-function-doc>
+<s-topics>
+<s-topic> summary.lmfm </s-topic>
+</s-topics>
+<s-title>
+Summary Method for Linear Models
+</s-title>
+<s-description>
+Returns a summary of the linear models stored in a fit.models object with
+virtual class lmfm.
+</s-description>
+<s-usage>
+<s-old-style-usage>
+summary.lmfm(object, correlation=T, ...)
+</s-old-style-usage>
+</s-usage>
+<s-args-required>
+<s-arg name=" object ">
+a fit.models object with virtual class lmfm that contains the fitted
+models.
+</s-arg>
+</s-args-required>
+<s-args-optional>
+<s-arg name=" correlation ">
+if TRUE, the correlation matrix for the coefficients is included in the
+summary.
+</s-arg>
+</s-args-optional>
+<s-value>
+a summary.lmfm object with the following components:
+<s-return-component name="mod.names">
+the names of the models in object.
+</s-return-component>
+<s-return-component name="calls">
+a list containing the call of each model in object.
+</s-return-component>
+<s-return-component name="restats">
+a 2-dimensional array with one row (containing the minimum, the maximum,
+and the quartiles of the residuals) for each model in object.
+</s-return-component>
+<s-return-component name="coefs">
+a 3-dimensional array.  For each level of the 3rd index (one for each model
+in object), the 2-dimensional slice contains the coefficient estimates,
+their standard errors, the t statistic, and the p-value.
+</s-return-component>
+<s-return-component name="df">
+the residual degrees of freedom for each model in object.
+</s-return-component>
+<s-return-component name="r.squared">
+the R-squared statistic for each model in object.
+</s-return-component>
+<s-return-component name="sigmas">
+the residual scale estimate for each model in object.
+</s-return-component>
+<s-return-component name="correlations" >
+a 3-dimensional array.  For each level of the 3rd index (one for each model
+in object), the 2-dimensional slice is the estimated correlation matrix of
+the coefficients.
+</s-return-component>
+<s-return-component name="biasTest">
+result of the bias test for robust models.  See <s-function
+name="test.lmRmb.sgm">test.lmRmb</s-function>.
+</s-return-component>
+</s-value>
+<s-see>
+<s-function name="fit.models1.sgm">fit.models</s-function>,
+<s-function name="summary1.sgm">summary</s-function>,
+<s-function name="summary.lmRob.sgm">summary.lmRob</s-function>,
+<s-function name="summary.lm.sgm">summary.lm</s-function>.
+</s-see>
+<s-examples>
+<s-example>
+stack.lm <- lm(Loss ~ ., data=stack.dat)
+stack.lmRob <- lmRob(Loss ~ ., data=stack.dat)
+stack.summary <- summary(fit.models(stack.lmRob, stack.lm))
+stack.summary
+</s-example>
+</s-examples>
+<s-keywords>
+<s-keyword>librobust</s-keyword>
+</s-keywords>
+<s-docclass>
+function
+</s-docclass>
+</s-function-doc>

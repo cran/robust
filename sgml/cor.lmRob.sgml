@@ -1,0 +1,51 @@
+<!doctype s-function-doc system "s-function-doc.dtd" [
+<!entity % S-OLD "INCLUDE">
+]
+>
+<s-function-doc>
+<s-topics>
+   <s-topic>cor.lmRob</s-topic>
+</s-topics>
+<s-title>
+Robust Correlation Matrix 
+</s-title>
+<s-description>
+Returns a robust correlation matrix of the coefficient estimates in a linear  
+model, as estimated by <s-expression>lmRob()</s-expression> function.  
+</s-description>
+<s-usage>
+<s-old-style-usage>
+cor.lmRob(x, tl=1e-10) 
+</s-old-style-usage>
+</s-usage>
+<s-args-required>
+<s-arg name="x">
+an object of class <s-expression>"lmRob"</s-expression>. 
+</s-arg>
+</s-args-required>
+<s-args-optional>
+<s-arg name="tl">
+the tolerance level. If one of the variances of the coefficient estimates  
+is less than <s-expression>tl</s-expression>, a warning message is printed. 
+</s-arg>
+</s-args-optional>
+<s-value>
+a matrix of robust correlations of the coefficient estimates. 
+</s-value>
+<s-see>
+<s-function name="cov.lmRob.sgm">cov.lmRob</s-function>,  <s-function name="lmRob.object.sgm">lmRob.object</s-function>.   </s-see>
+<s-examples>
+<s-example type = text>
+stack.df &lt;- data.frame(Loss=stack.loss,stack.x) 
+stack.rob &lt;- lmRob(Loss~Air.Flow+Water.Temp+Acid.Conc.,data=stack.df) 
+stack.cor &lt;- cor.lmRob(stack.robust) 
+</s-example>
+</s-examples>
+<s-keywords>
+<s-keyword>robust</s-keyword>
+<s-keyword>librobust</s-keyword>
+</s-keywords>
+<s-docclass>
+function
+</s-docclass>
+</s-function-doc>

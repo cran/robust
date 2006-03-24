@@ -1,0 +1,174 @@
+<!doctype s-function-doc system "s-function-doc.dtd" [
+<!entity % S-OLD "INCLUDE">
+]
+>
+<s-function-doc>
+<s-topics>
+   <s-topic>lmRob</s-topic>
+</s-topics>
+<s-title>
+High Breakdown and High Efficiency Robust Linear Regression 
+</s-title>
+<s-description>
+Performs a robust linear regression with high breakdown point and high  
+efficiency regression. 
+</s-description>
+<s-usage>
+<s-old-style-usage>
+lmRob(formula, data=&lt;&lt;see below&gt;&gt;, weights=&lt;&lt;see
+below&gt;&gt;, subset=&lt;&lt;see below&gt;&gt;, na.action, model=F, x=F,
+y=F, contrasts=NULL, nrep=NULL, robust.control=lmRob.robust.control(...),
+genetic.control=NULL, ...) 
+</s-old-style-usage>
+</s-usage>
+<s-args-required>
+<s-arg name="formula">
+a <s-expression>formula</s-expression> object, with the response on the 
+left of a ~ operator, and the terms, separated by 
+<s-expression>+</s-expression> operators, on the right. 
+</s-arg>
+</s-args-required>
+<s-args-optional>
+<s-arg name="data">
+a <s-expression>data.frame</s-expression> in which to interpret the 
+variables named in the <s-expression>formula</s-expression>,  
+or in the <s-expression>subset</s-expression> and the 
+<s-expression>weights</s-expression> argument. If this is missing, then  
+the variables in the <s-expression>formula</s-expression> should be on 
+the search list. This may also  
+be a single number to handle some special cases - see below for details. 
+</s-arg>
+<s-arg name="weights">
+vector of observation weights; if supplied, the algorithm fits to minimize
+the sum of a function of the square root of the weights multiplied into the residuals.  
+The length of <s-expression>weights</s-expression> must be the same as 
+the number of observations. The  
+weights must be nonnegative and it is strongly recommended that they be  
+strictly positive, since zero weights are ambiguous, compared to use of the  
+<s-expression>subset</s-expression> argument. 
+</s-arg>
+<s-arg name="subset">
+expression saying which subset of the rows of the data should be used in  
+the fit. This can be a logical vector (which is replicated to have length  
+equal to the number of observations), or a numeric vector indicating which  
+observation numbers are to be included, or a character vector of the row  
+names to be included. All observations are included by default. 
+</s-arg>
+<s-arg name="na.action">
+a function to filter missing data. This is applied to the 
+<s-expression>model.frame</s-expression>  
+after any <s-expression>subset</s-expression> argument has been used. 
+The default (with <s-expression>na.fail</s-expression>) is  
+to create an error if any missing values are found. A possible alternative  
+is <s-expression>na.exclude</s-expression>, which deletes observations 
+that contain one or more missing values. 
+</s-arg>
+<s-arg name="model">
+logical flag: if <s-expression>TRUE</s-expression>, the model frame 
+is returned in component model. 
+</s-arg>
+<s-arg name="x">
+logical flag: if <s-expression>TRUE</s-expression>, the model matrix 
+is returned in component <s-expression>x</s-expression>. 
+</s-arg>
+<s-arg name="y">
+logical flag: if <s-expression>TRUE</s-expression>, the response is 
+returned in component <s-expression>y</s-expression>. 
+</s-arg>
+<s-arg name="contrasts">
+a list giving contrasts for some or all of the factors appearing in the  
+model formula. The elements of the list should have the same name as the  
+variable and should be either a contrast matrix (specifically, any 
+full-rank matrix with as many rows as there are levels in the factor), or  
+else a function to compute such a matrix given the number of levels. 
+</s-arg>
+<s-arg name="nrep">
+the number of random subsamples to be drawn. If 
+<s-expression>"Exhaustive"</s-expression> resampling  
+is being used, the value of <s-expression>nrep</s-expression> is ignored. 
+</s-arg>
+<s-arg name="robust.control">
+a list of control parameters to be used in the numerical algorithms. See  
+<s-function name="lmRob.robust.control.sgm">lmRob.robust.control</s-function> for the possible 
+control parameters and their default settings.	 
+</s-arg>
+<s-arg name="genetic.control">
+a list of control parameters to be used in the genetic algorithm, if  
+chosen. See <s-function name="lmRob.genetic.control.sgm">lmRob.genetic.control</s-function> for 
+the possible control parameters.  
+</s-arg>
+</s-args-optional>
+<s-value>
+a list describing the regression. Note that the solution returned here is  
+an approximation to the true solution based upon a random algorithm (except 
+when <s-expression>"Exhaustive"</s-expression> resampling is chosen). 
+Hence you will get (slightly) different answers each time if you make the
+same call with a different seed. See <s-function
+name="lmRob.robust.control.sgm">lmRob.robust.control</s-function> for how
+to set the seed, and see <s-function
+name="lmRob.object.sgm">lmRob.object</s-function> for a complete description of 
+the object returned. 
+</s-value>
+<s-details>
+By default, the <s-expression>lmRob</s-expression> function automatically 
+chooses an appropriate 
+algorithm to compute a final robust estimate with high breakdown point 
+and high efficiency. The final robust estimate is computed based on an  
+initial estimate with high breakdown point. For the initial estimation, 
+the alternate M-S estimate is used if there are any factor variables 
+in the predictor matrix, and an S-estimate is used otherwise. To compute 
+the S-estimate, a random resampling or a fast procedure is used unless the 
+data set is small, in which case exhaustive resampling is employed. 
+See <s-function name="lmRob.robust.control.sgm">lmRob.robust.control</s-function> 
+for how to choose different algorithms.  
+</s-details>
+
+<s-section name=" REFERENCES">
+
+Gervini, D., and Yohai, V. J. (1999). A class of robust and fully 
+efficient regression estimates, mimeo, Universidad de Buenos Aires. 
+<br><br>
+Marazzi, A. (1993).  
+<it>Algorithms, routines, and S functions for robust statistics. </it>
+Wadsworth &#38; Brooks/Cole, Pacific Grove, CA. 
+<br><br>
+Maronna, R. A., and Yohai, V. J. (1999). Robust regression with both 
+continuous and categorical predictors, mimeo, Universidad de Buenos Aires. 
+<br><br>
+Pena, D., and Yohai, V. (1999). A Fast Procedure for Outlier
+Diagnostics in Large Regression Problems,
+<it>Journal of the American Statistical Association,</it>
+94, 434-445.
+<br><br>
+Yohai, V. (1988). High breakdown-point and high efficiency estimates for  
+regression,  
+<it>Annals of Statistics, </it>
+15, 642-665. 
+<br><br>
+Yohai, V., Stahel, W. A., and Zamar, R. H. (1991). A procedure for robust  
+estimation and inference in linear regression, in Stahel, W. A. and  
+Weisberg, S. W., Eds.,  
+<it>Directions in robust statistics and diagnostics, Part II. </it>
+Springer-Verlag. 
+</s-section>
+<s-see>
+<s-function name="lmRob.genetic.control.sgm">lmRob.genetic.control</s-function>,
+<s-function name="lmRob.robust.control.sgm">lmRob.robust.control</s-function>,
+<s-function name="lmRob.object.sgm">lmRob.object</s-function>.
+</s-see>
+<s-examples>
+<s-example type = text>
+oilcity.rob &lt;- lmRob(Oil~Market, data=oilcity) 
+</s-example>
+</s-examples>
+<s-keywords>
+<s-keyword>robust</s-keyword>
+<s-keyword>regression</s-keyword>
+<s-keyword>models</s-keyword>
+<s-keyword>librobust</s-keyword>
+</s-keywords>
+<s-docclass>
+function
+</s-docclass>
+</s-function-doc>
+

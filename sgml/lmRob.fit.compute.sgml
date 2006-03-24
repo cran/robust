@@ -1,0 +1,94 @@
+<!doctype s-function-doc system "s-function-doc.dtd" [
+<!entity % S-OLD "INCLUDE">
+]
+>
+<s-function-doc>
+<s-topics>
+   <s-topic>lmRob.fit.compute</s-topic>
+</s-topics>
+<s-title>
+Fit a Robust Linear Model 
+</s-title>
+<s-description>
+Fits a robust linear model with high breakdown point and high efficiency  
+estimates. This is used by <s-expression>lmRob</s-expression>, but not supposed to be called by the 
+users directly.  
+</s-description>
+<s-usage>
+<s-old-style-usage>
+lmRob.fit.compute(x2, y, x1=NULL, x1.idx=NULL, nrep=NULL,  
+    robust.control=lmRob.robust.control(...), genetic.control=NULL, ...) 
+</s-old-style-usage>
+</s-usage>
+<s-args-required>
+<s-arg name="x2">
+numeric vector or matrix for the continuous predictors. 
+</s-arg>
+<s-arg name="y">
+numeric vector for the response in a linear model. 
+</s-arg>
+</s-args-required>
+<s-args-optional>
+<s-arg name="x1 ">
+numeric vector or matrix for the discrete predictors.  
+</s-arg>
+<s-arg name="x1.idx">
+numeric vector giving the index of <s-expression>x1</s-expression> as column numbers of the whole 
+predictor matrix. 
+</s-arg>
+<s-arg name="nrep">
+the number of random subsamples to be drawn. If <s-expression>"Exhaustive"</s-expression> resampling  
+is being used, the value of <s-expression>nrep</s-expression> is ignored. 
+</s-arg>
+<s-arg name="robust.control">
+a list of control parameters to be used in the numerical algorithms. See  
+<s-expression>lmRob.robust.control()</s-expression> for the possible control parameters and their  
+default settings. 
+</s-arg>
+<s-arg name="genetic.control">
+a list of control parameters to be used in the genetic algorithm, if  
+chosen. See <s-expression>lmRob.genetic.control()</s-expression> for the possible control parameters.  
+</s-arg>
+</s-args-optional>
+<s-value>
+an object of class <s-expression>"lmRob"</s-expression>. See <s-expression>lmRob.object</s-expression> for a complete  
+description of the object returned. 
+</s-value>
+<s-section name=" REFERENCES">
+
+Gervini, D., and Yohai, V. J. (1999). A class of robust and fully 
+efficient regression estimates, mimeo, Universidad de Buenos Aires. 
+<br><br>
+Marazzi, A. (1993).  
+<it>Algorithms, routines, and S functions for robust statistics. </it>
+Wadsworth &#38; Brooks/Cole, Pacific Grove, CA. 
+<br><br>
+Maronna, R. A., and Yohai, V. J. (1999). Robust regression with both 
+continuous and categorical predictors, mimeo, Universidad de Buenos Aires. 
+<br><br>
+Yohai, V. (1988). High breakdown-point and high efficiency estimates for  
+regression,  
+<it>Annals of Statistics, </it>
+15, 642-665. 
+<br><br>
+Yohai, V., Stahel, W. A., and Zamar, R. H. (1991). A procedure for robust  
+estimation and inference in linear regression, in Stahel, W. A. and  
+Weisberg, S. W., Eds.,  
+<it>Directions in robust statistics and diagnostics, Part II. </it>
+Springer-Verlag. 
+</s-section>
+<s-see>
+<s-function name="lmRob.sgm">lmRob</s-function>,
+<s-function name="lmRob.genetic.control.sgm">lmRob.genetic.control</s-function>,
+<s-function name="lmRob.genetic.control.sgm">lmRob.genetic.control</s-function>,
+<s-function name="lmRob.robust.control.sgm">lmRob.robust.control</s-function>. </s-see>
+<s-keywords>
+<s-keyword>robust</s-keyword>
+<s-keyword>regression</s-keyword>
+<s-keyword>models</s-keyword>
+<s-keyword>librobust</s-keyword>
+</s-keywords>
+<s-docclass>
+function
+</s-docclass>
+</s-function-doc>

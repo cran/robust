@@ -1,0 +1,65 @@
+<!doctype s-function-doc system "s-function-doc.dtd" [
+<!entity % S-OLD "INCLUDE">
+]
+>
+<s-function-doc>
+<s-topics>
+   <s-topic>cov.lmRob</s-topic>
+</s-topics>
+<s-title>
+Robust Covariance Matrix 
+</s-title>
+<s-description>
+Returns a robust covariance matrix of the coefficient estimates in a linear  
+model, as estimated by <s-expression>lmRob()</s-expression> function. 
+</s-description>
+<s-usage>
+<s-old-style-usage>
+cov.lmRob(x) 
+</s-old-style-usage>
+</s-usage>
+<s-args-required>
+<s-arg name="x">
+an object of class <s-expression>"lmRob"</s-expression>. 
+</s-arg>
+</s-args-required>
+<s-value>
+a matrix of robust covariances of the coefficient estimates. 
+</s-value>
+<s-section name=" REFERENCES">
+
+Gervini, D., and Yohai, V. J. (1999). A class of robust and fully 
+efficient regression estimates, mimeo, Universidad de Buenos Aires. 
+<br><br>
+Hampel, F. R., Ronchetti, E. M., Rousseeuw, P. J., and Stahel, W. A. (1986).  
+<it>Robust statistics: the approach based on influence functions. </it>
+John &#38; Wiley.  
+<br><br>
+Huber, P. J. (1981).  
+<it>Robust statistics. </it>
+John &#38; Wiley. 
+<br><br>
+Marazzi, A. (1993).  
+<it>Algorithms, routines, and S functions for robust statistics. </it>
+Wadsworth &#38; Brooks/Cole, Pacific Grove, CA. 
+<br><br>
+Maronna, R. A., and Yohai, V. J. (1999). Robust regression with both 
+continuous and categorical predictors, mimeo, Universidad de Buenos Aires. 
+</s-section>
+<s-see>
+<s-function name="cor.lmRob.sgm">cor.lmRob</s-function>,  <s-function name="lmRob.object.sgm">lmRob.object</s-function>.   </s-see>
+<s-examples>
+<s-example type = text>
+stack.df &lt;- data.frame(Loss=stack.loss,stack.x) 
+stack.rob &lt;- lmRob(Loss~Air.Flow+Water.Temp+Acid.Conc.,data=stack.df) 
+stack.cov &lt;- cov.lmRob(stack.robust) 
+</s-example>
+</s-examples>
+<s-keywords>
+<s-keyword>robust</s-keyword>
+<s-keyword>librobust</s-keyword>
+</s-keywords>
+<s-docclass>
+function
+</s-docclass>
+</s-function-doc>

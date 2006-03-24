@@ -1,0 +1,82 @@
+<!doctype s-function-doc system "s-function-doc.dtd" [
+<!entity % S-OLD "INCLUDE">
+]
+>
+<s-function-doc>
+<s-topics>
+   <s-topic>predict.lmRob</s-topic>
+</s-topics>
+<s-title>
+Use <s-expression>predict()</s-expression> on an <s-expression>lmRob</s-expression> Object 
+</s-title>
+<s-description>
+Extracts the fitted values from an <s-expression>lmRob</s-expression> object and returns a matrix of 
+predictions. 
+</s-description>
+<s-usage>
+<s-old-style-usage>
+predict.lmRob(object, newdata, type = c("response", "terms"),  
+    se.fit = F, terms = labels(object))  
+</s-old-style-usage>
+</s-usage>
+<s-args-required>
+<s-arg name="object">
+a fitted <s-expression>lmRob</s-expression> object. 
+</s-arg>
+</s-args-required>
+<s-args-optional>
+<s-arg name="newdata">
+a data frame containing the values at which predictions are required. 
+This argument can be missing, in which case predictions are made at 
+the same values used to compute the object.   
+Only those predictors referred to in the right side of the formula in 
+object need be present by name in <s-expression>newdata</s-expression>.  
+</s-arg>
+<s-arg name="type">
+type of predictions, with choices <s-expression>"response"</s-expression> (the default) or <s-expression>"terms"</s-expression>. 
+If <s-expression>"response"</s-expression> is selected, the predictions are on the scale of the 
+response. If <s-expression>type="terms"</s-expression> is selected, the predictions are broken down  
+into the contributions from each term. A matrix of predictions is produced, 
+one column for each term in the model.       
+</s-arg>
+<s-arg name="se.fit">
+if <s-expression>TRUE</s-expression>, pointwise standard errors are computed along with the predictions. 
+</s-arg>
+<s-arg name="terms">
+if <s-expression>type="terms"</s-expression>, the <s-expression>terms=</s-expression> argument can be used to specify which terms 
+should be included; the default is <s-expression>labels(object)</s-expression>.  
+</s-arg>
+</s-args-optional>
+<s-value>
+a vector or matrix of predictions, or a list consisting of the predictions 
+and their standard errors if <s-expression>se.fit = T</s-expression>. If <s-expression>type="terms"</s-expression>, a matrix of  
+fitted terms is produced, with one column for each term in the model (or  
+subset of these if the <s-expression>terms=</s-expression> argument is used). There is no column for  
+the intercept, if present in the model, and each of the terms is centered  
+so that their average over the original data is zero. The matrix of fitted  
+terms has a <s-expression>"constant"</s-expression> attribute which, when added to the sum of these  
+centered terms, gives the additive predictor.   
+</s-value>
+<s-details>
+
+
+This function is a method for the generic function <s-function name="predict.sgm">predict</s-function> for class <s-class>lmRob</s-class>.
+It can be invoked by calling<s-function name="predict.sgm">predict</s-function> for an object <s-object>x</s-object> of the appropriate class, or directly by calling <s-function name="predict.lmRob.sgm">predict.lmRob</s-function> regardless of the class of the object.
+</s-details>
+<s-section name=" WARNING">
+
+<s-expression>predict</s-expression> can produce incorrect predictions when the <s-expression>newdata</s-expression> argument  
+is used if the formula in <s-expression>object</s-expression> involves  
+<it>data-dependent</it>transformations, such as <s-expression>poly(Age, 3)</s-expression> or <s-expression>sqrt(Age - min(Age))</s-expression>. 
+</s-section>
+<s-see>
+<s-function name="lmRob.sgm">lmRob</s-function>,
+<s-function name="predict.sgm">predict</s-function>.
+</s-see>
+<s-keywords>
+<s-keyword>librobust</s-keyword>
+</s-keywords>
+<s-docclass>
+function
+</s-docclass>
+</s-function-doc>

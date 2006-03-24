@@ -1,0 +1,37 @@
+<!doctype s-function-doc system "s-function-doc.dtd" [
+<!entity % S-OLD "INCLUDE">
+]
+>
+<s-function-doc>
+<s-topics>
+   <s-topic>deviance.lmRob</s-topic>
+</s-topics>
+<s-title>
+Use <s-expression>deviance()</s-expression> on an <s-expression>lmRob</s-expression> object 
+</s-title>
+<s-description>
+This is a method for the function <s-expression>deviance()</s-expression> for objects inheriting from  
+class <s-expression>lmRob</s-expression>. See <s-expression>deviance</s-expression> or <s-expression>deviance.default</s-expression> for the general  
+behavior of this function and the interpretation of <s-expression>object</s-expression>.  
+</s-description>
+<s-usage>
+<s-old-style-usage>
+deviance.lmRob(object, ...) 
+</s-old-style-usage>
+</s-usage>
+<s-details>
+The deviance for a robust linear model object is only computed for  
+S-estimate and MM-estimate, and is defined as the optimal value of the  
+objective function. 
+</s-details>
+<s-see>
+<s-function name="deviance.sgm">deviance</s-function>. </s-see>
+<s-keywords>
+<s-keyword>robust</s-keyword>
+<s-keyword>regression</s-keyword>
+<s-keyword>librobust</s-keyword>
+</s-keywords>
+<s-docclass>
+function
+</s-docclass>
+</s-function-doc>

@@ -1,0 +1,135 @@
+<!doctype s-function-doc system "s-function-doc.dtd" [
+<!entity % S-OLD "INCLUDE">
+]
+>
+<s-function-doc>
+<s-topics>
+   <s-topic>lmRob.object</s-topic>
+</s-topics>
+<s-title>
+Robust Linear Model Objects 
+</s-title>
+<s-description>
+These are objects of class <s-expression>lmRob</s-expression> which represent the robust fit of  
+a linear regression model, as estimated by <s-expression>lmRob()</s-expression> function. 
+</s-description>
+<s-section name=" GENERATION">
+
+This class of objects is returned from the <s-expression>lmRob</s-expression> function. 
+</s-section>
+<s-section name=" METHODS">
+
+<s-expression>add1</s-expression>, <s-expression>anova</s-expression>, <s-expression>coefficients</s-expression>, <s-expression>deviance</s-expression>, <s-expression>drop1</s-expression>, <s-expression>fitted.values</s-expression>,  
+<s-expression>formula</s-expression>, <s-expression>labels</s-expression>, <s-expression>plot</s-expression>, <s-expression>print</s-expression>, <s-expression>residuals</s-expression>, <s-expression>summary</s-expression>, <s-expression>update</s-expression>. 
+</s-section>
+<s-section name=" STRUCTURE">
+
+The following components must be included in a legitimate <s-expression>"lmRob"</s-expression> object: 
+</s-section>
+<s-value>
+<s-return-component name="coefficients">
+vector of coefficients for the robust regression. If <s-expression>est="final"</s-expression>, these 
+are final estimates; if <s-expression>est="initial"</s-expression>, these are initial estimates. 
+</s-return-component>
+<s-return-component name="T.coefficients">
+the vector of coefficients for the initial estimate, if <s-expression>est="final"</s-expression>.  
+</s-return-component>
+<s-return-component name="scale">
+the scale estimate computed using the initial estimates.  
+</s-return-component>
+<s-return-component name="residuals">
+the residual vector corresponding to the estimates returned in  
+<s-expression>coefficients</s-expression>. 
+</s-return-component>
+<s-return-component name="T.residuals">
+the residual vector corresponding to the estimates returned in  
+<s-expression>T.coefficients</s-expression>. 
+</s-return-component>
+<s-return-component name="fitted.values">
+the fitted values corresponding to the estimates returned in <s-expression>coefficients</s-expression>. 
+</s-return-component>
+<s-return-component name="T.fitted.values">
+the fitted values corresponding to the estimates returned in <s-expression>T.coefficients</s-expression>. 
+</s-return-component>
+<s-return-component name="cov">
+the estimated covariance matrix of the estimates in <s-expression>coefficients</s-expression>. 
+</s-return-component>
+<s-return-component name="T.cov">
+the estimated covariance matrix of the estimates in <s-expression>T.coefficients</s-expression>. 
+</s-return-component>
+<s-return-component name="rank">
+the rank of the design matrix <s-expression>x</s-expression>. 
+</s-return-component>
+<s-return-component name="iter.refinement">
+the number of iterations required to refine the initial estimates.  
+</s-return-component>
+<s-return-component name="df.residuals">
+the degrees of freedom in the residuals (the number of rows in <s-expression>x</s-expression> minus  
+the rank of <s-expression>x</s-expression>). 
+</s-return-component>
+<s-return-component name="est">
+a character string that specifies the type of estimates returned. If  
+<s-expression>est="initial"</s-expression>, the initial estimates are returned; if <s-expression>est="final"</s-expression>, the  
+final estimates are returned.  
+</s-return-component>
+<s-return-component name="robust.control">
+a list of control parameters, passed to the function <s-expression>lmRob</s-expression> as the 
+<s-expression>robust.control</s-expression> argument that produced the <s-expression>lmRob</s-expression> object. 
+</s-return-component>
+<s-return-component name="genetic.control">
+a list of control parameters, passed to the function <s-expression>lmRob</s-expression> as the 
+<s-expression>genetic.control</s-expression> argument that produced the <s-expression>lmRob</s-expression> object, if present. 
+</s-return-component>
+<s-return-component name="dev">
+the robust deviance if final MM-estimates are returned. 
+</s-return-component>
+<s-return-component name="T.dev">
+the robust deviance corresponding to initial S-estimates if applies. 
+</s-return-component>
+<s-return-component name="r.squared">
+the fraction of variation in <s-expression>y</s-expression> explained by the robust regression on <s-expression>x</s-expression>  
+corresponding to the final MM-estimates in <s-expression>coefficients</s-expression>, if applies. 
+</s-return-component>
+<s-return-component name="T.r.squared">
+the fraction of variation in <s-expression>y</s-expression> explained by the robust regression on <s-expression>x</s-expression>  
+corresponding to the initial S-estimates in <s-expression>T.coefficients</s-expression>, if applies. 
+</s-return-component>
+<s-return-component name="M.weights">
+the robust estimate weights corresponding to the final MM-estimates in  
+<s-expression>coefficients</s-expression>, if applies. 
+</s-return-component>
+<s-return-component name="T.M.weights">
+the robust estimate weights corresponding to the initial S-estimates in  
+<s-expression>T.coefficients</s-expression>, if applies. 
+</s-return-component>
+<s-return-component name="iter.final.coef">
+the number of iterations required to compute the final MM-estimates of the  
+coefficients, if applies. 
+</s-return-component>
+<s-return-component name="call">
+an image of the call that produced the object, but with the arguments all  
+named and with the actual formula included as the <s-expression>formula</s-expression> argument. 
+</s-return-component>
+<s-return-component name="assign">
+the same as the <s-expression>assign</s-expression> component of an <s-expression>"lm"</s-expression> object. 
+</s-return-component>
+<s-return-component name="contrasts">
+the same as the <s-expression>contrasts</s-expression> component of an <s-expression>"lm"</s-expression> object. 
+</s-return-component>
+<s-return-component name="terms">
+the same as the <s-expression>terms</s-expression> component of an <s-expression>"lm"</s-expression> object.  
+</s-return-component>
+</s-value>
+<s-see>
+<s-function name="lmRob.sgm">lmRob</s-function>. </s-see>
+<s-keywords>
+<s-keyword>robust</s-keyword>
+<s-keyword>regression</s-keyword>
+<s-keyword>methods</s-keyword>
+<s-keyword>models</s-keyword>
+<s-keyword>librobust</s-keyword>
+</s-keywords>
+<s-docclass>
+function
+</s-docclass>
+</s-function-doc>
