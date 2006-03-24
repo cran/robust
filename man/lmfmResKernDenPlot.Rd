@@ -21,6 +21,6 @@ lmfmResKernDenPlot(x, ...)
 \code{x} is invisibly returned.
 }
 
-\keyword{utilities}
+\keyword{hplot}
 
 

@@ -35,7 +35,9 @@ an \code{anova} object.
 \code{\link{anova}}.
 }
 
-\keyword{methods}
 \keyword{robust}
+\keyword{regression}
+\keyword{methods}
+
 
 

@@ -29,6 +29,6 @@ panel.addons(x, y, smooths = FALSE, rugplot = FALSE, id.n = 3, ...)
 a \code{NULL} value is invisibly returned.
 }
 
-\keyword{utilities}
+\keyword{aplot}
 
 

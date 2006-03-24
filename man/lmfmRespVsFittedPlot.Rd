@@ -25,6 +25,6 @@ lmfmRespVsFittedPlot(x, smooths = FALSE, rugplot = FALSE, ...)
 \code{x} is invisibly returned.
 }
 
-\keyword{utilities}
+\keyword{hplot}
 
 

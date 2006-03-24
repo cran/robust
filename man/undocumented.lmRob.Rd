@@ -66,5 +66,5 @@ lmRob.wm(x, y, coeff0, ucov0, scale0, itype = 1, isigma = -1, ipsi = 1, xk = 0.9
 
 \seealso{\code{\link{lmRob}}}
 
-\keyword{utilities}
+\keyword{robust}
 

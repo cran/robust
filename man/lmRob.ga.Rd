@@ -8,7 +8,7 @@ Computes the robust S-estimates using a genetic algorithm. It is used by
 \code{lmRob}, not supposed to be called by the users directly. 
 }
 
-\keyword{utilities}
+\keyword{robust}
 
 % docclass is function
 % Converted by Sd2Rd version 37351.

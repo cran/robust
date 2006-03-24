@@ -25,6 +25,6 @@ lmfmStdResPlot(x, level = 0.95, id.n = 3, ...)
 \code{x} is invisibly returned.
 }
 
-\keyword{utilities}
+\keyword{hplot}
 
 

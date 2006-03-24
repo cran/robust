@@ -1,7 +1,7 @@
 #include <S.h>
 #include "robust.h"
 
-
+#ifdef USING_R
 void F77_SUB(fseedi)(void)
 {
   long x = 100;
@@ -13,12 +13,6 @@ void F77_SUB(fseedo)(void)
 {
   long x = 100;
   seed_out(&x);
-}
-
-
-void F77_SUB(roblibrunif)(Sfloat* px)
-{
-	*px = unif_rand();
 }
 
 
@@ -39,9 +33,16 @@ void F77_SUB(xerror)(const char* msg, Sint* n, Sint* p, Sint* i)
 {
   error(msg);
 }
+#endif
 
-
-
+void F77_SUB(roblibrunif)(Sfloat* px)
+{
+#ifdef USING_R
+	*px = unif_rand();
+#else
+	*px = unif_rand(S_evaluator);
+#endif
+}
 
 
 Sfloat F77_SUB(robliberfc)(Sfloat* px)

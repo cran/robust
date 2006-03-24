@@ -43,5 +43,8 @@ predict(stack.rob)
 predict(stack.rob, newdata = stack.dat[c(1,2,4,21), ], se.fit = TRUE)
 }
 
+\keyword{robust}
+\keyword{regression}
 \keyword{methods}
+
 

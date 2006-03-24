@@ -11,6 +11,5 @@ Computes the unscaled covariance matrix of the coefficient estimates.  It is use
 }
 
 \keyword{robust}
-\keyword{utilities}
 
 

@@ -38,5 +38,7 @@ stack.sum
 }
 
 \keyword{methods}
+\keyword{robust}
+\keyword{regression}
 
 

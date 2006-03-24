@@ -46,8 +46,9 @@ anova(stack.full)
 anova(stack.full, stack.small)
 }
 
-\keyword{methods}
 \keyword{robust}
+\keyword{regression}
+\keyword{methods}
 
 
 

@@ -33,6 +33,6 @@ lmfmResQQPlot(x, envelope = TRUE, half.normal = FALSE, n.samples = 100, level = 
 \code{x} is invisibly returned.
 }
 
-\keyword{utilities}
+\keyword{hplot}
 
 

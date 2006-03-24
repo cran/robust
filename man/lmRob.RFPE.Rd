@@ -36,5 +36,6 @@ lmRob.RFPE(stack.rob)
 }
 
 \keyword{robust}
+\keyword{regression}
 
 

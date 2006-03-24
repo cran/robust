@@ -22,3 +22,5 @@ print.summary.covRob <- function(x, print.distance = TRUE, ...)
 
   invisible(x)
 }
+
+

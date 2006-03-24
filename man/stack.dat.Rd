@@ -36,6 +36,5 @@
   stack.dat
 }
 
-%\keyword{librobust}
 \keyword{sysdata}
 

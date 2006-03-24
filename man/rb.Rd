@@ -30,6 +30,7 @@ a numeric vector of robust bootstrap standard error estimates.
 \code{\link{summary.lmRob}}.
 }
 
-\keyword{utilities}
+\keyword{robust}
+\keyword{regression}
 
 

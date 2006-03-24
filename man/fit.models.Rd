@@ -48,6 +48,5 @@ To be comparable the specified models must all belong to one of the supported cl
   #woodmod.fm <- fit.models(Robust = woodmod.rob, Classical = woodmod.cls)
 }
 
-%\keyword{librobust}
 \keyword{models}
 

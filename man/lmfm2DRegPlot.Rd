@@ -23,6 +23,6 @@ lmfm2DRegPlot(x, cutoff = TRUE, ...)
 \code{x} is invisibly returned.
 }
 
-\keyword{utilities}
+\keyword{hplot}
 
 

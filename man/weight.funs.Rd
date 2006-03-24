@@ -33,6 +33,6 @@ See the Theoretical Details section in chapter 2 of Robust.pdf.
 a numeric vector containing the weights.
 }
 
-\keyword{utilities}
+\keyword{robust}
 
 

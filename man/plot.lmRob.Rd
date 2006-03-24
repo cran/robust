@@ -47,6 +47,7 @@ stack.rob <- lmRob(Loss ~ ., data = stack.dat)
 plot(stack.rob, which.plots = 6)
 }
 
+\keyword{methods}
 \keyword{hplot}
 
 

@@ -56,6 +56,7 @@ stack.fm <- fit.models(list(Robust = "lmRob", LS = "lm"), Loss ~ ., data = stack
 plot(stack.fm, which.plots = 2)
 }
 
+\keyword{methods}
 \keyword{hplot}
 
 

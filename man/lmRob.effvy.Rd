@@ -28,6 +28,5 @@ the constant of the optimal loss (weight) function which will give the required 
 }
 
 \keyword{robust}
-\keyword{utilities}
 
 

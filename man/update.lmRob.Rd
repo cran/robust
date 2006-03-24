@@ -38,5 +38,6 @@ If \code{formula} is missing, \code{update.lmRob} alternates between the initial
 
 \keyword{robust}
 \keyword{regression}
+\keyword{methods}
 
 

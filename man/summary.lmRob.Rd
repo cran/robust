@@ -55,5 +55,7 @@ stack.bse
 }
 
 \keyword{methods}
+\keyword{robust}
+\keyword{regression}
 
 
