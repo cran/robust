@@ -8,7 +8,7 @@ Create a set plots useful for comparing the fitted generalized linear models in 
 }
 
 \usage{
-plot.glmfm(x, which.plots = "ask", ...)
+\method{plot}{glmfm}(x, which.plots = "ask", ...)
 }
 
 \arguments{

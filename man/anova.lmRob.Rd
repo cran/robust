@@ -10,7 +10,7 @@ Compute an analysis of variance table for one or more robust linear model fits.
 
 \usage{
 \method{anova}{lmRob}(object, ..., test = c("RF", "RWald"))
-anova.lmRoblist(object, const, ipsi, yc, test = c("RWald", "RF"), ...) 
+\method{anova}{lmRoblist}(object, const, ipsi, yc, test = c("RWald", "RF"), ...) 
 }
 
 \arguments{

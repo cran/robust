@@ -8,7 +8,7 @@ Obtains predictions and optionally estimates standard errors of those prediction
 }
 
 \usage{
-predict.glmRob(object, newdata, type = c("link", "response", "terms"), se.fit = FALSE, terms = labels(object), dispersion = NULL, ...)
+\method{predict}{glmRob}(object, newdata, type = c("link", "response", "terms"), se.fit = FALSE, terms = labels(object), dispersion = NULL, ...)
 }
 
 \arguments{

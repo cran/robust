@@ -1,16 +1,11 @@
-covRob <- function(data, corr = FALSE, distance = TRUE,
-				na.action = na.fail, estim = "auto",
-				control = covRob.control(estim, ...), ...)
+covRob <- function(data, corr = FALSE, distance = TRUE, na.action = na.fail,
+                   estim = "auto", control = covRob.control(estim, ...), ...)
 {
-	stop.on.bdObject(data)
-	the.call <- match.call()
-
-##
-## Step 1. Check the data and control options
-##
+  ## Step 1. Check the data and control options ##
 
 	data <- na.action(data)
-	data <- as.matrix(data)
+  if(is.data.frame(data))
+    data <- data.matrix(data)
 
 	n <- nrow(data)
 	p <- ncol(data)
@@ -18,9 +13,6 @@ covRob <- function(data, corr = FALSE, distance = TRUE,
 	rowNames <- dimnames(data)[[1]]
 	colNames <- dimnames(data)[[2]]
 	dimnames(data) <- NULL
-
-	if(is.null(rowNames))
-		rowNames <- 1:n
 
 	if(is.null(colNames))
 		colNames <- paste("V", 1:p, sep = "")
@@ -45,70 +37,89 @@ covRob <- function(data, corr = FALSE, distance = TRUE,
 	else {
 		dots <- list(...)
 		dots.names <- names(dots)
+
+  ## For backwards compatibility we support the use of quan and ntrial   ##
+  ## to specify alpha and nsamp for estim = "mcd", estim = "weighted"    ##
+  ## and estim = "M". Providing both quan and alpha or both ntrial and   ##
+  ## nsamp will result in an error.                                      ##
+
+    if(any(dots.names == "quan") && all(dots.names != "alpha")) {
+      dots.names[dots.names == "quan"] <- "alpha"
+      names(dots) <- dots.names
+    }
+
+    if(any(dots.names == "ntrial") && all(dots.names != "nsamp")) {
+      dots.names[dots.names == "ntrial"] <- "nsamp"
+      names(dots) <- dots.names
+    }
+
 		control.names <- names(control)
+    if(any(control.names == "init.control"))
+      control.names <- c(control.names, names(control$init.control))
 		if(any(!is.element(dots.names, control.names))) {
 			bad.args <- sQuote(setdiff(dots.names, control.names))
-			estim <- dQuote(estim)
 			if(length(bad.args) == 1)
-				stop(paste(bad.args, "is not a control argument for the", estim, "estimator"))
+				stop(sQuote(bad.args), " is not a control argument for the ",
+             dQuote(estim), " estimator")
 			else
-				stop(paste(paste(bad.args, collapse = ", "), "are not a control arguments for the", estim, "estimator"))
+				stop(paste(sQuote(bad.args), collapse = ", "), " are not control ",
+             "arguments for the ", dQuote(estim), " estimator")
 		}
 	}
 
-##
-## Step 2. Call the robust covariance estimator
-##
+  ## Step 2. Call the robust covariance estimator ##
 
 	ans <- switch(estim,
 
-		donostah = {
-			donostah(data, control)
-		},
+		donostah = donostah(data, control),
 
-		pairwiseqc = {
-			fastcov(data, control)
-		},
+		pairwiseqc = fastcov(data, control),
 
-		pairwisegk = {
-			fastcov(data, control)
-		},
+		pairwisegk = fastcov(data, control),
 
 		m = {
-			rockem(data, control)
+      mcd.control <- control$init.control
+      control$init.control <- NULL
+			if(mcd.control$alpha > 1)
+				mcd.control$alpha <- mcd.control$alpha / n
+
+      init <- covMcd(data, cor = FALSE, control = mcd.control)
+
+			ans <- covMest(data, cor = FALSE, r = control$r, arp = control$arp,
+                     eps = control$eps, maxiter = control$maxiter,
+                     t0 = init$raw.center, S0 = init$raw.cov)
+
+      ans$dist <- ans$mah
+      ans$raw.center <- init$raw.center
+      ans$raw.cov <- init$raw.cov
+      ans$raw.dist <- init$raw.mah
+      ans
 		},
 
 		mcd = {
+			if(control$alpha > 1)
+				control$alpha <- control$alpha / n
 
-			quan <- control$quan
-			ntrial <- control$ntrial
+      ans <- covMcd(data, cor = FALSE, control = control)
 
-			if(is.numeric(quan) && 0.5 < quan && quan < 1)
-				quan <- ceiling(quan * n)
-
-      if(quan < floor((n + p + 1)/2) || quan > n)
-        stop("The value for quan must be between (n+p+1)/2 and n")
-
-			ans <- fastmcd(data, print = FALSE, quan = quan, ntrial = ntrial)
-			ans <- ans[c("call", "cov", "center", "raw.cov", "raw.center")]
-			ans$cov <- ans$raw.cov
-			ans$center <- ans$raw.center
+      ans$center <- ans$raw.center
+      ans$cov <- ans$raw.cov
+      ans$dist <- ans$raw.mah
+      ans$raw.cov <- ans$raw.cov / prod(ans$raw.cnp2)
+      ans$raw.dist <- ans$raw.mah * prod(ans$raw.cnp2)
 			ans
 		},
 
 		weighted = {
+			if(control$alpha > 1)
+				control$alpha <- control$alpha / n
 
-			quan <- control$quan
-			ntrial <- control$ntrial
+      ans <- covMcd(data, cor = FALSE, control = control)
 
-			if(is.numeric(quan) && 0.5 < quan && quan < 1)
-				quan <- ceiling(quan * n)
+      ans$dist <- ans$mah
+      ans$raw.cov <- ans$raw.cov / prod(ans$raw.cnp2)
+      ans$raw.dist <- ans$raw.mah * prod(ans$raw.cnp2)
 
-      if(quan < floor((n + p + 1)/2) || quan > n)
-        stop("The value for quan must be between (n+p+1)/2 and n")
-
-			ans <- fastmcd(data, print = FALSE, quan = quan, ntrial = ntrial)
-			ans <- ans[c("call", "cov", "center", "raw.cov", "raw.center")]
 			ans
 		},
 
@@ -117,19 +128,10 @@ covRob <- function(data, corr = FALSE, distance = TRUE,
 	) # end of switch
 
 
-##
-## Step 3. Create output object
-##
-
-	## put names on output ##
+  ## Step 3. Create output object ##
 
 	dimnames(ans$cov) <- list(colNames, colNames)
 	names(ans$center) <- colNames
-
-	if(!is.null(ans$raw.cov)) {
-		dimnames(ans$raw.cov) <- list(colNames, colNames)
-		names(ans$raw.center) <- colNames
-	}
 
   ## If no initial estimate set as missing ##
 
@@ -138,13 +140,33 @@ covRob <- function(data, corr = FALSE, distance = TRUE,
     ans$raw.center <- NA
   }
 
+	else {
+		dimnames(ans$raw.cov) <- list(colNames, colNames)
+		names(ans$raw.center) <- colNames
+	}
+
 	## compute Mahalanobis distances ##
 
-	if(distance && is.null(ans$dist))
-		ans$dist <- mahalanobis(data, ans$center, ans$cov)
+	if(distance) {
+    if(is.null(ans$dist))
+      ans$dist <- mahalanobis(data, ans$center, ans$cov)
+    if(!is.na(ans$raw.cov[1])) {
+      if(is.null(ans$raw.dist))
+        ans$raw.dist <- mahalanobis(data, ans$raw.center, ans$raw.cov)
+    }
+    else
+      ans$raw.dist <- NA
+  }
+  
+  else {
+    ans$dist <- NA
+    ans$raw.dist <- NA
+  }
 
-	if(!is.null(ans$dist))
+	if(!is.na(ans$dist[1]) && !is.null(rowNames))
 		names(ans$dist) <- rowNames
+	if(!is.na(ans$raw.dist[1]) && !is.null(rowNames))
+		names(ans$raw.dist) <- rowNames
 
 	## covariance or correlation ##
 
@@ -152,7 +174,7 @@ covRob <- function(data, corr = FALSE, distance = TRUE,
 		std <- sqrt(diag(ans$cov))
 		ans$cov <- ans$cov / (std %o% std)
 
-		if(!is.null(ans$raw.cov)) {
+		if(!is.na(ans$raw.cov[1])) {
 			std <- sqrt(diag(ans$raw.cov))
 			ans$raw.cov <- ans$raw.cov / (std %o% std)
 		}
@@ -164,9 +186,10 @@ covRob <- function(data, corr = FALSE, distance = TRUE,
 
 	ans$estim <- estim
 	ans$control <- control
-	ans$call <- the.call
+	ans$call <- match.call()
 
-	ans <- ans[c("call", "cov", "center", "raw.cov", "raw.center", "dist", "corr", "estim", "control")]
+	ans <- ans[c("call", "cov", "center", "dist", "raw.cov", "raw.center",
+               "raw.dist", "corr", "estim", "control")]
 	oldClass(ans) <- "covRob"
 	ans
 }
