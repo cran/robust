@@ -1,19 +1,25 @@
-lmfmResQQPlot <- function(x, envelope = TRUE, half.normal = FALSE,
-  n.samples = 100, level = .95, id.n = 3, robustQQline = TRUE,
-  ...)
+lmfmResQQPlot <- function(x, type = "response", envelope = TRUE,
+  half.normal = FALSE, n.samples = 100, level = .95, id.n = 3,
+  robustQQline = TRUE, main, xlab, ylab, ...)
 {
+  if(missing(main))
+    main <- "Normal QQ Plot of Residuals"
+
+  if(missing(xlab))
+    xlab <- "Quantiles of Standard Normal"
+
+  if(missing(ylab))
+    ylab <- "Residuals"
+
   n.models <- length(x)
   mod.names <- names(x)
   n <- length(residuals(x[[1]]))
-  x.sum <- summary(x)
 
-  std.resids <- matrix(0.0, n, n.models)
-  for(i in 1:n.models) {
-    if(is.null(x.sum[[i]]$sigma) || is.na(x.sum[[i]]$sigma))
-      std.resids[, i] <- residuals(x[[i]])
-    else
-      std.resids[, i] <- residuals(x[[i]]) / x.sum[[i]]$sigma
-  }
+  std.resids <- sapply(x, residuals, type = type)
+  sigmas <- sapply(x, function(u) ifelse(is.null(u$sigma), NA, u$sigma))
+
+  if(!any(is.na(sigmas)))
+    std.resids <- sweep(std.resids, 2, sigmas, "/")
 
 	px <- py <- matrix(0.0, n, n.models)
 
@@ -151,9 +157,9 @@ lmfmResQQPlot <- function(x, envelope = TRUE, half.normal = FALSE,
 
   print(xyplot(py ~ px | mod,
             data = df,
-            ylab = "Residuals",
-            xlab = "Quantiles of Standard Normal",
-            main = "Normal QQ-Plot of Residuals",
+            xlab = xlab,
+            ylab = ylab,
+            main = main,
             id.n = id.n,
             robQQln = robustQQline,
             panel = panel.special,

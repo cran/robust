@@ -1,7 +1,18 @@
-lmfmOverlaidQQPlot <- function(x, ...)
+lmfmOverlaidQQPlot <- function(x, main, xlab, ylab, ...)
 {
   n.models <- length(x)
   mod.names <- names(x)
+
+  if(missing(main))
+    main <- "Normal QQ Plot of Residuals"
+
+  if(missing(xlab))
+    xlab <- "Quantiles of Standard Normal"
+
+  if(missing(ylab))
+    ylab <- "Residuals"
+
+  model <- sapply(x, function(u) !is.null(u$model))
 
 	res <- na.omit(sapply(x, residuals))
   n <- length(res)
@@ -16,9 +27,9 @@ lmfmOverlaidQQPlot <- function(x, ...)
   matplot(px, py,
     pch = 1:n.models,
     col = 1:n.models,
-    xlab = "Quantiles of Standard Normal",
-    ylab = "Residuals",
-    main = "Normal QQ-Plot of Residuals",
+    xlab = xlab,
+    ylab = ylab,
+    main = main,
     ...)
 
   key(min(px), max(py),

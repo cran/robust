@@ -122,7 +122,7 @@ rockem <- function(x, control)
 
   ## compute an initial estimate using the MCD ##
 
-	covmat.mcd <- cov.mcd(x, print = FALSE, quan = quan, ntrial = ntrial)
+	covmat.mcd <- fastmcd(x, print = FALSE, quan = quan, ntrial = ntrial)
 	raw.mcd <- covmat.mcd$raw.cov 
 
 	# raw.mcd is not symmetric (but is very close) #

@@ -1,10 +1,10 @@
 \name{print.lmRob}
 \alias{print.lmRob}
 
-\title{Print Method for lmRob Class Objects}
+\title{Print Method for lmRob Objects}
 
 \description{
-Displays the formula, coefficients, degrees of freedom, and the residual standard error in a fitted lmRob object.
+Displays the call, coefficients, degrees of freedom, and the residual standard error in a fitted lmRob object.
 }
 
 \usage{

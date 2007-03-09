@@ -39,5 +39,5 @@
   woodmod.dat
 }
 
-\keyword{sysdata}
+\keyword{datasets}
 

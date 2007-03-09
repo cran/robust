@@ -36,5 +36,5 @@
   stack.dat
 }
 
-\keyword{sysdata}
+\keyword{datasets}
 

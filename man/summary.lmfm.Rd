@@ -4,7 +4,7 @@
 \title{Summary Method for lmfm Objects}
 
 \description{
-Computes a summary of the linear models stored in an lmfm object.
+Compute a summary of each lm or lmRob model in a summary.lmfm object.
 }
 
 \usage{

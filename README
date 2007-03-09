@@ -1,4 +1,4 @@
-This package contains the Robust Library version 0.2-0
+This package contains the Robust Library version 0.3-0
 
 Contributors:
 
@@ -18,13 +18,13 @@ Kjell Konis		<konis@stats.ox.ac.uk>
 This package contains the following robust methods:
 Robust Covariance estimation (scatter and location)
 Robust Linear Regression
+Robust Generalized Linear Models
 
 A method for side-by-side comparison of robust and classical models is also
 provided.  Please see Robust.pdf for further details.
 
 To do: (port from S-Plus to R)
-#Robust Principal Component Analysis
 #Robust ANOVA
-#Robust Generalized Linear Models
+#Robust Principal Component Analysis
 #Robust Gamma and Weibull parameter estimation
 

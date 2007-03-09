@@ -1,18 +1,25 @@
-lmfmStdResPlot <- function(x, level = 0.95, id.n = 3, ...)
+lmfmStdResPlot <- function(x, type = "response", level = 0.95, id.n = 3,
+  main, xlab, ylab, ...)
 {
+  if(missing(main))
+    main <- "Standardized Residuals vs. Index (Time)"
+
+  if(missing(xlab))
+    xlab <- "Index (Time)"
+
+  if(missing(ylab))
+    ylab <- "Standardized Residuals"
+
   n.models <- length(x)
   mod.names <- names(x)
   n <- length(residuals(x[[1]]))
-  x.sum <- summary(x)
   threshold <- qnorm(level)
 
-  std.resids <- matrix(0.0, n, n.models)
-  for(i in 1:n.models) {
-    if(is.null(x.sum[[i]]$sigma) || is.na(x.sum[[i]]$sigma))
-      std.resids[, i] <- residuals(x[[i]])
-    else
-      std.resids[, i] <- residuals(x[[i]]) / x.sum[[i]]$sigma
-  }
+  std.resids <- sapply(x, residuals, type = type)
+  sigmas <- sapply(x, function(u) ifelse(is.null(u$sigma), NA, u$sigma))
+
+  if(!any(is.na(sigmas)))
+    std.resids <- sweep(std.resids, 2, sigmas, "/")
 
   y.range <- range(std.resids)
   y.range[1] <- 1.05 * min(y.range[1], -threshold)
@@ -21,7 +28,7 @@ lmfmStdResPlot <- function(x, level = 0.95, id.n = 3, ...)
   panel.special <- function(x, y, threshold = 1.645, id.n = 3)
   {
     n <- length(y)
-    type <- ifelse(n > 40, "l", "b")
+    type <- ifelse(n > 60, "l", "b")
     panel.xyplot(x, y, type = type, col = 6, pch = 16)
     outliers <- which(abs(y) > threshold)
     if(length(outliers) > id.n)
@@ -39,12 +46,12 @@ lmfmStdResPlot <- function(x, level = 0.95, id.n = 3, ...)
 
   print(xyplot(std.resid ~ indicies | mod,
     data = df,
-    xlab = "Index (Time)",
+    xlab = xlab,
     panel = panel.special,
     id.n = id.n,
     ylim = y.range,
-    ylab = "Standardized Residuals",
-    main = "Standardized Residuals vs. Index (Time)",
+    ylab = ylab,
+    main = main,
     strip = function(...) strip.default(..., style = 1),
     threshold = threshold,
     layout = c(n.models, 1, 1),

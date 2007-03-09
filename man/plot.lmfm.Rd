@@ -16,7 +16,7 @@ Creates a set plots useful for comparing the fitted linear models in an lmfm obj
 
 \item{which.plots}{either "ask", "all", or an integer vector specifying which plots to draw.  If \code{which.plots} is an integer vector, use the plot numbers given in the description above (or in the "ask" menu).}
 
-\item{...}{additional arguments are pass to the ploting subfunctions which are listed in the see also section.}
+\item{...}{additional arguments are passed to the ploting subfunctions which are listed in the see also section.}
 }
 
 \value{

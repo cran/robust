@@ -1,10 +1,10 @@
 \name{print.summary.lmRob}
 \alias{print.summary.lmRob}
 
-\title{Print Method for summary.lmRob Class Objects}
+\title{Print Method for summary.lmRob Objects}
 
 \description{
-Displays the formula, coefficients, degrees of freedom, and the residual standard error in a fitted lmRob object.
+Displays the call, quartiles of the residuals, an anova table for the coefficients, residual standard error, degrees of freedom, robust multiple r-squared, and the test for bias. If the summary.lmRob object contains a correlation matrix for the coefficients it will be displayed as well.
 }
 
 \usage{
@@ -21,12 +21,6 @@ Displays the formula, coefficients, degrees of freedom, and the residual standar
 \code{x} is invisibly returned.
 }
 
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ 
-
- ~Make other sections like Warning with \section{Warning }{....} ~
-}
 \seealso{
 \code{\link{lmRob}}, 
 \code{\link{lmRob.object}}.

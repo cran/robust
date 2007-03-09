@@ -8,7 +8,7 @@ This is a method for the function \code{\link{update}} for objects inheriting fr
 }
 
 \usage{
-update.lmRob(object, formula, evaluate = TRUE, class, ...)
+\method{update}{lmRob}(object, formula, evaluate = TRUE, class, ...)
 }
 
 \arguments{

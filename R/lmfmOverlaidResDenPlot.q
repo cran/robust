@@ -1,4 +1,4 @@
-lmfmOverlaidResDenPlot <- function(x, ...)
+lmfmOverlaidResDenPlot <- function(x, main, xlab, ylab, ...)
 {
   bandwidth.nrd <- function(x) {
     r <- quantile(x, c(0.25, 0.75), na.rm = TRUE)
@@ -8,6 +8,15 @@ lmfmOverlaidResDenPlot <- function(x, ...)
 
   n.models <- length(x)
   mod.names <- names(x)
+
+  if(missing(main))
+    main <- "Kernel Density of Residuals"
+
+  if(missing(xlab))
+    xlab <- "Residuals"
+
+  if(missing(ylab))
+    ylab <- "Kernel Density"
 
 	res <- sapply(x, residuals)
 	denx <- deny <- matrix(0, 100, n.models)
@@ -21,9 +30,9 @@ lmfmOverlaidResDenPlot <- function(x, ...)
 
   matplot(denx, deny,
     type = "l",
-    xlab = "Residuals",
-    ylab = "Kernel Density",
-    main = "Kernel Density of Residuals",
+    xlab = xlab,
+    ylab = ylab,
+    main = main,
     lty = 1:n.models,
     col = 1:n.models,
     lwd = n.models:1,

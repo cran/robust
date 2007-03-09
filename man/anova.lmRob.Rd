@@ -1,24 +1,31 @@
 \name{anova.lmRob}
 \alias{anova.lmRob}
+\alias{anova.lmRoblist}
 
-\title{Compute and Anova table}
+\title{ANOVA for Robust Linear Model Fits}
 
 \description{
-Produces an Anova table for a robustly fitted linear model.
+Compute an analysis of variance table for one or more robust linear model fits.
 }
 
 \usage{
 \method{anova}{lmRob}(object, ..., test = c("RF", "RWald"))
+anova.lmRoblist(object, const, ipsi, yc, test = c("RWald", "RF"), ...) 
 }
 
 \arguments{
 \item{object}{an lmRob object.}
 
-\item{\dots}{additional arguments required by the generic anova function.  If \code{\dots} contains additional robustly fitted linear models then the function \code{\link{anova.lmRob.list}} is dispatched.}
+\item{\dots}{additional arguments required by the generic anova function.  If \code{\dots} contains additional robustly fitted linear models then the function \code{\link{anova.lmRoblist}} is dispatched.}
+
+\item{const}{a numeric value containing the tuning constant computed by \code{\link{lmRob.const}}.}
+
+\item{ipsi}{an integer value specifying the psi-function.}
+
+\item{yc}{a numeric value containing the tuning constant computed by \code{\link{lmRob.effvy}}.}
 
 \item{test}{a single character value specifying which test should be computed in the Anova table.  The possible choices are "RWald" and "RF".}
 }
-
 
 \details{
 The default test used by anova is the \code{"RWald"} test, which is the Wald test based on robust estimates of the coefficients and covariance matrix.  If \code{test} is \code{"RF"}, the robustified F-test is used instead.  
@@ -34,8 +41,7 @@ Hampel, F. R., Ronchetti, E. M., Rousseeuw, P. J., and Stahel, W. A. (1986).  \e
 
 \seealso{
 \code{\link{lmRob}}, 
-\code{\link{anova}}, 
-\code{\link{anova.lmRob.list}}.
+\code{\link{anova}}.
 }
 
 \examples{

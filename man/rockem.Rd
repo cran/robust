@@ -44,7 +44,7 @@ The required control parameters and their default values are:
     \item{\code{ntrial = 500}}{a positive integer specifying the number of random trial subsamples that are drawn for large datasets.}
   }
 
-The control parameters \code{quan} and \code{ntrial} are passed to the function \code{\link{cov.mcd}} which computes the initial robust estimate.  The remaining parameters affect the constrained m-estimator.
+The control parameters \code{quan} and \code{ntrial} are passed to the function \code{\link{fastmcd}} which computes the initial robust estimate.  The remaining parameters affect the constrained m-estimator.
 
   \describe{
     \item{\code{r = 0.45}}{a numeric value between 0 and 0.5 giving the desired breakdown point.}

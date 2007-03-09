@@ -56,7 +56,7 @@ anova.lmRob <- function(object, ..., test=c("RF","RWald"))
   }
 
   if(margs(...))
-    return(anova.lmRob.list(list(object, ...), cst, ipsi, yc, test = test))
+    return(anova.lmRoblist(list(object, ...), cst, ipsi, yc, test = test))
 
   if (object$est == "initial")
     warning("Inference based on initial estimates is not recommended.")

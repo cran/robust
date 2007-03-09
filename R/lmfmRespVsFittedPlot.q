@@ -20,7 +20,7 @@ lmfmRespVsFittedPlot <- function(x, smooths = FALSE, rugplot = FALSE, ...)
   }
     
   df <- data.frame(y = rep(y, n.models),
-    fv = as.vector(sapply(x, fitted)),
+    fv = as.vector(sapply(x, predict)),
     mod = rep(mod.names, each = n))
       
   print(xyplot(y ~ fv | mod,

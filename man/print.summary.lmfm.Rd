@@ -1,10 +1,10 @@
 \name{print.summary.lmfm}
 \alias{print.summary.lmfm}
 
-\title{Print Methods for summary.lmfm Objects}
+\title{Print Method for summary.lmfm Objects}
 
 \description{
-Displays a side-by-side comparison of the summaries in \code{object}.
+Displays a side-by-side comparison of the summaries in an lmfm object.
 }
 
 \usage{

@@ -56,7 +56,6 @@ covRob <- function(data, corr = FALSE, distance = TRUE,
 		}
 	}
 
-
 ##
 ## Step 2. Call the robust covariance estimator
 ##
@@ -87,14 +86,10 @@ covRob <- function(data, corr = FALSE, distance = TRUE,
 			if(is.numeric(quan) && 0.5 < quan && quan < 1)
 				quan <- ceiling(quan * n)
 
-			if(is.integer(quan)) {
-				if(quan < floor((n + p + 1)/2) || quan > n)
-					stop("The value for quan must be between (n+p+1)/2 and n")
-			}
-			else
-				quan <- floor((n + p + 1)/2)
+      if(quan < floor((n + p + 1)/2) || quan > n)
+        stop("The value for quan must be between (n+p+1)/2 and n")
 
-			ans <- cov.mcd(data, print = FALSE, quan = quan, ntrial = ntrial)
+			ans <- fastmcd(data, print = FALSE, quan = quan, ntrial = ntrial)
 			ans <- ans[c("call", "cov", "center", "raw.cov", "raw.center")]
 			ans$cov <- ans$raw.cov
 			ans$center <- ans$raw.center
@@ -109,14 +104,10 @@ covRob <- function(data, corr = FALSE, distance = TRUE,
 			if(is.numeric(quan) && 0.5 < quan && quan < 1)
 				quan <- ceiling(quan * n)
 
-			if(is.integer(quan)) {
-				if(quan < floor((n + p + 1)/2) || quan > n)
-					stop("The value for quan must be between (n+p+1)/2 and n")
-			}
-			else
-				quan <- floor((n + p + 1)/2)
+      if(quan < floor((n + p + 1)/2) || quan > n)
+        stop("The value for quan must be between (n+p+1)/2 and n")
 
-			ans <- cov.mcd(data, print = FALSE, quan = quan, ntrial = ntrial)
+			ans <- fastmcd(data, print = FALSE, quan = quan, ntrial = ntrial)
 			ans <- ans[c("call", "cov", "center", "raw.cov", "raw.center")]
 			ans
 		},
@@ -147,6 +138,14 @@ covRob <- function(data, corr = FALSE, distance = TRUE,
     ans$raw.center <- NA
   }
 
+	## compute Mahalanobis distances ##
+
+	if(distance && is.null(ans$dist))
+		ans$dist <- mahalanobis(data, ans$center, ans$cov)
+
+	if(!is.null(ans$dist))
+		names(ans$dist) <- rowNames
+
 	## covariance or correlation ##
 
 	if(corr) {
@@ -160,14 +159,6 @@ covRob <- function(data, corr = FALSE, distance = TRUE,
 	}
 
 	ans$corr <- corr
-
-	## compute Mahalanobis distances ##
-
-	if(distance && is.null(ans$dist))
-		ans$dist <- mahalanobis(data, ans$center, ans$cov)
-
-	if(!is.null(ans$dist))
-		names(ans$dist) <- rowNames
 
 	## some diagnostic information ##
 

@@ -4,7 +4,7 @@
 \title{Summarizing Robust Linear Model Fits}
 
 \description{
-Computes a summary of the robustly fitted linear model in an lmRob class object.
+Compute a summary of the robustly fitted linear model.
 }
 
 \usage{
@@ -24,25 +24,15 @@ Computes a summary of the robustly fitted linear model in an lmRob class object.
 \value{
 The summary is returned in a list of class summary.lmRob and contains the following components: 
 
-\item{sigma}{
-a single numeric value containing the residual scale estimate. 
-}
+  \item{sigma}{a single numeric value containing the residual scale estimate.}
 
-\item{df}{
-a numeric vector of length 3 containing integer values: the rank of the model matrix, the residual degrees of freedom, and the number of coefficients in the model.
-}
+  \item{df}{a numeric vector of length 3 containing integer values: the rank of the model matrix, the residual degrees of freedom, and the number of coefficients in the model.}
 
-\item{cov.unscaled}{
-the unscaled covariance matrix; i.e, the matrix that, when multiplied by the estimate of the error variance, yields the estimated covariance matrix for the coefficients. 
-}
+  \item{cov.unscaled}{the unscaled covariance matrix; i.e, the matrix that, when multiplied by the estimate of the error variance, yields the estimated covariance matrix for the coefficients.}
 
-\item{correlation}{
-the correlation coefficient matrix for the coefficients in the model. 
-}
+  \item{correlation}{the correlation coefficient matrix for the coefficients in the model.}
 
-\item{...}{
-the remaining components are the same as the corresponding components in an \code{lmRob} object. Use the \code{\link{names}} function to obtain a list of the components. 
-}
+  \item{...}{the remaining components are the same as the corresponding components in an \code{lmRob} object. Use the \code{\link{names}} function to obtain a list of the components.}
 }
 
 \examples{

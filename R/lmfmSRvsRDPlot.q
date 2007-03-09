@@ -1,35 +1,36 @@
-lmfmSRvsRDPlot <- function(x, level = 0.95, id.n = 3, ...)
+lmfmSRvsRDPlot <- function(x, type = "response", level = 0.95, id.n = 3,
+  main, xlab, ylab, ...)
 {
+  if(missing(main))
+    main <- "Standardized Residuals vs Robust Distances"
+
+  if(missing(xlab))
+    xlab <- "Robust Distances"
+
+  if(missing(ylab))
+    ylab <- "Standardized Residuals"
+
   n.models <- length(x)
   mod.names <- names(x)
   n <- length(residuals(x[[1]]))
-  x.sum <- summary(x)
 
-  std.resids <- matrix(0.0, n, n.models)
-  for(i in 1:n.models) {
-    if(is.null(x.sum[[i]]$sigma) || is.na(x.sum[[i]]$sigma))
-      std.resids[, i] <- residuals(x[[i]])
-    else
-      std.resids[, i] <- residuals(x[[i]]) / x.sum[[i]]$sigma
-  }
+  std.resids <- sapply(x, residuals, type = type)
+  sigmas <- sapply(x, function(u) ifelse(is.null(u$sigma), NA, u$sigma))
+
+  if(!any(is.na(sigmas)))
+    std.resids <- sweep(std.resids, 2, sigmas, "/")
 
   model <- sapply(x, function(u) !is.null(u$model))
   if(!any(model))
     stop("none of the fitted models in ", sQuote(deparse(substitute(x))),
           "contain a model frame component")
   model <- x[[(1:n.models)[model][1]]]$model
+  model <- model[sapply(model, is.numeric)]
 
-  model.terms <- attributes(model)$terms
-  term.labels <- attr(model.terms, "term.labels")
-  dataClasses <- attr(model.terms, "dataClasses")
-  numeric.vars <- names(dataClasses == "numeric")
-  term.labels <- intersect(term.labels, numeric.vars)
+  if(length(model)) {
 
-  if(length(term.labels)) {
-
-    model <- model[term.labels]
     p <- dim(model)[2]
-    dist <- covRob(model, distance = TRUE)$dist
+    dist <- sqrt(covRob(model, distance = TRUE)$dist)
 
     res.thresh <- qnorm(level)
     dist.thresh <- qchisq(level, df = p)
@@ -57,12 +58,12 @@ lmfmSRvsRDPlot <- function(x, level = 0.95, id.n = 3, ...)
 
     print(xyplot(RR ~ RD | mod,
       data = df,
-      xlab = "Robust Distances",
+      xlab = xlab,
       panel = panel.special,
       xlim = x.range,
       ylim = y.range,
-      ylab = "Standardized Residuals",
-      main = "Standardized Residuals vs Robust Distances",
+      ylab = ylab,
+      main = main,
       strip = function(...) strip.default(..., style = 1),
       res.thresh = res.thresh,
       dist.thresh = dist.thresh,

@@ -34,9 +34,9 @@
 
   \item{evals}{a numeric vector containing the eigenvalues of the covariance/correlation matrix.}
 
-  \item{dist}{a numeric vector containing the Mahalanobis distances.  Only present if \code{distance = T} in the \code{call}.}
+  \item{dist}{a numeric vector containing the Mahalanobis distances.  Only present if \code{distance = TRUE} in the \code{call}.}
 
-  \item{corr}{a logical flag.  If \code{corr = T} then \code{cov} contains an estimate of the correlation matrix of \code{x}.}
+  \item{corr}{a logical flag.  If \code{corr = TRUE} then \code{cov} contains an estimate of the correlation matrix of \code{x}.}
 }
 
 \seealso{

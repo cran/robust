@@ -59,7 +59,7 @@
 \seealso{
   \code{\link{covRob.control}},
   \code{\link{cov}},
-  \code{\link{cov.mcd}},
+  \code{\link{fastmcd}},
   \code{\link{donostah}},
   \code{\link{fastcov}},
   \code{\link{rockem}}.
