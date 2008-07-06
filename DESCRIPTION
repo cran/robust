@@ -1,5 +1,5 @@
 Package: robust
-Version: 0.3-3
+Version: 0.3-4
 Date: 2008-07-06
 Title: Insightful Robust Library
 Author: Jiahui Wang,
@@ -16,4 +16,4 @@ Maintainer: Kjell Konis <kjell.konis@epfl.ch>
 Depends: R (>= 2.6.0), MASS, lattice, robustbase, rrcov, stats
 Description: A package of robust methods.
 License: GPL
-Packaged: Mon Jul  7 14:35:02 2008; konis
+Packaged: Wed Sep 10 04:53:57 2008; theussl
