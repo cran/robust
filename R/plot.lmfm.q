@@ -1,181 +1,147 @@
-plot.lmfm <- function(x, which.plots = "ask", ...)
+plot.lmfm <- function(x, which.plots = ifelse(interactive(), "ask", "all"),
+                      ...)
 {
-	choices <- c("All",
-		"Normal QQ-Plot of Residuals", 
-		"Estimated Kernel Density of Residuals", 
-		"Robust Residuals vs Robust Distances", 
-		"Residuals vs Fitted Values", 
-		"Sqrt of abs(Residuals) vs Fitted Values", 
-		"Response vs Fitted Values", 
-		"Standardized Residuals vs Index (Time)", 
-		"Overlaid Normal QQ-Plot of Residuals", 
-		"Overlaid Estimated Density of Residuals")
+  choices <- c("All",
+    "Normal QQ Plot of Residuals", 
+    "Kernel Density Estimate of Residuals", 
+    "Residuals vs. Robust Distances", 
+    "Residuals vs. Fitted Values", 
+    "Square Root of Absolute Residuals vs. Fitted Values", 
+    "Response vs. Fitted Values", 
+    "Residuals vs. Index (Time)", 
+    "Overlaid Normal QQ Plot of Residuals", 
+    "Overlaid Kernel Density Estimate of Residuals")
 
-	if(length(attr(x[[1]]$terms, "term.labels")) == 1) {
-		choices <- c(choices, "Scatter Plot with Fits")
-		all.plots <- 2:11
-  }
-  else
-    all.plots <- 2:10
+  if(length(attr(x[[1]]$terms, "term.labels")) == 1)
+    choices <- c(choices, "Scatter Plot with Overlaid Fit(s)")
 
-	tmenu <- paste("plot:", choices)
+  all.plots <- 2:length(choices)
 
-	if(is.numeric(which.plots)) {
+  tmenu <- paste("plot:", choices)
+
+  if(is.numeric(which.plots)) {
     which.plots <- intersect(which.plots, all.plots)
-		ask <- FALSE
-		which.plots <- c(which.plots + 1, 1)
-	}
 
-	else if(which.plots == "all") {
-		which.plots <- c(all.plots + 1, 1)
-		ask <- FALSE
-	}
+    if(length(which.plots) == 0)
+      return(invisible(x))
 
-	else
-		ask <- TRUE
+    if(length(which.plots) > 1) {
+      par.ask <- par(ask = TRUE)
+      on.exit(par(ask = par.ask))
+    }
 
-	while(TRUE) {
-		if(ask) {
-			which.plots <- menu(tmenu,
+    ask <- FALSE
+    which.plots <- c(which.plots + 1, 1)
+  }
+
+  else if(which.plots == "all") {
+    which.plots <- c(all.plots + 1, 1)
+    ask <- FALSE
+    par.ask <- par(ask = TRUE)
+    on.exit(par(ask = par.ask))
+  }
+
+  else
+    ask <- TRUE
+
+  n.models <- length(x)
+  if(n.models <= 3)
+    colors <- c("black", "blue", "purple")[1:n.models]
+  else
+    colors <- 1:n.models
+
+  repeat {
+    if(ask) {
+      which.plots <- menu(tmenu,
         title = "\nMake plot selections (or 0 to exit):\n")
-			if(any(which.plots == 1))
-				which.plots <- all.plots
-			which.plots <- 1 + which.plots
-		}
 
-		graph.number <- 1
-		if(dev.cur() == 1 && which.plots[1] != 1)
-			trellis.device()
-		for(pick in which.plots) {
-			switch(pick,
-				return(invisible(x)),
-				{
-					## Place Holder ##
-				}
-				,
-				{
-          lmfmResQQPlot(x, ...)
+      if(any(which.plots == 1)) {
+        which.plots <- c(all.plots, 0)
+        par.ask <- par(ask = TRUE)
+        on.exit(par(ask = par.ask))
+      }
 
-					if(names(dev.cur()) == "graphsheet") {
-						guiModify("GraphSheetPage",
-							Name = paste("$", graph.number, sep = ""),
-							NewName = "Residuals QQ")
+      which.plots <- which.plots + 1
+    }
 
-						graph.number <- graph.number + 1
-					}
-				}
+    for(pick in which.plots) {
+      switch(pick,
+        return(invisible(x)),
 
-				,
-				{
-          lmfmResKernDenPlot(x, ...)
+        place.holder <- 1,
 
-					if(names(dev.cur()) == "graphsheet") {
-						guiModify("GraphSheetPage",
-							Name = paste("$", graph.number, sep = ""),
-							NewName = "Residual Density")
+        lmfmResQQPlot(x,
+                      main = "Normal QQ Plot of Residuals",
+                      xlab = "Standard Normal Quantiles",
+                      ylab = "Ordered Residuals",
+                      pch = 16,
+                      ...),
 
-						graph.number <- graph.number + 1
-					}
-				}
-				,
-				{
-          lmfmSRvsRDPlot(x, ...)
+        lmfmResKernDenPlot(x,
+                           main = "Kernel Density Estimate of Residuals",
+                           xlab = "Residuals",
+                           ylab = "Density",
+                           ...),
 
-					if(names(dev.cur()) == "graphsheet") {
-						guiModify("GraphSheetPage",
-							Name = paste("$", graph.number, sep = ""),
-							NewName = "Residuals vs. Robust Distances")
+        lmfmResVsRDPlot(x,
+                        main = "Residuals vs. Robust Distances",
+                        xlab = "Robust Distances",
+                        ylab = "Residuals",
+                        pch = 16,
+                        ...),
 
-						graph.number <- graph.number + 1
-					}
-				}
-				,
-				{
-          lmfmResVsFittedPlot(x, ...)
+        lmfmResVsFittedPlot(x,
+                            main = "Residuals vs. Fitted Values",
+                            xlab = "Fitted Values",
+                            ylab = "Residuals",
+                            pch = 16,
+                            ...),
 
-					if(names(dev.cur()) == "graphsheet") {
-						guiModify("GraphSheetPage",
-							Name = paste("$", graph.number, sep = ""),
-							NewName = "Residuals vs. Fitted Values")
+        lmfmSqrtResVsFittedPlot(x,
+                                main = "Square Root of Absolute Residuals vs. Fitted Values",
+                                xlab = "Fitted Values",
+                                ylab = expression(sqrt(abs(plain(Residuals)))),
+                                pch = 16,
+                                ...),
 
-						graph.number <- graph.number + 1
-					}
-				}
-				,
-				{
-          lmfmSqrtResVsFittedPlot(x, ...)
+        lmfmRespVsFittedPlot(x,
+                             main = "Response vs. Fitted Values",
+                             xlab = "Fitted Values",
+                             ylab = "Response",
+                             pch = 16,
+                             ...),
 
-					if(names(dev.cur()) == "graphsheet") {
-						guiModify("GraphSheetPage",
-							Name = paste("$", graph.number, sep = ""),
-							NewName = "Sqrt(abs(Residuals)) vs. Fitted Values")
+        lmfmResVsIdxPlot(x,
+                         main = "Residuals vs. Index (Time)",
+                         xlab = "Index (Time)",
+                         ylab = "Residuals",
+                         pch = 16,
+                         ...),
 
-						graph.number <- graph.number + 1
-					}
-				}
-				,
-				{
-          lmfmRespVsFittedPlot(x, ...)
+        lmfmOverlaidQQPlot(x,
+                           main = "Normal QQ Plot of Residuals",
+                           xlab = "Quantiles of Standard Normal",
+                           ylab = "Ordered Residuals",
+                           pch = rep(16, n.models),
+                           col = colors,
+                           ...),
 
-					if(names(dev.cur()) == "graphsheet") {
-						guiModify("GraphSheetPage",
-							Name = paste("$", graph.number, sep = ""),
-							NewName = "Response vs. Fitted Values")
+        lmfmOverlaidResDenPlot(x,
+                               main = "Kernel Density Estimate of Residuals",
+                               xlab = "Residuals",
+                               ylab = "Density",
+                               lwd = n.models:1,
+                               col = colors,
+                               ...),
 
-						graph.number <- graph.number + 1
-					}
-				}
-				,
-				{
-          lmfmStdResPlot(x, ...)
-
-					if(names(dev.cur()) == "graphsheet") {
-						guiModify("GraphSheetPage",
-							Name = paste("$", graph.number, sep = ""),
-							NewName = "Standardized Residuals vs. Index")
-
-						graph.number <- graph.number + 1
-					}
-				}
-				,
-				{
-          lmfmOverlaidQQPlot(x, ...)
-
-					if(names(dev.cur()) == "graphsheet") {
-						guiModify("GraphSheetPage",
-							Name = paste("$", graph.number, sep = ""),
-							NewName = "Overlaid Residuals QQ")
-
-						graph.number <- graph.number + 1
-					}
-				}
-				,
-				{
-          lmfmOverlaidResDenPlot(x, ...)
-
-					if(names(dev.cur()) == "graphsheet") {
-						guiModify("GraphSheetPage",
-							Name = paste("$", graph.number, sep = ""),
-							NewName = "Overlaid Residual Density")
-
-						graph.number <- graph.number + 1
-					}
-				}
-				,
-				{
-          lmfm2DRegPlot(x, ...)
-
-					if(names(dev.cur()) == "graphsheet") {
-						guiModify("GraphSheetPage",
-							Name = paste("$", graph.number, sep = ""),
-							NewName = "Scatter Plot")
-
-						graph.number <- graph.number + 1
-					}
-				}
-			)
-		}
-	}
+        lmfm2DRegPlot(x,
+                      main = format(formula(x[[1]])),
+                      lwd = n.models:1,
+                      col = colors,
+                      ...)
+      )
+    }
+  }
   invisible(x)
 }
 

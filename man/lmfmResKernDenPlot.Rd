@@ -1,10 +1,10 @@
 \name{lmfmResKernDenPlot}
 \alias{lmfmResKernDenPlot}
 
-\title{Residual Kernel Density Plot}
+\title{Kernel Density Estimate of Residuals}
 
 \description{
-Produces side-by-side residual kernel density plots from an lmfm object.
+Produces a side-by-side plot of kernel density estimates of the residuals.
 }
 
 \usage{
@@ -14,11 +14,11 @@ lmfmResKernDenPlot(x, ...)
 \arguments{
   \item{x}{an lmfm object.}
 
-  \item{\dots}{additional arguments are passed to the low-level plotting functions.}
+  \item{\dots}{any additional arguments are passed to \code{xyplot}.}
 }
 
 \value{
-\code{x} is invisibly returned.
+the \code{trellis} object is invisibly returned.
 }
 
 \keyword{hplot}

@@ -9,8 +9,8 @@ drop1.lmRob <- function(object, scope, scale, keep, fast = FALSE, ...)
   asgn <- attr(x, "assign")
   term.labels <- attr(object$terms, "term.labels")
 
-  if(!is.list(asgn))
-    asgn  <- splus.assign(asgn, term.labels)
+  dfs <- table(asgn[asgn > 0])
+  names(dfs) <- term.labels
 
   psif <- object$robust.control$weight
 
@@ -19,23 +19,20 @@ drop1.lmRob <- function(object, scope, scale, keep, fast = FALSE, ...)
 
   else {
     if(!is.character(scope))
-      scope <- attr(terms(update.formula(object,scope)), "term.labels")
+      scope <- attr(terms(update.formula(object, scope)), "term.labels")
 
     if(!all(match(scope, term.labels, FALSE)))
       stop("scope is not a subset of term labels")
   }
 
-  p <- length(asgn)  
-  asgn <- asgn[scope]
+  dfs <- dfs[scope]
   k <- length(scope)
 
-  if(missing(scale)) 
+  if(missing(scale))
     scale <- object$scale
 
   if(object$est == "initial")
-		warning("Inference based on initial estimates is not recommended.")
-
-  rfpe.none <- lmRob.RFPE(object, scale)
+    warning("Inference based on initial estimates is not recommended.")
 
   if(!missing(keep)) {
     max.keep <- c("coefficients", "fitted", "residuals")
@@ -56,10 +53,12 @@ drop1.lmRob <- function(object, scope, scale, keep, fast = FALSE, ...)
   else
     keep <- character(0)
 
-  dfs <- double(k)
   rfpe <- double(k)
 
   if(fast) {
+    warning("The fast algorithm in drop1.lmRob is not very reliable.")
+    stop("The fast algorithm in drop1.lmRob is broken in this version of the Robust Library")
+
     Weights <- object$M.weights
     ipsi <- 1
     xk <- .9440982
@@ -67,15 +66,15 @@ drop1.lmRob <- function(object, scope, scale, keep, fast = FALSE, ...)
     isigma <- -1
     yc <- object$yc
     mxr <- object$robust.control$mxr
-		mxs <- object$robust.control$mxs
+    mxs <- object$robust.control$mxs
     tlo <- object$robust.control$tlo
     tua <- object$robust.control$tua
     tl <- object$robust.control$tl
     y <- object$fitted.values + object$residuals
     n <- length(y)
-		tmpn <- double(n)
- 		beta <- sum(Weights)/(2*n)
-		bet0 <- 1
+    tmpn <- double(n)
+    beta <- sum(Weights)/(2*n)
+    bet0 <- 1
 
     rfpe.compute <- function(res, scale, ipsi, yc, p) {
       res <- res / scale
@@ -89,7 +88,7 @@ drop1.lmRob <- function(object, scope, scale, keep, fast = FALSE, ...)
       a + b/d
     }
 
-		for(i in 1:k) {
+    for(i in 1:k) {
       ii <- asgn[[i]]
       pii <- length(ii)
       dfs[i] <- pii
@@ -98,39 +97,39 @@ drop1.lmRob <- function(object, scope, scale, keep, fast = FALSE, ...)
       curobj <- lsfit(x = curx, y = y, wt = Weights, intercept = FALSE)
       coeff0 <- curobj$coef
 
-			scale0 <- .Fortran("rlrsigm2",
-													as.double(curobj$residuals),
-													as.double(curobj$residuals),
-													as.double(mad(curobj$residuals)),
-													as.integer(n),
-													as.integer(dim(curx)[2]),
-													as.double(tlo),
-													as.integer(1),
-													as.integer(1),
-													as.integer(mxs),
-													as.integer(1),
-													SIGMAF = double(1),
-													as.double(tmpn),
-													as.double(tmpn),
-													as.integer(ipsi),
-													as.double(xk),
-													as.double(beta),
-													as.double(bet0),
+      scale0 <- .Fortran("rlrsigm2",
+                          as.double(curobj$residuals),
+                          as.double(curobj$residuals),
+                          as.double(mad(curobj$residuals)),
+                          as.integer(n),
+                          as.integer(dim(curx)[2]),
+                          as.double(tlo),
+                          as.integer(1),
+                          as.integer(1),
+                          as.integer(mxs),
+                          as.integer(1),
+                          SIGMAF = double(1),
+                          as.double(tmpn),
+                          as.double(tmpn),
+                          as.integer(ipsi),
+                          as.double(xk),
+                          as.double(beta),
+                          as.double(bet0),
                           PACKAGE = "robust")$SIGMAF
 
-			ucov0 <- length(y) * solve(t(sqrt(Weights) * curx) %*%
-				(sqrt(Weights) * curx)) %*% t(Weights * curx) %*%
-				(Weights * curx) %*% solve(t(sqrt(Weights) * curx) %*%
-				(sqrt(Weights) * curx))
+      ucov0 <- length(y) * solve(t(sqrt(Weights) * curx) %*%
+        (sqrt(Weights) * curx)) %*% t(Weights * curx) %*%
+        (Weights * curx) %*% solve(t(sqrt(Weights) * curx) %*%
+        (sqrt(Weights) * curx))
 
-			ucov0 <- ucov0[row(ucov0) <= col(ucov0)]
+      ucov0 <- ucov0[row(ucov0) <= col(ucov0)]
 
       curobj <- lmRob.wm(x = curx, y = y, coeff0 = coeff0,
-								ucov0 = ucov0, scale0 = scale0, itype = itype, isigma = isigma,
-								ipsi = ipsi, xk = xk, beta = beta, wgt = y, tlo = tlo, tua = tua,
-								mxr = mxr)
+                ucov0 = ucov0, scale0 = scale0, itype = itype, isigma = isigma,
+                ipsi = ipsi, xk = xk, beta = beta, wgt = y, tlo = tlo, tua = tua,
+                mxr = mxr)
 
-      rfpe[i] <- rfpe.compute(curobj$rs, scale, ipsi, yc, p - 1)
+      rfpe[i] <- rfpe.compute(curobj$rs, scale, ipsi, yc, ncol(curx) - 1)
 
       if(length(keep)) {
         value[i,1] <- list(curobj$theta)
@@ -142,9 +141,6 @@ drop1.lmRob <- function(object, scope, scale, keep, fast = FALSE, ...)
 
   else {
     for(i in 1:k) {
-      ii <- asgn[[i]]
-      pii <- length(ii)
-      dfs[i] <- pii
       curfrm <- as.formula(paste(".~.-", scope[[i]]))
       curobj <- update(object, curfrm)
       rfpe[i] <- lmRob.RFPE(curobj, scale)
@@ -158,7 +154,7 @@ drop1.lmRob <- function(object, scope, scale, keep, fast = FALSE, ...)
   
   scope <- c("<none>", scope)
   dfs <- c(0, dfs)
-  rfpe <- c(rfpe.none, rfpe)
+  rfpe <- c(lmRob.RFPE(object, scale), rfpe)
   dfs[1] <- NA
   aod <- data.frame(Df=dfs, RFPE=rfpe, row.names=scope, check.names=FALSE)
 

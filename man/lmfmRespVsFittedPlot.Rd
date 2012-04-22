@@ -18,11 +18,11 @@ lmfmRespVsFittedPlot(x, smooths = FALSE, rugplot = FALSE, ...)
 
   \item{rugplot}{a logical value.  If TRUE then a rugplot is added to each panel of the plot.}
 
-  \item{\dots}{additional arguments are passed to the low-level plotting functions.}
+  \item{\dots}{any additional arguments are passed to \code{xyplot}.}
 }
 
 \value{
-\code{x} is invisibly returned.
+the \code{trellis} object is invisibly returned.
 }
 
 \keyword{hplot}

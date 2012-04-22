@@ -17,7 +17,7 @@ glmRob.mallows <- function(x, y, control, offset, null.dev, family, Terms)
 
   wt.fn <- control$wt.fn
   b <- control$wt.tuning
-			
+      
   x0 <- x
   tmp <- dimnames(x0)[[2]] == "(Intercept)"
 
@@ -31,7 +31,7 @@ glmRob.mallows <- function(x, y, control, offset, null.dev, family, Terms)
   mu <- tmp$center
   V <- tmp$cov
   x1 <- scale(x0, center = mu, scale = rep(1,p))
-			
+      
   #V <- var(x0)
   #x1 <- scale(x0, scale = rep(1,p))
 
@@ -50,7 +50,8 @@ glmRob.mallows <- function(x, y, control, offset, null.dev, family, Terms)
   on.exit(options(warn = old.warn))
   options(warn = -1)
 
-  w.glm.fit <- glm.fit(x = x, y = y, family = binomial(), offset = offset, w = w)
+  w.glm.fit <- glm.fit(x = x, y = y, weights = w, offset = offset,
+                       family = binomial())
   w.glm.fit$call <- the.call
   w.glm.fit$control <- control
   w.glm.fit$prior.weights <- NULL

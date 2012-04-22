@@ -80,7 +80,7 @@ predict.lmRob <- function(object, newdata, type = "response",
 
   if(missing(newdata)) {
     x <- model.matrix(object)
-		#center x if terms are to be computed
+    #center x if terms are to be computed
     if(type == "terms" && intercept) {
       xbar <- colMeans(x)
       x <- sweep(x, 2, xbar)
@@ -92,7 +92,7 @@ predict.lmRob <- function(object, newdata, type = "response",
              (newdata - trunc(newdata) < .Machine$single.eps)) | 
              is.list(newdata))) {
 
-		#try and coerce newdata to look like the x matrix
+    #try and coerce newdata to look like the x matrix
     if(!is.null(offset)) {
       warning("Offset not included")
       offset <- NULL
@@ -111,7 +111,7 @@ predict.lmRob <- function(object, newdata, type = "response",
   }
 
   else {
-		#newdata is a list, data frame or frame number
+    #newdata is a list, data frame or frame number
     x <- model.matrix(delete.response(Terms), newdata, contrasts = 
                       object$contrasts, xlevels = attr(object, "xlevels"))
 
@@ -120,7 +120,7 @@ predict.lmRob <- function(object, newdata, type = "response",
   }
 
   if(!missing(newdata) && type == "terms" && intercept) {
-		#need to center x 
+    #need to center x 
     xold <- model.matrix(object)
     xbar <- colMeans(xold)
     x <- sweep(x, 2, xbar)
@@ -131,12 +131,23 @@ predict.lmRob <- function(object, newdata, type = "response",
   asgn <- attr(coefs, "assign")
   if(is.null(asgn))
     asgn <- object$assign
-  if(!is.list(asgn))
-    asgn <- splus.assign(asgn, term.labels)
+
+  if(min(asgn) == 0) {
+    nasgn <- c("(Intercept)", term.labels)
+    asgn <- asgn + 1
+  }
+  else
+    nasgn <- term.labels
+
+  asgn.list <- list()
+  n <- length(nasgn)
+  for(i in 1:n)
+    asgn.list[[i]] <- which(asgn == i)
+  names(asgn.list) <- nasgn
 
   if(type == "terms") {
     terms <- match.arg(terms, labels(object))
-    asgn <- asgn[terms]
+    asgn.list <- asgn.list[terms]
   }
 
   nac <- is.na(object$coef)
@@ -152,14 +163,14 @@ predict.lmRob <- function(object, newdata, type = "response",
     fit.summary <- summary.lmRob(object)
 
     pred <- bt(x, coefs, fit.summary$cov * fit.summary$sigma^2, 
-               asgn, collapse = type != "terms")
+               asgn.list, collapse = type != "terms")
 
     pred$residual.scale <- fit.summary$sigma
     pred$df <- object$df.resid
   }
 
   else 
-    pred <- bt(x, coefs, NULL, assign = asgn, 
+    pred <- bt(x, coefs, NULL, assign = asgn.list, 
                collapse = type != "terms")
 
   if(!is.null(offset) && type != "terms") {
@@ -180,7 +191,7 @@ predict.lmRob <- function(object, newdata, type = "response",
       pred$fit <- napredict(object$na.action, pred$fit)
       pred$se.fit <- napredict(object$na.action, pred$se.fit)
     }
-	}
+  }
   pred
 }
 

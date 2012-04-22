@@ -21,7 +21,7 @@ glmRob.misclass <- function(x, y, control, offset, null.dev, family, Terms)
   mc.trc <- control$mc.trc
   mc.tol <- control$mc.tol
   initial <- control$mc.initial
-		
+    
   if(is.null(initial))
     initial <- coef(glm.fit(x,y, family = binomial()))
 
@@ -43,7 +43,7 @@ glmRob.misclass <- function(x, y, control, offset, null.dev, family, Terms)
 
   w <- glmRob.misclass.w(eta, mc.gamma)
 
-  w.glm.fit <- glm.fit(x = x, y = y, family = binomial(), w = w)
+  w.glm.fit <- glm.fit(x = x, y = y, family = binomial(), weights = w)
 
   w.glm.fit$call <- the.call
   w.glm.fit$control <- control
@@ -52,7 +52,7 @@ glmRob.misclass <- function(x, y, control, offset, null.dev, family, Terms)
   if(any(offset) && attr(Terms, "intercept")) {
     if(length(Terms))
       null.deviance <- glm.fit(x[, "(Intercept)", drop = FALSE], y, w, 
-							offset = offset, family = family)$deviance
+              offset = offset, family = family)$deviance
     else
       null.deviance <- w.glm.fit$deviance
 

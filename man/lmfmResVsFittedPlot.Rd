@@ -4,11 +4,11 @@
 \title{Residuals versus Fitted Values Plot}
 
 \description{
-Produces side-by-side residuals versus fitted values plots from an lmfm object.
+Produces a side-by-side plot of the residuals versus the fitted values.
 }
 
 \usage{
-lmfmResVsFittedPlot(x, type = "response", smooths = FALSE, rugplot = FALSE, id.n = 3, main, xlab, ylab, ...)
+lmfmResVsFittedPlot(x, type = "response", smooths = FALSE, rugplot = FALSE, id.n = 3, ...)
 }
 
 \arguments{
@@ -22,17 +22,11 @@ lmfmResVsFittedPlot(x, type = "response", smooths = FALSE, rugplot = FALSE, id.n
 
   \item{id.n}{a non-negative integer value giving the number of extreme points to identify.}
 
-  \item{main}{a character string specifying the plot title.}
-
-  \item{xlab}{a character string specifying the x-axis label.}
-
-  \item{ylab}{a character string specifying the y-axis label.}
-
-  \item{\dots}{additional arguments are passed to the low-level plotting functions.}
+  \item{\dots}{any additional arguments are passed to \code{xyplot}.}
 }
 
 \value{
-\code{x} is invisibly returned.
+the \code{trellis} object is invisibly returned.
 }
 
 \keyword{hplot}
