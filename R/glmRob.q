@@ -79,5 +79,6 @@ glmRob <- function(formula, family = binomial(), data, weights, subset,
     fit$y <- NULL
 
   oldClass(fit) <- "glmRob"
- fit
+
+  fit
 }

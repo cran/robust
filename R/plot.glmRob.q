@@ -1,16 +1,11 @@
-plot.glmRob <- function(x, which.plots = "ask", ...)
+plot.glmRob <- function(x, which.plots = c(2, 5, 7, 6), ...)
 {
-  x.name <- deparse(substitute(x))
-  model.list <- list(x$call)
-  names(model.list) <- x.name
-  x <- list(x = x)
-  names(x) <- x.name
-  attr(x, "model.list") <- model.list
-  oldClass(x) <- "glmfm"
+  fm <- fit.models(x)
+  names(fm) <- deparse(substitute(x))
 
-  plot.glmfm(x, which.plots = which.plots, ...)
+  plot.glmfm(fm, which.plots = which.plots, ...)
 
-  invisible(x[[1]])
+  invisible(x)
 }
 
 
