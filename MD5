@@ -1,8 +1,7 @@
-a30b4fe5cff7d0d179736ad04c4740c6 *Copyright
-69f04d72da8cd471bb1dc45e69218659 *DESCRIPTION
-f9f6065bfa2acb43bf8fc51e4a818a5f *NAMESPACE
-1784e2283b4e779ab32ce3fe493e8f4e *R/anova.glmRob.q
-4cde5697d917ac6cf5b5fe6d20b79b8d *R/anova.glmRoblist.q
+68883efabd0c1da0a522a956d644e96c *DESCRIPTION
+38ddf68b63d8090588542207055df1e7 *NAMESPACE
+1cb5e7bd0de2c370da8b20e391b3dab1 *R/anova.glmRob.q
+71b08b606aefede23204bc4bbc19cf15 *R/anova.glmRoblist.q
 3ea32d746531f55b35ca45f72ba636a3 *R/anova.lmRob.q
 0e0668217e644cbe6d58f6bbbd7a9e03 *R/anova.lmRoblist.q
 8e6014d505c5db57361c28887a4caa06 *R/covClassic.q
@@ -42,7 +41,7 @@ de39d76df6e0cfe68272cd6c0780374b *R/globalVariables.q
 cd77fe7cfd0d01d075a6fa3436303ef2 *R/labels.glmRob.q
 7d1eb3bc73d3023e7300a3480d36b634 *R/labels.lmRob.q
 635205b935eab800bc2602e76095de50 *R/library.q
-3ddcf33c7b39e8de14ec6850deb188e7 *R/lm.methods.q
+2ec056771dc277bac108420643f89416 *R/lm.methods.q
 904e355de52dd284a310ed2a81eb7b58 *R/lmRob.RFPE.q
 194bf663ba8ba0f5f58319139f78f794 *R/lmRob.const.q
 502beda57cf4ed91a0b85d3a7def37e3 *R/lmRob.control.q
@@ -58,6 +57,7 @@ e952d2bda142c1255e365e5a9391d028 *R/lmRob.fit.compute.q
 3c170e0de8208025ee9961535b1b23f9 *R/lmRob.wm.q
 d318ae17cc5767685de0d676079a3ecb *R/lognormRob.control.q
 8f2642117fae32f2cbaf3ffefd6ca663 *R/lognormRob.q
+9dedae9612ab2b6130901e017a5bcded *R/lsRobTest.q
 6bf76bcc7def45737c667cc67871f7be *R/overlaidDenPlot.fdfm.q
 b8aee482744a059d1b8adbc86cc45d1d *R/plot.covClassic.q
 62b40cf85300b54f203bebb47bcc1a61 *R/plot.covRob.q
@@ -106,7 +106,7 @@ b530bcfb12dbba7a34e99584731f6ee2 *data/breslow.dat.txt.gz
 021791f57ce49be7176ad83ef4ce277e *data/mallows.dat.txt.gz
 79aa88fd03b5a64c88d7396b53a25d47 *data/stack.dat.txt.gz
 7bde4d3567ba9be61c6a2c0010045974 *data/woodmod.dat.txt.gz
-ce6afc4f2f67a1c5a4fffb493d510b64 *inst/Copyright
+a8988a2985202a00965fbcc8d18efaed *inst/COPYRIGHTS
 67e7942b5fe2cf5169a6a57d214c142c *inst/datasets/lawson.tab
 8b323cbc156cf8a27d01f74ac5bcc495 *inst/datasets/wagner.q
 f075dcf2726ca7b18e29fcc2d05bc00d *inst/tests_S/asymmetric.t
@@ -155,6 +155,7 @@ e0fd6a7cab0796948c800836a6eb6bf7 *man/lmRob.fit.compute.Rd
 912e5ca754f14b1d7646de2a0a5d520f *man/lmRob.object.Rd
 ace1a7233303bc4c22026a6d510055fe *man/lognormRob.Rd
 5c5d3ebc13f0326fdb9e83b630481876 *man/lognormRob.control.Rd
+66c40667ff7bd6fd395a510b57b53869 *man/lsRobTest.Rd
 617ea0775aa0723e237a6f5cb10355ff *man/mallows.dat.Rd
 9f081b5ac2d07da5f88d99527110a6a2 *man/plot.covfm.Rd
 9a6ab4483d4a27c76c383feb3a90396e *man/plot.fdfm.Rd
@@ -191,6 +192,6 @@ bff275be68d14909c30fd2bc4005489b *src/robust.h
 9f217e72e87f0896db79ad08b436fb97 *src/tdmean.f
 4c8c0f492aef3bd020c00be7ddac9b97 *src/tmlfor.f
 6c32c412799219d329983852b953a3ff *src/wblrob.f
-c9a5956b132f6fa1803b8084fac23d14 *tests/Examples/robust-Ex.Rout.save
+aaad7136e7807c9c927835417775667b *tests/Examples/robust-Ex.Rout.save
 3d6070c3e3a95924c3c3a9d472b76b94 *tests/Run-tests.R
 558e87b9f8b2ffbdecbb3394e37eca26 *tests/weight-tst.R
