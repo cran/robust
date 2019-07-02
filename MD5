@@ -1,4 +1,4 @@
-c8e999fddcfeefef0b4c1b5cb1217312 *DESCRIPTION
+f3088aa6a1a74a2bb371eb6ba6c5ec66 *DESCRIPTION
 5b397fda17f0ee93c780a8e51a47be2f *NAMESPACE
 1cb5e7bd0de2c370da8b20e391b3dab1 *R/anova.glmRob.q
 71b08b606aefede23204bc4bbc19cf15 *R/anova.glmRoblist.q
@@ -179,7 +179,7 @@ f9e7be2c29c2e351c0a41da33560bebe *man/step.lmRob.Rd
 c43360155c7f4ffe98a770290e60bada *man/weight.funs.Rd
 355d027a18af2f391951b5686a876ed2 *man/woodmod.dat.Rd
 05d63b1a3fae9eabe2c72732684ccafa *src/Makevars
-6f290d012c336fa1f64b1120c162c0a1 *src/compatibility.c
+d411d2104897c78cc199cf9082cb7823 *src/compatibility.c
 ad6561356b99f9218e3598ac49d4d437 *src/gamrob.f
 263aae5b18dbaa46490ac6bf493406c9 *src/glmrob.f
 6be80787157d427e82e1ed36c6f3ad06 *src/lmrobbi.f
@@ -187,7 +187,7 @@ ad6561356b99f9218e3598ac49d4d437 *src/gamrob.f
 44d27b76c5be3aa1489c8f969afba1d7 *src/lmrobml.f
 4d5e047aca895e066f6fd3f91566be09 *src/lmrobmm.f
 d5fbf5ddd93ce5ad876b5557e4b8b760 *src/mmprnt.c
-30b601a9874b7ee5f49ef94e4bce1b93 *src/rb.c
+b15844df8d48ad058fe1717b4a6bea1d *src/rb.c
 bff275be68d14909c30fd2bc4005489b *src/robust.h
 5e72ba80a7517f5b6f9479324c5e39ec *src/tdmean.f
 f7ab2a89e5daf1b01d54093d8a782b42 *src/tmlfor.f

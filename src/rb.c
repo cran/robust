@@ -52,7 +52,7 @@ void rl_rb_rand(Sfloat *X, Sfloat *y, Sint *N, Sint *P, Sint *M, Sfloat *ours,
 	Sfloat *Fi, *res, *res_s, *w, scale;
 	Sfloat *v, *v2, *v_aux, *yb;
 	Sfloat u, u2, s, c, Psi_constant, beta;
-	Sint n, p, m, seed, *indices;
+	Sint n, p, m, *indices;
 	register Sint i, j, k;
 
 	beta = *Beta;
@@ -61,7 +61,6 @@ void rl_rb_rand(Sfloat *X, Sfloat *y, Sint *N, Sint *P, Sint *M, Sfloat *ours,
 	n = *N;
 	p = *P;
 	m = *M;
-	seed = *Seed;
 
 	indices = Salloc(n, Sint);
 	v = Salloc(p, Sfloat);
@@ -219,7 +218,7 @@ void rl_rb_fixed(Sfloat *X, Sfloat *y, Sint *N, Sint *P, Sint *M, Sfloat *ours,
 	Sfloat *Fi, *res, *res_s, *w, scale;
 	Sfloat *v, *v2, *v_aux, *yb, beta;
 	Sfloat u, u2, s, c, Psi_constant;
-	Sint n, p, m, seed, *indices;
+	Sint n, p, m, *indices;
 	register Sint i, j;
 
 	beta = *Beta;
@@ -229,7 +228,6 @@ void rl_rb_fixed(Sfloat *X, Sfloat *y, Sint *N, Sint *P, Sint *M, Sfloat *ours,
 	n = *N;
 	p = *P;
 	m = *M;
-	seed = *Seed;
 
 	indices = Salloc(n, Sint);
 	v = Salloc(p, Sfloat);

@@ -1,3 +1,4 @@
+#define USE_FC_LEN_T
 #include <S.h>
 #include "R_ext/Rdynload.h"
 #include "robust.h"
@@ -37,7 +38,11 @@ void F77_SUB(getrandind)(Sint* n, Sint* np, Sint* maxslen, Sint* ntind, Sint* ni
 }
 
 
+#ifdef FC_LEN_T
+void F77_SUB(xerror)(const char* msg, Sint* n, Sint* p, Sint* i, FC_LEN_T msg_len)
+#else
 void F77_SUB(xerror)(const char* msg, Sint* n, Sint* p, Sint* i)
+#endif
 {
   error(msg);
 }
