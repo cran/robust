@@ -49,7 +49,9 @@
 \examples{
   data(woodmod.dat)
   woodm.cov <- covClassic(woodmod.dat)
+## IGNORE_RDIFF_BEGIN
   summary(woodm.cov)
+## IGNORE_RDIFF_END
 
   woodm.covRob <- covRob(woodmod.dat)
   summary(woodm.covRob)

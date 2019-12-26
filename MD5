@@ -1,4 +1,4 @@
-f3088aa6a1a74a2bb371eb6ba6c5ec66 *DESCRIPTION
+c453fb17e3a13cea275e55bf0a6c9ae7 *DESCRIPTION
 5b397fda17f0ee93c780a8e51a47be2f *NAMESPACE
 1cb5e7bd0de2c370da8b20e391b3dab1 *R/anova.glmRob.q
 71b08b606aefede23204bc4bbc19cf15 *R/anova.glmRoblist.q
@@ -169,7 +169,7 @@ d5298f48ad90bd1eee4628aff2caf79e *man/residuals.glmRob.Rd
 8d7dbecd85933f29a2a9540ff6fd8023 *man/screePlot.covfm.Rd
 ee8fc08275d716679c30b652c6b992bd *man/stack.dat.Rd
 f9e7be2c29c2e351c0a41da33560bebe *man/step.lmRob.Rd
-066ac6944530497e31d49e4177a1590c *man/summary.covfm.Rd
+6fdc3ff131a333493341d7dc508de51c *man/summary.covfm.Rd
 573c039204235b41dd8ae199f45eb7c4 *man/summary.glmRob.Rd
 796ad6d41d24e100a9386a3c8c39769a *man/summary.lmRob.Rd
 2506e9e10375c8c481a54aab0ae60aa5 *man/test.lmRob.Rd
@@ -192,6 +192,6 @@ bff275be68d14909c30fd2bc4005489b *src/robust.h
 5e72ba80a7517f5b6f9479324c5e39ec *src/tdmean.f
 f7ab2a89e5daf1b01d54093d8a782b42 *src/tmlfor.f
 1f00a4d9e69e26d7d0f3bf661e37019b *src/wblrob.f
-f86f41c65212d62dabef82df5ed24bc1 *tests/Examples/robust-Ex.Rout.save
+2c30b738193f5849200d8191a8c7b0d7 *tests/Examples/robust-Ex.Rout.save
 3d6070c3e3a95924c3c3a9d472b76b94 *tests/Run-tests.R
 558e87b9f8b2ffbdecbb3394e37eca26 *tests/weight-tst.R

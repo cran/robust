@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2016-01-17 r69948) -- "Unsuffered Consequences"
-Copyright (C) 2016 The R Foundation for Statistical Computing
+R Under development (unstable) (2019-12-26 r77621) -- "Unsuffered Consequences"
+Copyright (C) 2019 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -24,6 +24,7 @@ Type 'q()' to quit R.
 Loading required package: fit.models
 > 
 > base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
 > cleanEx()
 > nameEx("OverlaidDenPlot.fdfm")
 > ### * OverlaidDenPlot.fdfm
@@ -848,6 +849,7 @@ Coefficients:
 > 
 >   data(woodmod.dat)
 >   woodm.cov <- covClassic(woodmod.dat)
+> ## IGNORE_RDIFF_BEGIN
 >   summary(woodm.cov)
 Call:
 covClassic(data = woodmod.dat)
@@ -873,6 +875,7 @@ Squared Mahalanobis Distances:
 4.327 1.552 3.224 3.959 3.277 3.974 9.124 4.536 5.665 7.588 5.075 6.833 4.506 
    14    15    16    17    18    19    20 
 1.500 1.945 9.049 4.548 4.637 4.599 5.084 
+> ## IGNORE_RDIFF_END
 > 
 >   woodm.covRob <- covRob(woodmod.dat)
 >   summary(woodm.covRob)
@@ -1123,9 +1126,10 @@ LS-estimate     2.640  0.6197
 > 
 > ### * <FOOTER>
 > ###
+> cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  3.838 0.107 4.29 0 0 
+Time elapsed:  4.512 0.101 4.655 0 0 
 > grDevices::dev.off()
 null device 
           1 
