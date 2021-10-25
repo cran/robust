@@ -1,7 +1,7 @@
 
-R Under development (unstable) (2019-12-26 r77621) -- "Unsuffered Consequences"
-Copyright (C) 2019 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R Under development (unstable) (2021-10-11 r81035) -- "Unsuffered Consequences"
+Copyright (C) 2021 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -20,6 +20,7 @@ Type 'q()' to quit R.
 > pkgname <- "robust"
 > source(file.path(R.home("share"), "R", "examples-header.R"))
 > options(warn = 1)
+> options(pager = "console")
 > library('robust')
 Loading required package: fit.models
 > 
@@ -39,8 +40,16 @@ Loading required package: fit.models
 > ### ** Examples
 > 
 >   data(los, package="robustbase")
+>   
+>  ## Not run: 
+> ##D  
+> ##D   los.fm <- fit.models(c(Robust = "fitdstnRob", MLE = "fitdstn"),
+> ##D                          x = los, densfun = "gamma")
+> ## End(Not run)
+>   
 >   los.fm <- fit.models(c(Robust = "fitdstnRob", MLE = "fitdstn"),
-+                          x = los, densfun = "gamma")
++                          x = los, densfun = "weibull")
+>                          
 >   overlaidDenPlot.fdfm(los.fm, xlab = "x-axis label", ylab = "y-axis label",
 +                        main = "Plot Title")
 > 
@@ -111,7 +120,7 @@ Air.Flow           1  41.228 6.026e-11 ***
 Water.Temp         1   6.522  0.009257 ** 
 Acid.Conc.         1   0.551  0.449386    
 ---
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > anova(stack.full, stack.small)
 
 Response: Loss
@@ -119,7 +128,7 @@ Response: Loss
 [1,]     1   1                         
 [2,]     2   1  1  27.354 9.839e-08 ***
 ---
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
 > 
 > 
@@ -908,8 +917,8 @@ Squared Robust Distances:
 >   summary(woodm.fm)
 
 Calls: 
-Robust : covRob(data = woodmod.dat)
-Classical : covClassic(data = woodmod.dat)
+Robust: covRob(data = woodmod.dat)
+Classical: covClassic(data = woodmod.dat)
 
 Comparison of Covariance/Correlation Estimates:
  (unique correlation terms) 
@@ -923,7 +932,7 @@ Classical -0.0003520 -0.0008388  0.0006124 0.004185 0.0015788 -0.001692
 Robust    0.004831 -0.001441 0.004417
 Classical 0.003946 -0.000792 0.002757
 
-Comparison of Location Estimates: 
+Comparison of center Estimates: 
               V1     V2     V3     V4     V5
 Robust    0.5693 0.1189 0.5093 0.5399 0.8964
 Classical 0.5508 0.1330 0.5087 0.5112 0.9070
@@ -1016,7 +1025,7 @@ Air.Flow      0.79769    0.07129  11.189 2.91e-09 ***
 Water.Temp    0.57734    0.17546   3.291  0.00432 ** 
 Acid.Conc.   -0.06706    0.06512  -1.030  0.31757    
 ---
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Residual standard error: 1.837 on 17 degrees of freedom
 Multiple R-Squared: 0.6205 
@@ -1042,7 +1051,7 @@ Air.Flow      0.79769    0.07129      0.05086  11.189 2.91e-09 ***
 Water.Temp    0.57734    0.17546      0.13551   3.291  0.00432 ** 
 Acid.Conc.   -0.06706    0.06512      0.05842  -1.030  0.31757    
 ---
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Residual standard error: 1.837 on 17 degrees of freedom
 Multiple R-Squared: 0.6205 
@@ -1129,7 +1138,7 @@ LS-estimate     2.640  0.6197
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  4.512 0.101 4.655 0 0 
+Time elapsed:  2.48 0.17 2.66 NA NA 
 > grDevices::dev.off()
 null device 
           1 

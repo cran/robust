@@ -1,5 +1,6 @@
 #define USE_FC_LEN_T
 #include <S.h>
+#include <R_ext/Error.h>
 #include "R_ext/Rdynload.h"
 #include "robust.h"
 

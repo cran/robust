@@ -9,12 +9,12 @@
 
   FM.add.class("lmfm", "lmRob")
   FM.add.class("lmfm", "lmrob")
-  FM.add.class("lmfm", "rlm")
+##  FM.add.class("lmfm", "rlm")
 
   FM.add.class("glmfm", "glmRob")
   FM.add.class("glmfm", "glmrob")
 
-  FM.register("covfm", c("covRob",  "covClassic"))
+##  FM.register("covfm", c("covRob",  "covClassic"))
   FM.register("fdfm",  c("fitdstnRob", "fitdstn"))
   ##--------------- end {fit.models} -------------------
 

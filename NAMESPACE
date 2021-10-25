@@ -88,12 +88,12 @@ export(
   plot.covClassic,
 
   # Covariance Comparison
-  summary.covfm,
-  plot.covfm,
-  ddPlot.covfm,
-  ellipsesPlot.covfm,
-  screePlot.covfm,
-  distancePlot.covfm,
+##  summary.covfm,
+##  plot.covfm,
+##  ddPlot.covfm,
+##  ellipsesPlot.covfm,
+##  screePlot.covfm,
+##  distancePlot.covfm,
 
 
   ## Robust univariate parameter estimation ##
@@ -180,10 +180,10 @@ S3method(plot, fitdstn)
 
 ## S3 methods for fit.models ##
 
-S3method(plot, covfm)
-S3method(print, covfm)
-S3method(summary, covfm)
-S3method(print, summary.covfm)
+##  S3method(plot, covfm)
+##  S3method(print, covfm)
+##  S3method(summary, covfm)
+##  S3method(print, summary.covfm)
 
 S3method(print, fdfm)
 S3method(summary, fdfm)
