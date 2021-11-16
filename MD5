@@ -1,5 +1,5 @@
-49f73efeea2eef83ab8019b1fdec2e6b *DESCRIPTION
-a5a1f6ff4a95d502ead9df22b2abf97b *NAMESPACE
+ee4808bdfcddf7f6274be38519dfeb89 *DESCRIPTION
+ccd0a5179e8b2097e3c529e08d10767e *NAMESPACE
 1cb5e7bd0de2c370da8b20e391b3dab1 *R/anova.glmRob.q
 71b08b606aefede23204bc4bbc19cf15 *R/anova.glmRoblist.q
 3ea32d746531f55b35ca45f72ba636a3 *R/anova.lmRob.q
@@ -40,7 +40,7 @@ bba15b3658c2de7ac3070d00e7ee4fe5 *R/glmRob.misclass.q
 de39d76df6e0cfe68272cd6c0780374b *R/globalVariables.q
 cd77fe7cfd0d01d075a6fa3436303ef2 *R/labels.glmRob.q
 7d1eb3bc73d3023e7300a3480d36b634 *R/labels.lmRob.q
-ede373f6e81fae8f0b513bdd67f7f566 *R/library.q
+ad2a2807a78a3efd56bbdd670a15dfd4 *R/library.q
 2ec056771dc277bac108420643f89416 *R/lm.methods.q
 904e355de52dd284a310ed2a81eb7b58 *R/lmRob.RFPE.q
 194bf663ba8ba0f5f58319139f78f794 *R/lmRob.const.q
@@ -121,7 +121,7 @@ e5298c46281ca869ee0fb0b5356aace4 *inst/tests_S/plots.covrob.t
 1dd770adc2e31395a08d873724b86bc8 *inst/tests_S/plots.princomprob.t
 57f7470c7f83a8074cef41472522cfb6 *inst/tests_S/plots.wblrob.t
 4ddeeaf399e10c21a115585922e83c14 *inst/tests_S/princomprob.t
-1a59f205dd9cc2de1d2285fa0541817e *man/OverlaidDenPlot.fdfm.Rd
+7d4dadb3fedce2746c688d7379ddeb9d *man/OverlaidDenPlot.fdfm.Rd
 9fe177ac1d3b88507bcbd65b0338d6c9 *man/anova.glmRob.Rd
 c1237e310c620df465cb14742330e5b1 *man/anova.lmRob.Rd
 e1b1bb53f8d4c560d0ba55e6bfc7e212 *man/breslow.dat.Rd
@@ -179,7 +179,7 @@ f9e7be2c29c2e351c0a41da33560bebe *man/step.lmRob.Rd
 c43360155c7f4ffe98a770290e60bada *man/weight.funs.Rd
 355d027a18af2f391951b5686a876ed2 *man/woodmod.dat.Rd
 05d63b1a3fae9eabe2c72732684ccafa *src/Makevars
-e8ddd60199d099fdbcc42796fa33ed7c *src/compatibility.c
+0e555a78be79febd5886a59c6526d4a0 *src/compatibility.c
 ad6561356b99f9218e3598ac49d4d437 *src/gamrob.f
 263aae5b18dbaa46490ac6bf493406c9 *src/glmrob.f
 6be80787157d427e82e1ed36c6f3ad06 *src/lmrobbi.f
@@ -192,6 +192,6 @@ bff275be68d14909c30fd2bc4005489b *src/robust.h
 5e72ba80a7517f5b6f9479324c5e39ec *src/tdmean.f
 f7ab2a89e5daf1b01d54093d8a782b42 *src/tmlfor.f
 1f00a4d9e69e26d7d0f3bf661e37019b *src/wblrob.f
-d6041d0ab9ae2dbb153bbc982610aa4c *tests/Examples/robust-Ex.Rout.save
+c6510ac78f246ed1eee0c614d9261e8b *tests/Examples/robust-Ex.Rout.save
 3d6070c3e3a95924c3c3a9d472b76b94 *tests/Run-tests.R
 558e87b9f8b2ffbdecbb3394e37eca26 *tests/weight-tst.R

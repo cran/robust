@@ -25,13 +25,14 @@ overlaidDenPlot.fdfm(x, trunc = 1.0 - 1e-3, \dots)
  
   los.fm <- fit.models(c(Robust = "fitdstnRob", MLE = "fitdstn"),
                          x = los, densfun = "gamma")
-}
+
   
   los.fm <- fit.models(c(Robust = "fitdstnRob", MLE = "fitdstn"),
                          x = los, densfun = "weibull")
                          
   overlaidDenPlot.fdfm(los.fm, xlab = "x-axis label", ylab = "y-axis label",
                        main = "Plot Title")
+ }
 }
 \keyword{hplot}
 

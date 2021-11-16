@@ -45,13 +45,15 @@ Loading required package: fit.models
 > ##D  
 > ##D   los.fm <- fit.models(c(Robust = "fitdstnRob", MLE = "fitdstn"),
 > ##D                          x = los, densfun = "gamma")
+> ##D 
+> ##D   
+> ##D   los.fm <- fit.models(c(Robust = "fitdstnRob", MLE = "fitdstn"),
+> ##D                          x = los, densfun = "weibull")
+> ##D                          
+> ##D   overlaidDenPlot.fdfm(los.fm, xlab = "x-axis label", ylab = "y-axis label",
+> ##D                        main = "Plot Title")
+> ##D  
 > ## End(Not run)
->   
->   los.fm <- fit.models(c(Robust = "fitdstnRob", MLE = "fitdstn"),
-+                          x = los, densfun = "weibull")
->                          
->   overlaidDenPlot.fdfm(los.fm, xlab = "x-axis label", ylab = "y-axis label",
-+                        main = "Plot Title")
 > 
 > 
 > 
@@ -1138,7 +1140,7 @@ LS-estimate     2.640  0.6197
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  2.48 0.17 2.66 NA NA 
+Time elapsed:  2.35 0.14 2.5 NA NA 
 > grDevices::dev.off()
 null device 
           1 

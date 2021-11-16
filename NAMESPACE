@@ -88,6 +88,9 @@ export(
   plot.covClassic,
 
   # Covariance Comparison
+
+## VT::24.10.2021 - these are now in fit.models
+
 ##  summary.covfm,
 ##  plot.covfm,
 ##  ddPlot.covfm,
@@ -179,6 +182,8 @@ S3method(plot, fitdstn)
 
 
 ## S3 methods for fit.models ##
+
+## VT::24.10.2021 - these are now in fit.models
 
 ##  S3method(plot, covfm)
 ##  S3method(print, covfm)

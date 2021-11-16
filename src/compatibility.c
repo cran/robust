@@ -1,6 +1,7 @@
 #define USE_FC_LEN_T
 #include <S.h>
-#include <R_ext/Error.h>
+#include <R_ext/Error.h>            // VT::24.10.2021 - included implicitely to fix 
+                                    //  a bug reported by Prof. Ripley on 11.10.2021
 #include "R_ext/Rdynload.h"
 #include "robust.h"
 
