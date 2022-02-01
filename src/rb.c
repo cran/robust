@@ -10,7 +10,10 @@
  * Statistics.  
  */
 
-#include <S.h>
+//  #include <S.h>                                  // VT::30.01.2022 - replace by R.h, a bug report from
+#include <R.h>                                      //  Prof. Ripley from 15.01.2022
+#define Salloc(n,t) (t*)S_alloc(n, sizeof(t))       // VT::30.01.2022
+
 #include "robust.h"
 #include <math.h>
 
@@ -520,18 +523,28 @@ void rl_sampler_i(Sint n, Sint *x)
    * x[i] = (Sint) ( (Sfloat) rand() / RAND_MAX * (Sfloat) (n-1) );
    */
 
-  long ignored = 0;
+  //    long ignored = 0;
+  
   Sint i = 0;
   Sfloat u = 0.0;
 
-  seed_in(&ignored);
+  // VT::30.01.2022 - replace S.h bu R.h
+  //    seed_in() and seed_out() will be repalced by GetRNGstate() 
+  //    and PutRNGstate(), respectively
+  
+  //    seed_in(&ignored);
+  
+  GetRNGstate();
 
   for(i = 0; i < n; i++) {
     u = unif_rand();
     x[i] = (Sint) (u * ((Sfloat) (n - 1)));
   }
 
-  seed_out(&ignored);
+  //    seed_out(&ignored);
+  
+  PutRNGstate();
+
 }
 
 

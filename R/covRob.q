@@ -102,15 +102,26 @@ covRob <- function(data, corr = FALSE, distance = TRUE, na.action = na.fail,
 
       init <- covMcd(data, cor = FALSE, control = mcd.control)
 
-      ans <- covMest(data, cor = FALSE, r = control$r, arp = control$arp,
+
+##  VT::30.01.2022: replace the call to the deprecated function covMest() by
+##      a call to CovMest() which returns an S4 object
+##
+##      ans <- covMest(data, cor = FALSE, r = control$r, arp = control$arp,
+##                     eps = control$eps, maxiter = control$maxiter,
+##                     t0 = init$raw.center, S0 = init$raw.cov)
+##
+##      ans$dist <- ans$mah
+##      ans$raw.center <- init$raw.center
+##      ans$raw.cov <- init$raw.cov
+##      ans$raw.dist <- init$raw.mah
+##      ans
+
+      ans <- CovMest(data, r = control$r, arp = control$arp,
                      eps = control$eps, maxiter = control$maxiter,
                      t0 = init$raw.center, S0 = init$raw.cov)
 
-      ans$dist <- ans$mah
-      ans$raw.center <- init$raw.center
-      ans$raw.cov <- init$raw.cov
-      ans$raw.dist <- init$raw.mah
-      ans
+      list(center = getCenter(ans), cov = getCov(ans), dist = getDistance(ans),
+           raw.center = init@raw.center, raw.cov = init@raw.cov, raw.dist = init@raw.mah)
     },
 
     mcd = {

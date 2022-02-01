@@ -29,7 +29,7 @@ importFrom("robustbase", covMcd, rrcov.control)
 importFrom("fit.models", fit.models, fmclass.register, fmclass.add.class,
            plot.glmfm, designMD)
 
-importFrom("rrcov", CovControlOgk, covMest, CovOgk, CovSde,
+importFrom("rrcov", CovControlOgk, CovMest, CovOgk, CovSde,
            getCenter, getCov, getDistance)
 
 

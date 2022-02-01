@@ -1,5 +1,7 @@
 #define USE_FC_LEN_T
-#include <S.h>
+//  #include <S.h>                  // VT::30.01.2022 - replace by R.h, a bug report from
+#include <R.h>                      //  Prof. Ripley from 15.01.2022
+
 #include <R_ext/Error.h>            // VT::24.10.2021 - included implicitely to fix 
                                     //  a bug reported by Prof. Ripley on 11.10.2021
 #include "R_ext/Rdynload.h"
@@ -15,15 +17,29 @@ void R_init_mypkg(DllInfo *dll)
 #ifdef USING_R
 void F77_SUB(fseedi)(void)
 {
-  long x = 100;
-  seed_in(&x);
+  // VT::30.01.2022 - replace S.h bu R.h
+  //    seed_in() and seed_out() will be repalced by GetRNGstate() 
+  //    and PutRNGstate(), respectively
+  
+  //    long x = 100;
+  //    seed_in(&x);
+  
+  GetRNGstate(); 
 }
 
 
 void F77_SUB(fseedo)(void)
 {
-  long x = 100;
-  seed_out(&x);
+
+  // VT::30.01.2022 - replace S.h bu R.h
+  //    seed_in() and seed_out() will be repalced by GetRNGstate() 
+  //    and PutRNGstate(), respectively
+  
+  //    long x = 100;
+  //    seed_out(&x);
+  
+  PutRNGstate(); 
+
 }
 
 

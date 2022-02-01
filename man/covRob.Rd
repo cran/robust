@@ -35,7 +35,7 @@ The \code{covRob} function selects a robust covariance estimator that is likely 
 
 The MCD and Reweighted-MCD estimates (\code{estim = "mcd"} and \code{estim = "weighted"} respectively) are computed using the \code{\link[robustbase]{covMcd}} function in the robustbase package. By default, \code{\link[robustbase]{covMcd}} returns the reweighted estimate; the actual MCD estimate is contained in the components of the output list prefixed with \code{raw}.
 
-The M estimate (\code{estim = "M"}) is computed using the \code{\link[rrcov]{covMest}} function in the rrcov package. For historical reasons the Robust Library uses the MCD to compute the initial estimate.
+The M estimate (\code{estim = "M"}) is computed using the \code{\link[rrcov]{CovMest}} function in the rrcov package. For historical reasons the Robust Library uses the MCD to compute the initial estimate.
 
 The Donoho-Stahel (\code{estim = "donostah"}) estimator is computed using the \code{\link[rrcov]{CovSde}} function provided in the rrcov package.
 
@@ -84,7 +84,7 @@ Version 0.3-8 of the Robust Library: all of the functions origianlly contributed
   \code{\link[rrcov]{CovSde}},
   \code{\link[robustbase]{covMcd}},
   \code{\link[rrcov]{CovOgk}},
-  \code{\link[rrcov]{covMest}},
+  \code{\link[rrcov]{CovMest}},
   \code{\link{covRob.control}},
   \code{\link{covClassic}}.
 }
