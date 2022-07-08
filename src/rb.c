@@ -10,6 +10,15 @@
  * Statistics.  
  */
 
+/* 
+    VT::08.07.2022
+    Define NO_S_TYPEDEFS
+    Used to check that Sfloat and Sint are now deprecated.
+    Include before R.H 
+    Remove later!
+*/
+#define NO_S_TYPEDEFS
+
 //  #include <S.h>                                  // VT::30.01.2022 - replace by R.h, a bug report from
 #include <R.h>                                      //  Prof. Ripley from 15.01.2022
 #define Salloc(n,t) (t*)S_alloc(n, sizeof(t))       // VT::30.01.2022

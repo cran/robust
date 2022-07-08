@@ -4,7 +4,19 @@
 /* Date  : 12/20/1999                                   */
 /*------------------------------------------------------*/
 
+/* 
+    VT::08.07.2022
+    Define NO_S_TYPEDEFS
+    Used to check that Sfloat and Sint are now deprecated.
+    Include before R.H 
+    Remove later!
+*/
+#define NO_S_TYPEDEFS       
+
 #include <R.h>
+
+#include "robust.h"
+
 #include <time.h>
 
 #if defined(S_newio_IS_STDIO_FILE)

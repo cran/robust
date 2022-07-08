@@ -3,7 +3,12 @@ NEWS-robust
 
 <!-- NEWS.md is generated from NEWS.Rmd. Please edit that file -->
 
-    #> Last Update: 2022-02-01 15:13:47
+    #> Last Update: 2022-07-08 20:46:09
+
+# robust v0.7-1 (2022-07-08)
+
+-   Sfloat and Sint are now deprecated, see mail of Prof Riplay from
+    08.07.2022 typedef-s inserted in robust.h
 
 # robust v0.7-0 (2022-02-01)
 
@@ -12,13 +17,16 @@ NEWS-robust
 
 -   Code using S.h is converted to use R.h
 
+-   BLAS - Fix for USE_FC_LEN_T becoming the default in 4.2.0 (early
+    notification)
+
 # robust v0.6-1 (2021-11-16)
 
 -   Fixed error on Solaris
 
 # robust v0.6-0 (2021-10-24)
 
--   Fixed an error due to not explicitly including R\_ext/Error.h -
+-   Fixed an error due to not explicitly including R_ext/Error.h -
     include this file implicitly in compatibility.c.
 -   Fixed: everything related to ‘covfm’ was moved to package fit.models
     (actually I only commented the exports in NAMESPACE and a couple of

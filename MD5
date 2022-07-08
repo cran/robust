@@ -1,6 +1,6 @@
-23040874c494a5ac1e1157f581fcd500 *DESCRIPTION
+17f0728073a8c29b04b5b8524d8d6981 *DESCRIPTION
 c8ec28590a87843e8f85bd1975ac2201 *NAMESPACE
-13fc1b1d4d69208c5f776c8c98edf222 *NEWS.md
+97231dc73f8b15de63ec5c864167a54e *NEWS.md
 1cb5e7bd0de2c370da8b20e391b3dab1 *R/anova.glmRob.q
 71b08b606aefede23204bc4bbc19cf15 *R/anova.glmRoblist.q
 3ea32d746531f55b35ca45f72ba636a3 *R/anova.lmRob.q
@@ -101,7 +101,7 @@ db377d214f7711696a2abb234ccf9f65 *R/weibullRob.control.q
 2f4d2f530445ce04a0792482fce1b0b4 *R/weibullRob.q
 4ef1bb6eeee4b045e5f2a4799930f6ec *R/weight.funs.q
 9cbcdb2fe4ccd4376a5ac667d21c27cc *R/wt.carroll.q
-b8c694f3b0466df04ba04fb6def1ae3e *README
+4b39e1acc6cf743f0123fd53ad018e22 *README.md
 b530bcfb12dbba7a34e99584731f6ee2 *data/breslow.dat.txt.gz
 7e26afce6ddf085f5df1ca17bf36817f *data/leuk.dat.txt.gz
 021791f57ce49be7176ad83ef4ce277e *data/mallows.dat.txt.gz
@@ -180,15 +180,15 @@ f9e7be2c29c2e351c0a41da33560bebe *man/step.lmRob.Rd
 c43360155c7f4ffe98a770290e60bada *man/weight.funs.Rd
 355d027a18af2f391951b5686a876ed2 *man/woodmod.dat.Rd
 05d63b1a3fae9eabe2c72732684ccafa *src/Makevars
-f43cad729085f4cfe1a5cea382ec4414 *src/compatibility.c
+3bb7b7f387371a3bc3cb7e120e264963 *src/compatibility.c
 ad6561356b99f9218e3598ac49d4d437 *src/gamrob.f
 263aae5b18dbaa46490ac6bf493406c9 *src/glmrob.f
 6be80787157d427e82e1ed36c6f3ad06 *src/lmrobbi.f
 8e1e01aeee7634e3c624dac804edd81c *src/lmrobfs.f
 44d27b76c5be3aa1489c8f969afba1d7 *src/lmrobml.f
 4d5e047aca895e066f6fd3f91566be09 *src/lmrobmm.f
-d5fbf5ddd93ce5ad876b5557e4b8b760 *src/mmprnt.c
-559158d9cadf63f42134f65fff93a169 *src/rb.c
+80ed6040dca49c8bdc4c4e3b50b2f5e0 *src/mmprnt.c
+d552badffae36c1b572c818f329f61a6 *src/rb.c
 bff275be68d14909c30fd2bc4005489b *src/robust.h
 5e72ba80a7517f5b6f9479324c5e39ec *src/tdmean.f
 f7ab2a89e5daf1b01d54093d8a782b42 *src/tmlfor.f

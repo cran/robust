@@ -1,4 +1,13 @@
-#define USE_FC_LEN_T
+/* 
+    VT::08.07.2022 Define NO_S_TYPEDEFS, see mail of Prof Riplay from 08.07.2022
+    Used to check that Sfloat and Sint are now deprecated.
+    Include before R.H 
+    Remove later!
+*/
+#define NO_S_TYPEDEFS
+#define USE_FC_LEN_T                // VT::25.09.2021: BLAS - Fix for USE_FC_LEN_T becoming the default in 4.2.0
+                                    // (early notification)
+
 //  #include <S.h>                  // VT::30.01.2022 - replace by R.h, a bug report from
 #include <R.h>                      //  Prof. Ripley from 15.01.2022
 
