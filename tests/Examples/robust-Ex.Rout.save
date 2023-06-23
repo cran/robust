@@ -382,10 +382,10 @@ glmRob(formula = y ~ a + b + c, family = binomial(), data = mallows.dat,
 
 Coefficients:
 (Intercept)           a           b           c 
-   -2.04642     0.10810     0.08633     0.12584 
+    -1.3214     -0.9052     -0.7435     -1.0201
 
-Degrees of Freedom: 70 Total; 66 Residual
-Residual Deviance: 40.06 
+Degrees of Freedom: 70 Total; 58 Residual
+Residual Deviance: 27.04 
 > 
 > 
 > 

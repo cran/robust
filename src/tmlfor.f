@@ -43,7 +43,7 @@ C-----------------------------------------------------------------------
 C     STEP 0: INITIALIZATIONS
 C-----------------------------------------------------------------------
       K1=N/2+1
-      CONST=BETA*DFLOAT(N-NP)
+      CONST=BETA*DBLE(N-NP)
       IF (ITRACE .EQ. 1) THEN
          call mminitclk(iclock)
          ielapse=0
@@ -206,7 +206,7 @@ C  850   SX(I,J)=WI*X(I,J)
       END DO
 C  860 CONTINUE
       CALL RLKFFAM2(RS,N,NP,SMIN,FH,IPS,XK)
-      FACT=FH*SWI/DFLOAT(N)
+      FACT=FH*SWI/DBLE(N)
       IF (K.EQ.0) FACT=FACT*SMIN*SMIN
       CALL RLKTASM2(SX,N,NP,MDX,NCOV,TAU,FACT,SA,COV)
 c        call dblepr('cov',3,cov,ncov)
@@ -1102,7 +1102,7 @@ C   10 continue
 c      avs0=0.d0
 c      avs=0.d0
       tmp1=xbar(1)
-      en2=dfloat(n)*dfloat(n-np)
+      en2=dble(n)*dble(n-np)
       pnrm0=pnorm0(u)
       alfa=2.d0*pnrm0-1.d0
       beta=RLBETAN(u)
@@ -1348,7 +1348,7 @@ C
       KEY=1
       LO=TL
       HI=TU
-      WGT(1)=DFLOAT(IWGT)
+      WGT(1)=DBLE(IWGT)
       WGT(2)=B1
       CALL RLINTGRT(CHIS1WP,WGT,2,rlezez,RLXEXPD,LO,HI,TIL,TIL,
      1            KEY,LIMIT,SUM,ERRSTD,NEVAL,IER,WORK,IWORK,2,WGT)
@@ -1521,7 +1521,7 @@ c   10 continue
           avts(i,j)=0.d0
         end do
       end do
-      en2=dfloat(n)*dfloat(n-np)
+      en2=dble(n)*dble(n-np)
 
       alfa=rlpezez(u)-rlpezez(l)
       beta=RLBetaw(l,u)
