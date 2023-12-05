@@ -47,7 +47,7 @@ void F77_NAME(mmprint)(Sint *nrep, Sint *itmp, Sint *ct,
   else if (lapt < 360) {
     nleft = lapt/60;
     lapt = lapt % 60;
-    Rprintf("00:%02ld:%02d left\n", nleft, lapt);
+    Rprintf("00:%02d:%02d left\n", nleft, lapt);
 //    printf("00:%02ld:%02ld left\n", nleft, lapt);
   }
   else {
@@ -55,7 +55,7 @@ void F77_NAME(mmprint)(Sint *nrep, Sint *itmp, Sint *ct,
     lapt = lapt % 360;
     nleft = lapt/60;
     lapt = lapt % 60;
-    Rprintf("%ld:%02ld:%02d left\n", ihr, nleft, lapt);
+    Rprintf("%d:%02d:%02d left\n", ihr, nleft, lapt);
 //    printf("%ld:%02ld:%02ld left\n", ihr, nleft, lapt);
   }
 }

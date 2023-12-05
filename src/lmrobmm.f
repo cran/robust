@@ -687,6 +687,7 @@ C         IF (X(I,I)) 80,70,80
          else
            goto 70
          end if
+C   VT::05.12.2023
  70      CALL XERROR('Singular matrix',15,10,-1)
  80      THETA(I)=(THETA(I)-SM1)/X(I,I)
  90   CONTINUE

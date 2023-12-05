@@ -3,7 +3,12 @@ NEWS-robust
 
 <!-- NEWS.md is generated from NEWS.Rmd. Please edit that file -->
 
-    #> Last Update: 2023-06-23 23:17:57.700875
+    #> Last Update: 2023-12-05 10:57:00.123788
+
+# robust v0.7-3 (2023-12-05)
+
+- src/mmprnt.c: format ‘%ld’ changed to ’%d%, see mail of Kurt Hornik
+  from 26.11.2023
 
 # robust v0.7-2 (2023-06-22)
 

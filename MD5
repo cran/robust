@@ -1,6 +1,6 @@
-e97ac3600c2386b6372cc18f0023ebbf *DESCRIPTION
+4f30eff2023b61653e66a293debada30 *DESCRIPTION
 6dd1f0a09bafd6e26419eab4cd492c4e *NAMESPACE
-3874988b41861eb81e26e205a80f40d7 *NEWS.md
+057312cd6865040f6da47a0cadef38c7 *NEWS.md
 3f6d414dc13d8ff3729fe6f7445f13e4 *R/anova.glmRob.q
 36cf6ff6e9c235d222290cbdb34993d7 *R/anova.glmRoblist.q
 03c53bfbcc24f4068a8dfdf43abc5e75 *R/anova.lmRob.q
@@ -180,14 +180,14 @@ ff07acc0bf26170e2e17c697e9fcb441 *man/update.lmRob.Rd
 6e46b421350c60739a8a1ca2e221cb5a *man/weight.funs.Rd
 572a23ae1a4785846da73c05ba1f4211 *man/woodmod.dat.Rd
 05d63b1a3fae9eabe2c72732684ccafa *src/Makevars
-3bb7b7f387371a3bc3cb7e120e264963 *src/compatibility.c
+9ab9398530e863298b4e327eb053583f *src/compatibility.c
 ad6561356b99f9218e3598ac49d4d437 *src/gamrob.f
 263aae5b18dbaa46490ac6bf493406c9 *src/glmrob.f
 6be80787157d427e82e1ed36c6f3ad06 *src/lmrobbi.f
 8e1e01aeee7634e3c624dac804edd81c *src/lmrobfs.f
 44d27b76c5be3aa1489c8f969afba1d7 *src/lmrobml.f
-4d5e047aca895e066f6fd3f91566be09 *src/lmrobmm.f
-80ed6040dca49c8bdc4c4e3b50b2f5e0 *src/mmprnt.c
+7738caf3a9d8a9cdb30f81f0790c6f8e *src/lmrobmm.f
+d2c6078360fcdd6eff48c88c0ef52153 *src/mmprnt.c
 d552badffae36c1b572c818f329f61a6 *src/rb.c
 bff275be68d14909c30fd2bc4005489b *src/robust.h
 5e72ba80a7517f5b6f9479324c5e39ec *src/tdmean.f

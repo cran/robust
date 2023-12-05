@@ -26,7 +26,7 @@ void R_init_mypkg(DllInfo *dll)
 #ifdef USING_R
 void F77_SUB(fseedi)(void)
 {
-  // VT::30.01.2022 - replace S.h bu R.h
+  // VT::30.01.2022 - replace S.h by R.h
   //    seed_in() and seed_out() will be repalced by GetRNGstate() 
   //    and PutRNGstate(), respectively
   
@@ -40,7 +40,7 @@ void F77_SUB(fseedi)(void)
 void F77_SUB(fseedo)(void)
 {
 
-  // VT::30.01.2022 - replace S.h bu R.h
+  // VT::30.01.2022 - replace S.h by R.h
   //    seed_in() and seed_out() will be repalced by GetRNGstate() 
   //    and PutRNGstate(), respectively
   
@@ -64,15 +64,17 @@ void F77_SUB(getrandind)(Sint* n, Sint* np, Sint* maxslen, Sint* ntind, Sint* ni
 	error("getrandind not implemented.  Please report this to the package maintainer.");
 }
 
-
+//  VT::05.12.2023 - warning: format string is not a string literal (potentially insecure)
 #ifdef FC_LEN_T
 void F77_SUB(xerror)(const char* msg, Sint* n, Sint* p, Sint* i, FC_LEN_T msg_len)
 #else
 void F77_SUB(xerror)(const char* msg, Sint* n, Sint* p, Sint* i)
 #endif
 {
-  error(msg);
+  //    error(msg);
+  error("Singular matrix");
 }
+
 #endif
 
 void F77_SUB(roblibrunif)(Sfloat* px)
