@@ -1,6 +1,6 @@
-4f30eff2023b61653e66a293debada30 *DESCRIPTION
+6bb9b1cbe6c0776c053abda42b8de79f *DESCRIPTION
 6dd1f0a09bafd6e26419eab4cd492c4e *NAMESPACE
-057312cd6865040f6da47a0cadef38c7 *NEWS.md
+35dbe5fe1d36da9c3b257492f7e164b8 *NEWS.md
 3f6d414dc13d8ff3729fe6f7445f13e4 *R/anova.glmRob.q
 36cf6ff6e9c235d222290cbdb34993d7 *R/anova.glmRoblist.q
 03c53bfbcc24f4068a8dfdf43abc5e75 *R/anova.lmRob.q
@@ -36,7 +36,7 @@ ab443718eaf8cddafa8aca3e2b20f6ed *R/glmRob.mallows.control.q
 f9626fe05ccf4b9a36b77a89ff63b3aa *R/glmRob.mallows.q
 32293a1d0d2874957ede59e37090be8e *R/glmRob.misclass.control.q
 5df547c959f75f5ea91fd24efc817400 *R/glmRob.misclass.misc.q
-15b3c94593dd421d01cb3e3978dac88c *R/glmRob.misclass.q
+99366664f1c71c181fa29d0e09ba58de *R/glmRob.misclass.q
 eb84e8646d52969a7fc8542dfe08391e *R/glmRob.q
 e2eac5cbcddb1e1af48a60263063461a *R/globalVariables.q
 c8d56429ac6923528d8d60990a1684bb *R/labels.glmRob.q

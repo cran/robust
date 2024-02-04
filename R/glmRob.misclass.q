@@ -36,11 +36,14 @@ glmRob.misclass <- function(x, y, control, offset, null.dev, family, Terms)
   beta <- mc.beta$coefficients
   eta <- drop(x %*% beta)
 
-  if(is.R())
+## VT::04.02.2024 - remove is.R() - see mail of Prof. Ripley from 29.02.2024
+##  if(is.R())
+##    mu <- binomial()$linkinv(eta)
+##  else
+##    mu <- binomial()$inverse(eta)
+## 
     mu <- binomial()$linkinv(eta)
-  else
-    mu <- binomial()$inverse(eta)
-
+ 
   w <- glmRob.misclass.w(eta, mc.gamma)
 
   w.glm.fit <- suppressWarnings(glm.fit(x = x, y = y, family = binomial(), weights = w))
