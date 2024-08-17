@@ -28,7 +28,9 @@ The selected plots are drawn on a graphics device.
 }
 
 \details{
-This function casts the glmRob object as an glmfm object containing a single model.  The actual ploting is then done by the function \code{\link{plot.glmfm}}.
+This function casts the glmRob object as an glmfm object containing a single model. 
+The actual ploting is then done by the function 
+\code{\link[fit.models]{plot.glmfm}}.
 }
 
 \section{References}{
@@ -38,7 +40,7 @@ Atkinson, A. C. (1985).  Plots, Transformations and Regression. New York: Oxford
 \seealso{
 \code{\link{plot}},
 \code{\link{glmRob}},
-\code{\link{plot.glmfm}}.
+\code{\link[fit.models]{plot.glmfm}}.
 }
 
 \keyword{methods}

@@ -41,7 +41,7 @@ The actual plot functions are only implemented for "fit.models" objects.  When t
   \code{\link{plot}},
   \code{\link{covClassic}},
   \code{\link{covRob}},
-  \code{\link{fit.models}},
+  \code{\link[fit.models]{fit.models}},
   \code{\link{ddPlot.covfm}},
   \code{\link{ellipsesPlot.covfm}},
   \code{\link{screePlot.covfm}},

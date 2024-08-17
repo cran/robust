@@ -1,4 +1,3 @@
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # `robust`: Port of the S+ “Robust Library”
@@ -15,27 +14,27 @@ version](https://www.r-pkg.org/badges/version/robust)](https://cran.r-project.or
 
 This package contains the Robust Library version 0.4
 
-- Contributors:
-  - Jeff Wang <jwang@statsci.com>
-  - Ruben Zamar <ruben@stat.ubc.ca>
-  - Alfio Marazzi <Alfio.Marazzi@inst.hospvd.ch>
-  - Victor Yohai <vyohai@dm.uba.ar>
-  - Matias Salibian-Barrera <matias@stat.ubc.ca>
-  - Ricardo Maronna <maron@mate.unlp.edu.ar>
-  - Eric Zivot <ezivot@u.washington.edu>
-  - David Rocke <dmrocke@ucdavis.edu>
-  - Doug Martin <doug@statsci.com>
-  - Kjell Konis <kjell.konis@icloud.com>
+-   Contributors:
+    -   Jeff Wang <jwang@statsci.com>
+    -   Ruben Zamar <ruben@stat.ubc.ca>
+    -   Alfio Marazzi <Alfio.Marazzi@inst.hospvd.ch>
+    -   Victor Yohai <vyohai@dm.uba.ar>
+    -   Matias Salibian-Barrera <matias@stat.ubc.ca>
+    -   Ricardo Maronna <maron@mate.unlp.edu.ar>
+    -   Eric Zivot <ezivot@u.washington.edu>
+    -   David Rocke <dmrocke@ucdavis.edu>
+    -   Doug Martin <doug@statsci.com>
+    -   Kjell Konis <kjell.konis@icloud.com>
 
 ------------------------------------------------------------------------
 
-- This package contains the following robust methods:
-  - Robust Covariance estimation (scatter and location)
-  - Robust Linear Regression
-  - Robust Generalized Linear Models
-  - Robust Gamma, Weibull, and lognormal parameter estimation
-- A method for side-by-side comparison of robust and classical models is
-  also provided. Please see Robust.pdf for further details.
+-   This package contains the following robust methods:
+    -   Robust Covariance estimation (scatter and location)
+    -   Robust Linear Regression
+    -   Robust Generalized Linear Models
+    -   Robust Gamma, Weibull, and lognormal parameter estimation
+-   A method for side-by-side comparison of robust and classical models
+    is also provided. Please see Robust.pdf for further details.
 
 ## Installation
 

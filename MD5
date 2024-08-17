@@ -1,6 +1,6 @@
-6bb9b1cbe6c0776c053abda42b8de79f *DESCRIPTION
+dd4e8d61276fe81866dc8fcc4d691a83 *DESCRIPTION
 6dd1f0a09bafd6e26419eab4cd492c4e *NAMESPACE
-35dbe5fe1d36da9c3b257492f7e164b8 *NEWS.md
+7fdca2d54798d5787427b2f553333f69 *NEWS.md
 3f6d414dc13d8ff3729fe6f7445f13e4 *R/anova.glmRob.q
 36cf6ff6e9c235d222290cbdb34993d7 *R/anova.glmRoblist.q
 03c53bfbcc24f4068a8dfdf43abc5e75 *R/anova.lmRob.q
@@ -101,7 +101,7 @@ b4f343c77ee5b4c5f8386f58cd843a40 *R/update.lmRob.q
 c1be1c779cbbb749af6eeb22b0c9f51d *R/weibullRob.q
 45261577256aa6e0ea450c5e9e3588dd *R/weight.funs.q
 baf5338b0a61875951ad4354ff0c4680 *R/wt.carroll.q
-aa9248135fe05e0259b4e13f606f4662 *README.md
+7b1c47510df140c9b840222b8bc0a22c *README.md
 b530bcfb12dbba7a34e99584731f6ee2 *data/breslow.dat.txt.gz
 7e26afce6ddf085f5df1ca17bf36817f *data/leuk.dat.txt.gz
 021791f57ce49be7176ad83ef4ce277e *data/mallows.dat.txt.gz
@@ -158,10 +158,10 @@ b7cc9d91b3a2aa7da16a1ed1db8ec104 *man/lognormRob.Rd
 def890452e05b22b4587c99032d04559 *man/lognormRob.control.Rd
 63fc78ed609015952e4a2242498e82aa *man/lsRobTest.Rd
 9f0cf0d6a636ef1ffa2556f84dd17166 *man/mallows.dat.Rd
-53f29dc4cca2973e041507ff320afaff *man/plot.covfm.Rd
+ece85d3194146945a660ac9f26c3f56e *man/plot.covfm.Rd
 e0b23306dd37a73be2d43e2c7f788681 *man/plot.fdfm.Rd
-c4ec2b857b86b8d2d9b829b8a458bfaf *man/plot.glmRob.Rd
-1aeb9f58b672156c8031d7cdeb14698b *man/plot.lmRob.Rd
+19ec90a966721bf2a93d132425b60529 *man/plot.glmRob.Rd
+cd552f7e097642ffc963e0818e89f5c7 *man/plot.lmRob.Rd
 b51cbc37a3872edc6bf7db35394c8484 *man/predict.glmRob.Rd
 bad11ee318be6daeb93bcbf1a177e07f *man/predict.lmRob.Rd
 4506a23277e4d9feca155d7b84a0b98c *man/qqPlot.fdfm.Rd
@@ -170,7 +170,7 @@ bad11ee318be6daeb93bcbf1a177e07f *man/predict.lmRob.Rd
 a9aa21ec19af58d8620836b1bf9e3178 *man/screePlot.covfm.Rd
 5642d363bbb8dde105c71b301bfc5fba *man/stack.dat.Rd
 9dead22206cbb354addf96e6d8ff5976 *man/step.lmRob.Rd
-3438d78967ef61755b057b43a41517aa *man/summary.covfm.Rd
+4120d218043e1f6dc9504aefbac0e6db *man/summary.covfm.Rd
 ea27cce7eea0e4625dda1183027efc8f *man/summary.glmRob.Rd
 0a67d94841afcc7dac64817f58fa1977 *man/summary.lmRob.Rd
 a8f4393c8d87ff06d8dea03692ab193b *man/test.lmRob.Rd

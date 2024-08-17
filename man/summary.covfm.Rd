@@ -43,7 +43,7 @@
   \code{\link{summary}},
   \code{\link{covClassic}},
   \code{\link{covRob}},
-  \code{\link{fit.models}}.
+  \code{\link[fit.models]{fit.models}}.
 }
 
 \examples{
